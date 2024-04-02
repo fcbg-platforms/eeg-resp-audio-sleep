@@ -16,58 +16,42 @@ classifiers = [
   'Programming Language :: Python :: 3.10',
   'Programming Language :: Python :: 3.11',
   'Programming Language :: Python :: 3.12',
-  'Programming Language :: Python :: 3.9',
 ]
 dependencies = [
+  'mne-lsl>=1.3.0',
   'numpy>=1.21',
   'packaging',
   'psutil',
 ]
-description = 'Template for python projects.'
+description = 'Project to study sound stimulus synchronous, asynchronous and isochronous with the respiration during sleep.'
 keywords = [
   'python',
-  'template',
+  'respiration',
+  'eeg',
+  'audio',
+  'sleep',
 ]
 license = {file = 'LICENSE'}
 maintainers = [
   {email = 'mathieu.scheltienne@fcbg.ch', name = 'Mathieu Scheltienne'},
 ]
-name = 'template'
+name = 'resp_audio_sleep'
 readme = 'README.md'
-requires-python = '>=3.9'
+requires-python = '>=3.10'
 version = '0.1.0'
 
 [project.optional-dependencies]
 all = [
-  'template[build]',
-  'template[doc]',
-  'template[stubs]',
-  'template[style]',
-  'template[test]',
+  'resp_audio_sleep[build]',
+  'resp_audio_sleep[style]',
+  'resp_audio_sleep[test]',
 ]
 build = [
   'build',
   'twine',
 ]
-doc = [
-  'furo',
-  'matplotlib',
-  'memory-profiler',
-  'numpydoc',
-  'sphinx',
-  'sphinx-copybutton',
-  'sphinx-design',
-  'sphinx-gallery',
-  'sphinx-issues',
-  'sphinxcontrib-bibtex',
-]
 full = [
-  'template[all]',
-]
-stubs = [
-  'isort',
-  'mypy',
-  'ruff>=0.1.8',
+  'resp_audio_sleep[all]',
 ]
 style = [
   'bibclean',
@@ -85,13 +69,11 @@ test = [
 ]
 
 [project.scripts]
-template-sys_info = 'template.commands.sys_info:run'
+ras-sys_info = 'resp_audio_sleep.commands.sys_info:run'
 
 [project.urls]
-documentation = 'https://github.com/mscheltienne/template-python'
-homepage = 'https://github.com/mscheltienne/template-python'
-source = 'https://github.com/mscheltienne/template-python'
-tracker = 'https://github.com/mscheltienne/template-python/issues'
+source = 'https://github.com/fcbg-hnp-meeg/eeg-resp-audio-sleep'
+tracker = 'https://github.com/fcbg-hnp-meeg/eeg-resp-audio-sleep/issues'
 
 [tool.codespell]
 check-filenames = true
@@ -113,40 +95,34 @@ cover_pylib = false
 omit = [
   '**/__init__.py',
   '**/conftest.py',
-  '**/template/_version.py',
-  '**/template/commands/*',
-  '**/template/utils/_fixes.py',
+  '**/resp_audio_sleep/_version.py',
+  '**/resp_audio_sleep/commands/*',
+  '**/resp_audio_sleep/utils/_fixes.py',
   '**/tests/**',
 ]
 
 [tool.isort]
-extend_skip_glob = [
-  'doc/*',
-  'examples/*',
-  'tutorials/*',
-]
+extend_skip_glob = []
 line_length = 88
 multi_line_output = 3
 profile = 'black'
-py_version = 39
+py_version = 310
 
 [tool.pydocstyle]
 add_ignore = 'D100,D104,D107'
 convention = 'numpy'
 ignore-decorators = '(copy_doc|property|.*setter|.*getter|pyqtSlot|Slot)'
 match = '^(?!__init__|test_).*\.py'
-match-dir = '^template.*'
+match-dir = '^resp_audio_sleep.*'
 
 [tool.pytest.ini_options]
 addopts = '--durations 20 --junit-xml=junit-results.xml --verbose'
 minversion = '8.0'
 
 [tool.ruff]
-extend-exclude = [
-  'doc',
-]
+extend-exclude = []
 line-length = 88
-target-version = 'py39'
+target-version = 'py310'
 
 [tool.ruff.format]
 docstring-code-format = true
@@ -159,17 +135,15 @@ select = ['A', 'B', 'E', 'F', 'UP', 'W']
 [tool.ruff.lint.per-file-ignores]
 '*' = [
   'B904', # 'Within an except clause, raise exceptions with raise ... from ...'
-  'UP007', # 'Use `X | Y` for type annotations', requires python 3.10
 ]
-'*.pyi' = ['E501']
 '__init__.py' = ['F401']
 
 [tool.setuptools]
 include-package-data = false
 
 [tool.setuptools.packages.find]
-exclude = ['template*tests']
-include = ['template*']
+exclude = ['resp_audio_sleep*tests']
+include = ['resp_audio_sleep*']
 
 [tool.tomlsort]
 all = true

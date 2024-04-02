@@ -36,9 +36,9 @@ jobs:
           python -m pip install --progress-bar off --upgrade pip setuptools
           python -m pip install --progress-bar off .[test]
       - name: Display system information
-        run: template-sys_info --developer
+        run: ras-sys_info --developer
       - name: Run pytest
-        run: pytest template --cov=template --cov-report=xml --cov-config=pyproject.toml
+        run: pytest resp_audio_sleep --cov=resp_audio_sleep --cov-report=xml --cov-config=pyproject.toml
       - name: Upload to codecov
         uses: codecov/codecov-action@v4
         with:
@@ -73,9 +73,9 @@ jobs:
           python -m pip install --progress-bar off .[test]
           python -m pip install --progress-bar off --upgrade --pre --only-binary :all: -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple --timeout=180 numpy
       - name: Display system information
-        run: template-sys_info --developer
+        run: ras-sys_info --developer
       - name: Run pytest
-        run: pytest template --cov=template --cov-report=xml --cov-config=pyproject.toml
+        run: pytest resp_audio_sleep --cov=resp_audio_sleep --cov-report=xml --cov-config=pyproject.toml
       - name: Upload to codecov
         uses: codecov/codecov-action@v4
         with:

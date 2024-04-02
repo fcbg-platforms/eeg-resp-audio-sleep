@@ -1,1 +1,1 @@
-exclude template/conftest.py
+exclude resp_audio_sleep/conftest.py
