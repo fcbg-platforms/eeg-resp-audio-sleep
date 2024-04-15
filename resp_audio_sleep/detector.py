@@ -23,12 +23,15 @@ class Detector:
         self._stream.pick(respiration_ch_name)
         self._stream.set_channel_types({respiration_ch_name: "misc"})
         self._stream.notch_filter(50, picks=respiration_ch_name)
-        self._stream.filter(None, 20, picks=respiration_ch_name)
+        self._stream.filter(0.1, 5, picks=respiration_ch_name)
+        # peak detection settings
         self._last_peak = None
 
     def prefill_buffer(self) -> None:
         """Prefill an entire buffer."""
+        logger.info("Prefilling buffer of %.2f seconds.", self._stream._bufsize)
         sleep(self._stream._bufsize)
+        logger.info("Buffer prefilled.")
 
     def new_peak(self) -> float | None:
         """Detect new peak entering the buffer."""
@@ -50,10 +53,5 @@ class Detector:
     def detect_peaks(self) -> NDArray[np.float64]:
         """Detects all peaks in the buffer."""
         data, ts = self._stream.get_data()
-        peaks, _ = find_peaks(
-            data.squeeze(),
-            height=np.percentile(data, self._peak_height_perc),
-            width=self._peak_width_samples,
-            prominence=self._peak_prominence,
-        )
+        peaks, _ = find_peaks(data.squeeze(), height=10)
         return ts[peaks]
