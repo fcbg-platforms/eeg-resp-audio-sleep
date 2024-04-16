@@ -68,8 +68,8 @@ class Detector:
             else:
                 peaks2append.append(peak)
         # before going further, let's make sure we don't add too many false positives
-        if len(peaks2append) + len(self._peak_candidates) > int(
-            self._stream._bufsize * 2
+        if int(self._stream._bufsize * 1.5) < len(peaks2append) + len(
+            self._peak_candidates
         ):
             self._peak_candidates = None
             self._peak_candidate_counts = None
