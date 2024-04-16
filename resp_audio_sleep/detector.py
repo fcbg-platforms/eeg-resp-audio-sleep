@@ -23,6 +23,20 @@ class Detector:
         respiration_ch_name: str,
         viewer: Viewer | None,
     ) -> None:
+        """Respiration peak detector.
+
+        Parameters
+        ----------
+        bufsize : float
+            Size of the buffer in seconds.
+        stream_name : str
+            Name of the LSL stream to connect to.
+        respiration_ch_name : str
+            Name of the respiration channel.
+        viewer : Viewer | None
+            Viewer to display the respiration signal and detected peaks. Useful for
+            debugging, but should be set to None for production.
+        """
         if bufsize < 2:
             warn("Buffer size shorter than 2 second might be too short.")
         check_type(viewer, (Viewer, None), "viewer")
