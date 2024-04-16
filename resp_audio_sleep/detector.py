@@ -28,7 +28,9 @@ class Detector:
         check_type(viewer, (Viewer, None), "viewer")
         self._stream = StreamLSL(bufsize, stream_name).connect(processing_flags="all")
         self._stream.pick(respiration_ch_name)
-        self._stream.set_channel_types({respiration_ch_name: "misc"})
+        self._stream.set_channel_types(
+            {respiration_ch_name: "misc"}, on_unit_change="ignore"
+        )
         self._stream.notch_filter(50, picks=respiration_ch_name)
         self._stream.filter(0.1, 5, picks=respiration_ch_name)
         # peak detection settings
@@ -45,7 +47,13 @@ class Detector:
         logger.info("Buffer prefilled.")
 
     def new_peak(self) -> float | None:
-        """Detect new peak entering the buffer."""
+        """Detect new peak entering the buffer.
+
+        Returns
+        -------
+        peak : float | None
+            The timestamp of the newly detected peak. None if no new peak is detected.
+        """
         ts_peaks = self.detect_peaks()
         if ts_peaks.size == 0:
             return None  # unlikely to happen, but let's exit early if we have nothing
@@ -68,7 +76,7 @@ class Detector:
             return None
         self._peak_candidates.extend(peaks2append)
         self._peak_candidate_counts.extend([1] * len(peaks2append))
-        # now that we triage all the detected peaks, let's see if we have a winner
+        # now, all the detected peaks have been triage, let's see if we have a winner
         idx = [k for k, count in enumerate(self._peak_candidate_counts) if 4 <= count]
         if len(idx) == 0:
             return None
@@ -87,7 +95,13 @@ class Detector:
         return None
 
     def detect_peaks(self) -> NDArray[np.float64]:
-        """Detects all peaks in the buffer."""
+        """Detects all peaks in the buffer.
+
+        Returns
+        -------
+        peaks : array of shape (n_peaks,)
+            The timestamps of all detected peaks.
+        """
         data, ts = self._stream.get_data()
         peaks, _ = find_peaks(data.squeeze(), height=10)
         if self._viewer is not None:

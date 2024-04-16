@@ -13,6 +13,14 @@ if TYPE_CHECKING:
 
 class Viewer:
     def __init__(self, ax: plt.Axes | None = None) -> None:
+        """Matplotlib viewer of a real-time respiration signal with peak detection.
+
+        Parameters
+        ----------
+        ax : Axes | None
+            Matplotlib axes used to draw the respiration data and peaks. If None, a new
+            figure is created.
+        """
         if plt.get_backend() != "QtAgg":
             plt.switch_backend("QtAgg")
         if not plt.isinteractive():
@@ -26,6 +34,15 @@ class Viewer:
         plt.show()
 
     def plot(self, ts: NDArray[np.float64], data: NDArray[np.float64]) -> None:
+        """Plot the respiration data and peaks.
+
+        Parameters
+        ----------
+        ts : array of shape (n_samples,)
+            Timestamps of the respiration data.
+        data : array of shape (n_samples,)
+            Respiration data.
+        """
         assert ts.ndim == 1
         assert data.ndim == 1
         # prune peaks outside of the viewing window
@@ -45,6 +62,13 @@ class Viewer:
         self._fig.canvas.flush_events()
 
     def add_peak(self, peak: float) -> None:
+        """Add a peak to the viewer.
+
+        Parameters
+        ----------
+        peak : float
+            Timestamp of the peak.
+        """
         check_type(peak, ("numeric",), "peak")
         assert 0 < peak
         self._peaks.append(peak)
