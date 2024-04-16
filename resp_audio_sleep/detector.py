@@ -7,7 +7,9 @@ import numpy as np
 from mne_lsl.stream import StreamLSL
 from scipy.signal import find_peaks
 
+from .utils._checks import check_type
 from .utils.logs import logger, warn
+from .viz import Viewer
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
@@ -15,10 +17,15 @@ if TYPE_CHECKING:
 
 class Detector:
     def __init__(
-        self, bufsize: float, stream_name: str, respiration_ch_name: str
+        self,
+        bufsize: float,
+        stream_name: str,
+        respiration_ch_name: str,
+        viewer: Viewer | None,
     ) -> None:
         if bufsize < 2:
             warn("Buffer size shorter than 2 second might be too short.")
+        check_type(viewer, (Viewer, None), "viewer")
         self._stream = StreamLSL(bufsize, stream_name).connect(processing_flags="all")
         self._stream.pick(respiration_ch_name)
         self._stream.set_channel_types({respiration_ch_name: "misc"})
@@ -26,6 +33,10 @@ class Detector:
         self._stream.filter(0.1, 5, picks=respiration_ch_name)
         # peak detection settings
         self._last_peak = None
+        self._peak_candidates = None
+        self._peak_candidates_count = None
+        # viewer
+        self._viewer = viewer
 
     def prefill_buffer(self) -> None:
         """Prefill an entire buffer."""
@@ -38,20 +49,47 @@ class Detector:
         ts_peaks = self.detect_peaks()
         if ts_peaks.size == 0:
             return None  # unlikely to happen, but let's exit early if we have nothing
-        if self._last_peak is None:  # first peak to be detected
-            self._last_peak = ts_peaks[-1]
-            return ts_peaks[-1]
-        if ts_peaks[-1] == self._last_peak:  # already found this peak
+        if self._peak_candidates is None and self._peak_candidates_count is None:
+            self._peak_candidates = list(ts_peaks)
+            self._peak_candidate_counts = [1] * ts_peaks.size
             return None
-        elif ts_peaks[-1] - self._last_peak <= 0.5:
-            logger.debug("Two peaks detected too close to each other.")
+        peaks2append = []
+        for k, peak in enumerate(self._peak_candidates):
+            if peak in ts_peaks:
+                self._peak_candidate_counts[k] += 1
+            else:
+                peaks2append.append(peak)
+        # before going further, let's make sure we don't add too many false positives
+        if len(peaks2append) + len(self._peak_candidates) > int(
+            self._stream._bufsize * 2
+        ):
+            self._peak_candidates = None
+            self._peak_candidate_counts = None
             return None
+        self._peak_candidates.extend(peaks2append)
+        self._peak_candidate_counts.extend([1] * len(peaks2append))
+        # now that we triage all the detected peaks, let's see if we have a winner
+        idx = [k for k, count in enumerate(self._peak_candidate_counts) if 4 <= count]
+        if len(idx) == 0:
+            return None
+        peaks = sorted([self._peak_candidates[k] for k in idx])
+        # compare the winner with the last known peak
+        if self._last_peak is None or self._last_peak < peaks[-1]:
+            new_peak = peaks[-1]
+            self._last_peak = new_peak
+            if self._viewer is not None:
+                self._viewer.add_peak(new_peak)
         else:
-            self._last_peak = ts_peaks[-1]
-            return ts_peaks[-1]
+            new_peak = None
+        # reset the peak candidates
+        self._peak_candidates = None
+        self._peak_candidate_counts = None
+        return None
 
     def detect_peaks(self) -> NDArray[np.float64]:
         """Detects all peaks in the buffer."""
         data, ts = self._stream.get_data()
         peaks, _ = find_peaks(data.squeeze(), height=10)
+        if self._viewer is not None:
+            self._viewer.plot(ts, data.squeeze())
         return ts[peaks]
