@@ -15,6 +15,9 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
+_MIN_PEAK_DISTANCE: float = 0.8  # minimum distance in seconds
+
+
 class Detector:
     def __init__(
         self,
@@ -82,9 +85,9 @@ class Detector:
             else:
                 peaks2append.append(peak)
         # before going further, let's make sure we don't add too many false positives
-        if int(self._stream._bufsize * 1.5) < len(peaks2append) + len(
-            self._peak_candidates
-        ):
+        if int(self._stream._bufsize * (1 / _MIN_PEAK_DISTANCE)) < len(
+            peaks2append
+        ) + len(self._peak_candidates):
             self._peak_candidates = None
             self._peak_candidate_counts = None
             return None
@@ -96,9 +99,12 @@ class Detector:
             return None
         peaks = sorted([self._peak_candidates[k] for k in idx])
         # compare the winner with the last known peak
-        if self._last_peak is None or self._last_peak < peaks[-1]:
+        if self._last_peak is None:  # don't return the first peak detected
+            new_peak = None
+            self._last_peak = peaks[-1]
+        if self._last_peak is None or self._last_peak + _MIN_PEAK_DISTANCE <= peaks[-1]:
             new_peak = peaks[-1]
-            self._last_peak = new_peak
+            self._last_peak = peaks[-1]
             if self._viewer is not None:
                 self._viewer.add_peak(new_peak)
         else:
@@ -106,7 +112,7 @@ class Detector:
         # reset the peak candidates
         self._peak_candidates = None
         self._peak_candidate_counts = None
-        return None
+        return new_peak
 
     def detect_peaks(self) -> NDArray[np.float64]:
         """Detects all peaks in the buffer.
@@ -117,7 +123,11 @@ class Detector:
             The timestamps of all detected peaks.
         """
         data, ts = self._stream.get_data()
-        peaks, _ = find_peaks(data.squeeze(), height=10)
+        peaks, _ = find_peaks(
+            data.squeeze(),
+            height=10,
+            distance=(_MIN_PEAK_DISTANCE * self._stream.info["sfreq"]),
+        )
         if self._viewer is not None:
             self._viewer.plot(ts, data.squeeze())
         return ts[peaks]
