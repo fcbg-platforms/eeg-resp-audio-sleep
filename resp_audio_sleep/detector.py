@@ -48,7 +48,6 @@ class Detector:
         self._stream.set_channel_types(
             {respiration_ch_name: "misc"}, on_unit_change="ignore"
         )
-        self._stream.notch_filter(50, picks=respiration_ch_name)
         self._stream.filter(0.1, 5, picks=respiration_ch_name)
         # peak detection settings
         self._last_peak = None
