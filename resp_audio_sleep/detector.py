@@ -48,7 +48,8 @@ class Detector:
         self._stream.set_channel_types(
             {respiration_ch_name: "misc"}, on_unit_change="ignore"
         )
-        self._stream.filter(0.1, 5, picks=respiration_ch_name)
+        self._stream.notch_filter(50, picks=respiration_ch_name)
+        self._stream.notch_filter(100, picks=respiration_ch_name)
         # peak detection settings
         self._last_peak = None
         self._peak_candidates = None
@@ -124,8 +125,8 @@ class Detector:
         data, ts = self._stream.get_data()
         peaks, _ = find_peaks(
             data.squeeze(),
-            height=10,
             distance=(_MIN_PEAK_DISTANCE * self._stream.info["sfreq"]),
+            prominence=20,
         )
         if self._viewer is not None:
             self._viewer.plot(ts, data.squeeze())
