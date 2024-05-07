@@ -15,10 +15,10 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
-_MIN_PEAK_DISTANCE: float = 0.8  # minimum distance in seconds
+_MIN_RESP_PEAK_DISTANCE: float = 0.8  # minimum distance in seconds
 
 
-class Detector:
+class DetectorResp:
     def __init__(
         self,
         bufsize: float,
@@ -85,7 +85,7 @@ class Detector:
             else:
                 peaks2append.append(peak)
         # before going further, let's make sure we don't add too many false positives
-        if int(self._stream._bufsize * (1 / _MIN_PEAK_DISTANCE)) < len(
+        if int(self._stream._bufsize * (1 / _MIN_RESP_PEAK_DISTANCE)) < len(
             peaks2append
         ) + len(self._peak_candidates):
             self._peak_candidates = None
@@ -102,7 +102,10 @@ class Detector:
         if self._last_peak is None:  # don't return the first peak detected
             new_peak = None
             self._last_peak = peaks[-1]
-        if self._last_peak is None or self._last_peak + _MIN_PEAK_DISTANCE <= peaks[-1]:
+        if (
+            self._last_peak is None
+            or self._last_peak + _MIN_RESP_PEAK_DISTANCE <= peaks[-1]
+        ):
             new_peak = peaks[-1]
             self._last_peak = peaks[-1]
             if self._viewer is not None:
@@ -125,7 +128,7 @@ class Detector:
         data, ts = self._stream.get_data()
         peaks, _ = find_peaks(
             data.squeeze(),
-            distance=(_MIN_PEAK_DISTANCE * self._stream.info["sfreq"]),
+            distance=(_MIN_RESP_PEAK_DISTANCE * self._stream.info["sfreq"]),
             prominence=20,
         )
         if self._viewer is not None:

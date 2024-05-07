@@ -22,11 +22,14 @@ dependencies = [
   'numpy>=1.21',
   'packaging',
   'psutil',
+  'psychopy',
+  'psychtoolbox',
 ]
 description = 'Project to study sound stimulus synchronous, asynchronous and isochronous with the respiration during sleep.'
 keywords = [
   'python',
   'respiration',
+  'cardiac',
   'eeg',
   'audio',
   'sleep',
@@ -54,11 +57,10 @@ full = [
   'resp_audio_sleep[all]',
 ]
 style = [
-  'bibclean',
   'codespell[toml]>=2.2.4',
   'isort',
   'pydocstyle[toml]',
-  'ruff>=0.1.8',
+  'ruff>=0.4.0',
   'toml-sort',
   'yamllint',
 ]
@@ -130,7 +132,7 @@ line-ending = "lf"
 
 [tool.ruff.lint]
 ignore = []
-select = ['A', 'B', 'E', 'F', 'UP', 'W']
+select = ['A', 'B', 'E', 'F', 'G', 'LOG', 'NPY', 'PIE', 'PT', 'T20', 'UP', 'W']
 
 [tool.ruff.lint.per-file-ignores]
 '*' = [
