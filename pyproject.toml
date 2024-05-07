@@ -27,11 +27,11 @@ dependencies = [
 ]
 description = 'Project to study sound stimulus synchronous, asynchronous and isochronous with the respiration during sleep.'
 keywords = [
-  'python',
-  'respiration',
+  'audio',
   'cardiac',
   'eeg',
-  'audio',
+  'python',
+  'respiration',
   'sleep',
 ]
 license = {file = 'LICENSE'}

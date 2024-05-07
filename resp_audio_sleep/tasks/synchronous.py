@@ -12,14 +12,14 @@ from ._utils import generate_sequence
 
 
 @fill_doc
-def synchronous(stream_name: str, respiration_ch_name: str):
+def synchronous(stream_name: str, respiration_ch_name: str):  # noqa: D401
     """Synchronous auditory stimulus with the respiration peak signal.
 
     Parameters
     ----------
     %(stream_name)s
     %(respiration_ch_name)s
-    """  # noqa: D401
+    """
     # create sound stimuli and trigger
     target = SoundPTB(value=1000, secs=0.2, blockSize=128)
     deviant = SoundPTB(value=2000, secs=0.2, blockSize=128)
