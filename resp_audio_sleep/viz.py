@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class Viewer:
     def __init__(self, ax: plt.Axes | None = None) -> None:
-        """Matplotlib viewer of a real-time respiration signal with peak detection.
+        """Viewer of a real-time respiration or cardiac signal with peak detection.
 
         Parameters
         ----------
@@ -34,14 +34,14 @@ class Viewer:
         plt.show()
 
     def plot(self, ts: NDArray[np.float64], data: NDArray[np.float64]) -> None:
-        """Plot the respiration data and peaks.
+        """Plot the respiration or cardiac data and peaks.
 
         Parameters
         ----------
         ts : array of shape (n_samples,)
             Timestamps of the respiration data.
         data : array of shape (n_samples,)
-            Respiration data.
+            Respiration or cardiac data.
         """
         assert ts.ndim == 1
         assert data.ndim == 1

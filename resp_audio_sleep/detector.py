@@ -8,6 +8,7 @@ from mne_lsl.stream import StreamLSL
 from scipy.signal import find_peaks
 
 from .utils._checks import check_type
+from .utils._docs import fill_doc
 from .utils.logs import logger, warn
 from .viz import Viewer
 
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 _MIN_RESP_PEAK_DISTANCE: float = 0.8  # minimum distance in seconds
 
 
+@fill_doc
 class DetectorResp:
     def __init__(
         self,
@@ -32,10 +34,8 @@ class DetectorResp:
         ----------
         bufsize : float
             Size of the buffer in seconds.
-        stream_name : str
-            Name of the LSL stream to connect to.
-        respiration_ch_name : str
-            Name of the respiration channel.
+        %(stream_name)s
+        %(respiration_ch_name)s
         viewer : Viewer | None
             Viewer to display the respiration signal and detected peaks. Useful for
             debugging, but should be set to None for production.

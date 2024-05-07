@@ -34,7 +34,18 @@ docdict: dict[str, str] = dict()
 # -- P ---------------------------------------------------------------------------------
 # -- Q ---------------------------------------------------------------------------------
 # -- R ---------------------------------------------------------------------------------
+docdict["respiration_ch_name"] = """
+respiration_ch_name : str
+    Name of the respiration channel in the LSL stream. This channel should contain the
+    respiration signal, typically recorded with a respiration belt or a thermistor."""
+
 # -- S ---------------------------------------------------------------------------------
+docdict["stream_name"] = """
+stream_name : str
+    Name of the LSL stream to use for the respiration or cardiac detection. The stream
+    should contain a respiration channel using a respiration belt or a thermistor and/or
+    an ECG channel."""
+
 # -- T ---------------------------------------------------------------------------------
 # -- U ---------------------------------------------------------------------------------
 # -- V ---------------------------------------------------------------------------------
