@@ -56,6 +56,11 @@ verbose : int | str | bool | None
     verbosity is set to ``"WARNING"``. If a bool is provided, the verbosity is set to
     ``"WARNING"`` for False and to ``"INFO"`` for True."""
 
+docdict["viewer"] = """
+viewer : Viewer | None
+    Viewer to display the respiration or cardiac signal and detected peaks. Useful
+    for debugging, but should be set to None for production."""
+
 # -- W ---------------------------------------------------------------------------------
 # -- X ---------------------------------------------------------------------------------
 # -- Y ---------------------------------------------------------------------------------

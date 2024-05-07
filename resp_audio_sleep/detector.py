@@ -21,6 +21,17 @@ _MIN_RESP_PEAK_DISTANCE: float = 0.8  # minimum distance in seconds
 
 @fill_doc
 class DetectorResp:
+    """Respiration peak detector.
+
+    Parameters
+    ----------
+    bufsize : float
+        Size of the buffer in seconds.
+    %(stream_name)s
+    %(respiration_ch_name)s
+    %(viewer)s
+    """
+
     def __init__(
         self,
         bufsize: float,
@@ -28,18 +39,6 @@ class DetectorResp:
         respiration_ch_name: str,
         viewer: Viewer | None,
     ) -> None:
-        """Respiration peak detector.
-
-        Parameters
-        ----------
-        bufsize : float
-            Size of the buffer in seconds.
-        %(stream_name)s
-        %(respiration_ch_name)s
-        viewer : Viewer | None
-            Viewer to display the respiration signal and detected peaks. Useful for
-            debugging, but should be set to None for production.
-        """
         if bufsize < 2:
             warn("Buffer size shorter than 2 second might be too short.")
         check_type(viewer, (Viewer, None), "viewer")
@@ -134,3 +133,40 @@ class DetectorResp:
         if self._viewer is not None:
             self._viewer.plot(ts, data.squeeze())
         return ts[peaks]
+
+
+@fill_doc
+class DetectorCardiac:
+    """Respiration peak detector.
+
+    Parameters
+    ----------
+    bufsize : float
+        Size of the buffer in seconds.
+    %(stream_name)s
+    ecg_ch_name : str
+        Name of the ECG channel on the LSL stream.
+    %(viewer)s
+    """
+
+    def __init__(
+        self,
+        bufsize: float,
+        stream_name: str,
+        ecg_ch_name: str,
+        viewer: Viewer | None,
+    ) -> None:
+        if bufsize < 2:
+            warn("Buffer size shorter than 2 second might be too short.")
+        check_type(viewer, (Viewer, None), "viewer")
+        self._stream = StreamLSL(bufsize, stream_name).connect(processing_flags="all")
+        self._stream.pick(ecg_ch_name)
+        self._stream.set_channel_types({ecg_ch_name: "ecg"}, on_unit_change="ignore")
+        self._stream.notch_filter(50, picks=ecg_ch_name)
+        self._stream.notch_filter(100, picks=ecg_ch_name)
+        # peak detection settings
+        self._last_peak = None
+        self._peak_candidates = None
+        self._peak_candidates_count = None
+        # viewer
+        self._viewer = viewer
