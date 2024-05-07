@@ -117,7 +117,7 @@ class DetectorResp:
         return new_peak
 
     def detect_peaks(self) -> NDArray[np.float64]:
-        """Detects all peaks in the buffer.
+        """Detect all peaks in the buffer.
 
         Returns
         -------

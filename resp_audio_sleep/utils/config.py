@@ -12,8 +12,8 @@ from packaging.requirements import Requirement
 from ._checks import check_type
 
 if TYPE_CHECKING:
-    from typing import IO
     from collections.abc import Callable
+    from typing import IO
 
 
 def sys_info(fid: IO | None = None, developer: bool = False):

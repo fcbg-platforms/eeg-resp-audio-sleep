@@ -12,15 +12,16 @@ if TYPE_CHECKING:
 
 
 class Viewer:
-    def __init__(self, ax: plt.Axes | None = None) -> None:
-        """Viewer of a real-time respiration or cardiac signal with peak detection.
+    """Viewer of a real-time respiration or cardiac signal with peak detection.
 
-        Parameters
-        ----------
-        ax : Axes | None
-            Matplotlib axes used to draw the respiration data and peaks. If None, a new
-            figure is created.
-        """
+    Parameters
+    ----------
+    ax : Axes | None
+        Matplotlib axes used to draw the respiration data and peaks. If None, a new
+        figure is created.
+    """
+
+    def __init__(self, ax: plt.Axes | None = None) -> None:
         if plt.get_backend() != "QtAgg":
             plt.switch_backend("QtAgg")
         if not plt.isinteractive():
