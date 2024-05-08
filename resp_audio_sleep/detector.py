@@ -16,12 +16,6 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
-_MIN_RESP_PEAK_DISTANCE: float = 0.8  # seconds
-_MIN_ECG_PEAK_DISTANCE: float = 0.3  # seconds
-_RESP_PROMINENCE: float = 20  # arbitrary units
-_ECG_PROMINENCE: float = 200  # arbitrary units
-
-
 @fill_doc
 class Detector:
     """Real-time single channel peak detector.
@@ -32,9 +26,18 @@ class Detector:
     %(stream_name)s
     %(ecg_ch_name)s
     %(resp_ch_name)s
+    ecg_height : float | None
+        The height of the ECG peaks as a percentage of the data range, between 0 and 1.
+    ecg_distance : float | None
+        The minimum distance between two ECG peaks in seconds.
+    resp_prominence : float | None
+        The prominence of the respiration peaks in arbitrary units.
+    resp_distance : float | None
+        The minimum distance between two respiration peaks in seconds.
     viewer : bool
         If True, a viewer will be created to display the real-time signal and detected
-        peaks. Useful for debugging, but should be set to False for production.
+        peaks. Useful for debugging or calibration, but should be set to False for
+        production.
     """
 
     def __init__(
@@ -43,6 +46,10 @@ class Detector:
         stream_name: str,
         ecg_ch_name: str | None,
         resp_ch_name: str | None,
+        ecg_height: float | None = None,
+        ecg_distance: float | None = None,
+        resp_prominence: float | None = None,
+        resp_distance: float | None = None,
         *,
         viewer: bool = False,
     ) -> None:
@@ -55,8 +62,13 @@ class Detector:
         check_type(viewer, (bool,), "viewer")
         self._ecg_ch_name = ecg_ch_name
         self._resp_ch_name = resp_ch_name
+        self._set_peak_detection_parameters(
+            ecg_height, ecg_distance, resp_prominence, resp_distance
+        )
         self._create_stream(bufsize, stream_name)
-        self._viewer = Viewer(ecg_ch_name, resp_ch_name) if viewer else None
+        self._viewer = (
+            Viewer(ecg_ch_name, resp_ch_name, self._ecg_height) if viewer else None
+        )
         # peak detection settings
         self._last_peak = {"ecg": None, "resp": None}
         self._peak_candidates = {"ecg": None, "resp": None}
@@ -76,6 +88,58 @@ class Detector:
             raise ValueError("No respiration channel was set.")
         elif ch_type == "ecg" and self._ecg_ch_name is None:
             raise ValueError("No ECG channel was set.")
+
+    def _set_peak_detection_parameters(
+        self,
+        ecg_height: float | None,
+        ecg_distance: float | None,
+        resp_prominence: float | None,
+        resp_distance: float | None,
+    ) -> None:
+        """Check validity of peak detection parameters."""
+        if self._ecg_ch_name is None and any(
+            elt is not None for elt in (ecg_height, ecg_distance)
+        ):
+            raise ValueError(
+                "ECG peak detection parameters were set without ECG channel."
+            )
+        elif self._ecg_ch_name is not None and any(
+            elt is None for elt in (ecg_height, ecg_distance)
+        ):
+            raise ValueError(
+                "ECG peak detection parameters were not set while ECG channel was set."
+            )
+        if self._resp_ch_name is None and any(
+            elt is not None for elt in (resp_prominence, resp_distance)
+        ):
+            raise ValueError(
+                "Respiration peak detection parameters were set without respiration "
+                "channel."
+            )
+        elif self._resp_ch_name is not None and any(
+            elt is None for elt in (resp_prominence, resp_distance)
+        ):
+            raise ValueError(
+                "Respiration peak detection parameters were not set while respiration "
+                "channel was set."
+            )
+        if self._ecg_ch_name is not None:
+            check_type(ecg_height, ("numeric",), "ecg_height")
+            if not 0 <= ecg_height <= 1:
+                raise ValueError("ECG height must be between 0 and 1.")
+            check_type(ecg_distance, ("numeric",), "ecg_distance")
+            if ecg_distance <= 0:
+                raise ValueError("ECG distance must be positive.")
+        if self._resp_ch_name is not None:
+            check_type(resp_prominence, ("numeric",), "resp_prominence")
+            if resp_prominence <= 0:
+                raise ValueError("Respiration prominence must be positive.")
+            check_type(resp_distance, ("numeric",), "resp_distance")
+            if resp_distance <= 0:
+                raise ValueError("Respiration distance must be positive.")
+        self._distances = {"ecg": ecg_distance, "resp": resp_distance}
+        self._ecg_height = ecg_height
+        self._resp_prominence = resp_prominence
 
     @fill_doc
     def _create_stream(self, bufsize: float, stream_name: str) -> None:
@@ -113,19 +177,18 @@ class Detector:
         data, ts = self._stream.get_data(
             picks=self._resp_ch_name if ch_type == "resp" else self._ecg_ch_name
         )
-        distance = (
-            _MIN_RESP_PEAK_DISTANCE * self._stream.info["sfreq"]
-            if ch_type == "resp"
-            else _MIN_ECG_PEAK_DISTANCE * self._stream.info["sfreq"]
-        )
-        prominence = _RESP_PROMINENCE if ch_type == "resp" else _ECG_PROMINENCE
+        data = data.squeeze()
+        if ch_type == "resp":
+            kwargs = {"prominence": self._resp_prominence}
+        elif ch_type == "ecg":
+            kwargs = {"height": np.percentile(data, self._ecg_height * 100)}
         peaks, _ = find_peaks(
-            data.squeeze(),
-            distance=distance,
-            prominence=prominence,
+            data,
+            distance=self._distances[ch_type] * self._stream.info["sfreq"],
+            **kwargs,
         )
         if self._viewer is not None:
-            self._viewer.plot(ts, data.squeeze(), ch_type)
+            self._viewer.plot(ts, data, ch_type)
         return ts[peaks]
 
     @fill_doc
@@ -147,30 +210,27 @@ class Detector:
             and self._peak_candidates_count[ch_type] is None
         ):
             self._peak_candidates[ch_type] = list(ts_peaks)
-            self._peak_candidate_counts[ch_type] = [1] * ts_peaks.size
+            self._peak_candidates_count[ch_type] = [1] * ts_peaks.size
             return None
         peaks2append = []
         for k, peak in enumerate(self._peak_candidates[ch_type]):
             if peak in ts_peaks:
-                self._peak_candidate_counts[ch_type][k] += 1
+                self._peak_candidates_count[ch_type][k] += 1
             else:
                 peaks2append.append(peak)
         # before going further, let's make sure we don't add too many false positives
-        min_distance = (
-            _MIN_RESP_PEAK_DISTANCE if ch_type == "resp" else _MIN_ECG_PEAK_DISTANCE
-        )
-        if int(self._stream._bufsize * (1 / min_distance)) < len(peaks2append) + len(
-            self._peak_candidates[ch_type]
-        ):
+        if int(self._stream._bufsize * (1 / self._distances[ch_type])) < len(
+            peaks2append
+        ) + len(self._peak_candidates[ch_type]):
             self._peak_candidates[ch_type] = None
-            self._peak_candidate_counts[ch_type] = None
+            self._peak_candidates_count[ch_type] = None
             return None
         self._peak_candidates[ch_type].extend(peaks2append)
-        self._peak_candidate_counts[ch_type].extend([1] * len(peaks2append))
+        self._peak_candidates_count[ch_type].extend([1] * len(peaks2append))
         # now, all the detected peaks have been triage, let's see if we have a winner
         idx = [
             k
-            for k, count in enumerate(self._peak_candidate_counts[ch_type])
+            for k, count in enumerate(self._peak_candidates_count[ch_type])
             if 4 <= count
         ]
         if len(idx) == 0:
@@ -182,7 +242,7 @@ class Detector:
             self._last_peak[ch_type] = peaks[-1]
         if (
             self._last_peak[ch_type] is None
-            or self._last_peak[ch_type] + _MIN_RESP_PEAK_DISTANCE <= peaks[-1]
+            or self._last_peak[ch_type] + self._distances[ch_type] <= peaks[-1]
         ):
             new_peak = peaks[-1]
             self._last_peak[ch_type] = peaks[-1]
@@ -192,5 +252,5 @@ class Detector:
             new_peak = None
         # reset the peak candidates
         self._peak_candidates[ch_type] = None
-        self._peak_candidate_counts[ch_type] = None
+        self._peak_candidates_count[ch_type] = None
         return new_peak

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import numpy as np
 from matplotlib import pyplot as plt
 
 from .utils._checks import check_type
@@ -20,9 +21,16 @@ class Viewer:
     ----------
     %(ecg_ch_name)s
     %(resp_ch_name)s
+    ecg_height : float | None
+        The height of the ECG peaks as a percentage of the data range, between 0 and 1.
     """
 
-    def __init__(self, ecg_ch_name: str | None, resp_ch_name: str | None) -> None:
+    def __init__(
+        self,
+        ecg_ch_name: str | None,
+        resp_ch_name: str | None,
+        ecg_height: float | None,
+    ) -> None:
         if plt.get_backend() != "QtAgg":
             plt.switch_backend("QtAgg")
         if not plt.isinteractive():
@@ -40,6 +48,7 @@ class Viewer:
             self._axes = {"resp": axes}
             axes.set_title(f"Respiration: {resp_ch_name}")
         self._peaks = {"ecg": [], "resp": []}
+        self._ecg_height = ecg_height
         plt.show()
 
     @fill_doc
@@ -69,8 +78,15 @@ class Viewer:
         # update plotting window
         self._axes[ch_type].clear()
         self._axes[ch_type].plot(ts, data)
-        for peak in self._peaks:
+        for peak in self._peaks[ch_type]:
             self._axes[ch_type].axvline(peak, color="red", linestyle="--")
+        if ch_type == "ecg":
+            assert self._ecg_height is not None  # sanity-check
+            self._axes[ch_type].axhline(
+                np.percentile(data, self._ecg_height * 100),
+                color="green",
+                linestyle="--",
+            )
         self._fig.canvas.draw()
         self._fig.canvas.flush_events()
 
