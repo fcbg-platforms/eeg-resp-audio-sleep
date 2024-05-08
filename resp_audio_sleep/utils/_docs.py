@@ -18,9 +18,23 @@ docdict: dict[str, str] = dict()
 
 # -- A ---------------------------------------------------------------------------------
 # -- B ---------------------------------------------------------------------------------
+docdict["bufsize"] = """
+bufsize : float
+    Size of the buffer in seconds. The buffer will be filled on instantiation, thus
+    the program will hold during this duration."""
+
 # -- C ---------------------------------------------------------------------------------
+docdict["ch_type"] = """
+ch_type : str
+    The channel type to look on to, either 'resp' or 'ecg'."""
+
 # -- D ---------------------------------------------------------------------------------
 # -- E ---------------------------------------------------------------------------------
+docdict["ecg_ch_name"] = """
+ecg_ch_name : str | None
+    Name of the ECG channel in the LSL stream. This channel should contain the ECG
+    signal recorded with 2 bipolar electrodes."""
+
 # -- F ---------------------------------------------------------------------------------
 # -- G ---------------------------------------------------------------------------------
 # -- H ---------------------------------------------------------------------------------
@@ -34,8 +48,8 @@ docdict: dict[str, str] = dict()
 # -- P ---------------------------------------------------------------------------------
 # -- Q ---------------------------------------------------------------------------------
 # -- R ---------------------------------------------------------------------------------
-docdict["respiration_ch_name"] = """
-respiration_ch_name : str
+docdict["resp_ch_name"] = """
+resp_ch_name : str
     Name of the respiration channel in the LSL stream. This channel should contain the
     respiration signal, typically recorded with a respiration belt or a thermistor."""
 
@@ -55,11 +69,6 @@ verbose : int | str | bool | None
     ``"ERROR"``, ``"WARNING"``, ``"INFO"`` and ``"DEBUG"``. If None is provided, the
     verbosity is set to ``"WARNING"``. If a bool is provided, the verbosity is set to
     ``"WARNING"`` for False and to ``"INFO"`` for True."""
-
-docdict["viewer"] = """
-viewer : Viewer | None
-    Viewer to display the respiration or cardiac signal and detected peaks. Useful
-    for debugging, but should be set to None for production."""
 
 # -- W ---------------------------------------------------------------------------------
 # -- X ---------------------------------------------------------------------------------

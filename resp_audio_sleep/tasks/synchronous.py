@@ -12,13 +12,13 @@ from ._utils import generate_sequence
 
 
 @fill_doc
-def synchronous(stream_name: str, respiration_ch_name: str):  # noqa: D401
+def synchronous(stream_name: str, resp_ch_name: str):  # noqa: D401
     """Synchronous auditory stimulus with the respiration peak signal.
 
     Parameters
     ----------
     %(stream_name)s
-    %(respiration_ch_name)s
+    %(resp_ch_name)s
     """
     # create sound stimuli and trigger
     target = SoundPTB(value=1000, secs=0.2, blockSize=128)
@@ -31,10 +31,10 @@ def synchronous(stream_name: str, respiration_ch_name: str):  # noqa: D401
     detector = DetectorResp(
         bufsize=4,
         stream_name=stream_name,
-        respiration_ch_name=respiration_ch_name,
-        viewer=None,
+        ecg_ch_name=None,
+        resp_ch_name=resp_ch_name,
+        viewer=False,
     )
-    detector.prefill_buffer()
     # main loop
     counter = 0
     while counter <= len(sequence) - 1:
