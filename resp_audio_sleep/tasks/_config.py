@@ -4,7 +4,7 @@ TRIGGER_ARGS: str | None = None
 # sequence settings
 N_TARGET: int = 100
 N_DEVIANT: int = 100
-# Sound settings
+# sound settings
 FQ_TARGET: int = 440
 FQ_DEVIANT: int = 2000
 SOUND_DURATION: float = 0.2
