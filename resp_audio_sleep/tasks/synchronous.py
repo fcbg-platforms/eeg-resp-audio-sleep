@@ -138,8 +138,8 @@ def synchronous_cardiac(
 class _HeartRateMonitor:
     """Class to monitor the heart rate."""
 
-    def __init__(self) -> None:
-        self._times = np.empty(shape=10, dtype=float)
+    def __init__(self, size: int = 10) -> None:
+        self._times = np.empty(shape=size, dtype=float)
         self._counter = 0
         self._initialized = False
 
