@@ -160,6 +160,10 @@ class Detector:
         )
         self._stream.notch_filter(50, picks=picks)
         self._stream.notch_filter(100, picks=picks)
+        if self._resp_ch_name:
+            self._stream.filter(
+                None, 60, method="iir", phase="forward", picks=self._resp_ch_name
+            )
         logger.info("Prefilling buffer of %.2f seconds.", self._stream._bufsize)
         sleep(bufsize)
         logger.info("Buffer prefilled.")
