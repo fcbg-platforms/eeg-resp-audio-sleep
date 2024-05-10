@@ -28,7 +28,7 @@ def asynchronous(peaks: NDArray[np.float64]) -> None:  # noqa: D401
     # generate delays between peaks
     delays = np.diff(peaks)
     rng = np.random.default_rng()
-    rng.choice(delays, size=len(sequence), replace=True)
+    delays = rng.choice(delays, size=len(sequence), replace=True)
     # main loop
     counter = 0
     while counter <= len(sequence) - 1:
