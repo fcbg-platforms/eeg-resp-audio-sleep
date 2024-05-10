@@ -13,3 +13,5 @@ ECG_HEIGHT: float = 0.99
 ECG_DISTANCE: float = 0.3
 RESP_PROMINENCE: float = 20
 RESP_DISTANCE: float = 0.8
+# target timing
+TARGET_DELAY: float = 0.2

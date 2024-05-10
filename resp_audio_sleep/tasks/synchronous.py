@@ -11,7 +11,13 @@ from ..detector import Detector
 from ..utils._checks import check_type, ensure_int
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
-from ._config import ECG_DISTANCE, ECG_HEIGHT, RESP_DISTANCE, RESP_PROMINENCE
+from ._config import (
+    ECG_DISTANCE,
+    ECG_HEIGHT,
+    RESP_DISTANCE,
+    RESP_PROMINENCE,
+    TARGET_DELAY,
+)
 from ._utils import create_sounds, create_trigger, generate_sequence
 
 if TYPE_CHECKING:
@@ -57,7 +63,7 @@ def synchronous_respiration(
         pos = detector.new_peak("resp")
         if pos is None:
             continue
-        wait = pos + 0.2 - local_clock()
+        wait = pos + TARGET_DELAY - local_clock()
         if wait <= 0:
             logger.debug("Skipping bad detection/triggering.")
             continue
@@ -123,7 +129,7 @@ def synchronous_cardiac(
                 target_time - pos
             ):
                 continue  # next r-peak will be closer from the target
-        wait = pos + 0.2 - local_clock()
+        wait = pos + TARGET_DELAY - local_clock()
         if wait <= 0:
             logger.debug("Skipping bad detection/triggering.")
             continue
