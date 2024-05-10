@@ -119,7 +119,9 @@ def synchronous_cardiac(
         if not heartrate.initialized:
             continue
         if target_time is not None:
-            if abs(target_time - pos + heartrate.mean_delay()) < abs(target_time - pos):
+            if abs(target_time - (pos + heartrate.mean_delay())) < abs(
+                target_time - pos
+            ):
                 continue  # next r-peak will be closer from the target
         wait = pos + 0.2 - local_clock()
         if wait <= 0:
@@ -150,6 +152,7 @@ class _HeartRateMonitor:
         self._times[-1] = pos
         self._counter += 1
         if self._counter == self._times.size:
+            logger.info("Heart-rate monitor initialized.")
             self._initialized = True
 
     def mean_delay(self) -> float:
