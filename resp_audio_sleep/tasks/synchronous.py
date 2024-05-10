@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import time
 from typing import TYPE_CHECKING
 
@@ -6,7 +8,7 @@ import psychtoolbox as ptb
 from mne_lsl.lsl import local_clock
 
 from ..detector import Detector
-from ..utils._checks import check_type
+from ..utils._checks import check_type, ensure_int
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
 from ._config import ECG_DISTANCE, ECG_HEIGHT, RESP_DISTANCE, RESP_PROMINENCE
@@ -139,20 +141,22 @@ class _HeartRateMonitor:
     """Class to monitor the heart rate."""
 
     def __init__(self, size: int = 10) -> None:
-        self._times = np.empty(shape=size, dtype=float)
+        self._times = np.empty(shape=ensure_int(size, "size"), dtype=float)
         self._counter = 0
         self._initialized = False
 
     def add_heartbeat(self, pos: float) -> None:
         """Add an heartbeat measurement point."""
-        self._times[self._counter] = pos
+        self._times = np.roll(self._times, shift=-1)
+        self._times[-1] = pos
         self._counter += 1
         if self._counter == self._times.size:
-            self._counter = 0
             self._initialized = True
 
     def mean_delay(self) -> float:
         """Mean delay between two heartbeats in seconds."""
+        if not self._initialized:
+            raise ValueError("The monitor is not initialized yet.")
         return np.mean(np.diff(self._times))
 
     def rate(self) -> float:
