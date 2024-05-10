@@ -38,9 +38,9 @@ def create_trigger() -> BaseTrigger:
     trigger : Trigger
         The corresponding trigger object.
     """
-    check_type(TRIGGER_TYPE, ("str",), "trigger_type")
+    check_type(TRIGGER_TYPE, (str,), "trigger_type")
     check_value(TRIGGER_TYPE, ("arduino", "lpt"), "TRIGGER_TYPE")
-    check_type(TRIGGER_ARGS, ("str", None), "TRIGGER_ARGS")
+    check_type(TRIGGER_ARGS, (str, None), "TRIGGER_ARGS")
     if TRIGGER_TYPE == "arduino":
         trigger = ParallelPortTrigger("arduino", delay=10)
     elif TRIGGER_TYPE == "lpt":

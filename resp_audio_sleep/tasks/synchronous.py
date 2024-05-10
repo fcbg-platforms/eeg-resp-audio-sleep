@@ -110,7 +110,7 @@ def synchronous_cardiac(
     heartrate = _HeartRateMonitor()
     # main loop
     counter = 0
-    target = None
+    target_time = None
     while counter <= len(sequence) - 1:
         pos = detector.new_peak("ecg")
         if pos is None:
@@ -118,10 +118,9 @@ def synchronous_cardiac(
         heartrate.add_heartbeat(pos)
         if not heartrate.initialized:
             continue
-        if target is not None and abs(target - pos + heartrate.mean_delay()) < abs(
-            target - pos
-        ):
-            continue  # next r-peal will be closer from the target
+        if target_time is not None:
+            if abs(target_time - pos + heartrate.mean_delay()) < abs(target_time - pos):
+                continue  # next r-peak will be closer from the target
         wait = pos + 0.2 - local_clock()
         if wait <= 0:
             logger.debug("Skipping bad detection/triggering.")
@@ -134,7 +133,7 @@ def synchronous_cardiac(
         time.sleep(wait)
         trigger.signal(sequence[counter])
         counter += 1
-        target = pos + delay if target is None else target + delay
+        target_time = pos + delay if target_time is None else target_time + delay
 
 
 class _HeartRateMonitor:
