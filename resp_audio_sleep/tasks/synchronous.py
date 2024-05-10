@@ -31,8 +31,8 @@ def synchronous(stream_name: str, resp_ch_name: str) -> NDArray[np.float64]:  # 
     """
     # create sound stimuli, trigger, sequence and detector
     target, deviant = create_sounds()
-    trigger = create_trigger("arduino")
-    sequence = generate_sequence(n_target=100, n_deviant=0)
+    trigger = create_trigger()
+    sequence = generate_sequence()
     detector = Detector(
         bufsize=4,
         stream_name=stream_name,

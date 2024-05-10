@@ -1,4 +1,6 @@
 TRIGGERS: dict[str, int] = {"target": 1, "deviant": 2}
+TRIGGER_TYPE: str = "arduino"
+TRIGGER_ARGS: str | None = None
 # sequence settings
 N_TARGET: int = 100
 N_DEVIANT: int = 100

@@ -4,7 +4,6 @@ import psychtoolbox as ptb
 
 from ..utils._checks import check_type
 from ..utils.logs import logger
-from ._config import N_DEVIANT, N_TARGET
 from ._utils import create_sounds, create_trigger, generate_sequence
 
 
@@ -21,8 +20,8 @@ def isochronous(delay: float) -> None:  # noqa: D401
         raise ValueError("The delay must be strictly positive.")
     # create sound stimuli, trigger and sequence
     target, deviant = create_sounds()
-    trigger = create_trigger("arduino")
-    sequence = generate_sequence(n_target=N_TARGET, n_deviant=N_DEVIANT)
+    trigger = create_trigger()
+    sequence = generate_sequence()
     # main loop
     counter = 0
     while counter <= len(sequence) - 1:
