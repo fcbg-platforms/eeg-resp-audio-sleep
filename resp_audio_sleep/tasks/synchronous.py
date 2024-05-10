@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 @fill_doc
-def synchronous(stream_name: str, resp_ch_name: str) -> NDArray[np.float64]:  # noqa: D401
+def synchronous(stream_name: str, resp_ch_name: str) -> NDArray[np.float64]:  # noqa: D401, E501
     """Synchronous auditory stimulus with the respiration peak signal.
 
     Parameters

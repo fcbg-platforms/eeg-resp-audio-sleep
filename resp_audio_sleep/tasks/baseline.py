@@ -4,7 +4,7 @@ from ..utils._checks import check_type
 from ..utils.logs import logger
 
 
-def baseline(duration: float):
+def baseline(duration: float) -> None:  # noqa: D401
     """Baseline block corresponding to a resting-state recording.
 
     Parameters
