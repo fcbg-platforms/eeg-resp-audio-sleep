@@ -72,7 +72,11 @@ def synchronous_respiration(
 
 
 @fill_doc
-def synchronous_cardiac(stream_name: str, ecg_ch_name: str, delay: float) -> None:  # noqa: D401
+def synchronous_cardiac(
+    stream_name: str,
+    ecg_ch_name: str,
+    delay: float,
+) -> None:  # noqa: D401
     """Synchronous auditory stimulus with the cardiac peak signal.
 
     Parameters
