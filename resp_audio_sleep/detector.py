@@ -170,11 +170,14 @@ class Detector:
     def _detect_peaks(self, ch_type: str) -> NDArray[np.float64]:
         """Detect all peaks in the buffer.
 
+        Parameters
+        ----------
+        %(ch_type)s
+
         Returns
         -------
         peaks : array of shape (n_peaks,)
             The timestamps of all detected peaks.
-        %(ch_type)s
         """
         data, ts = self._stream.get_data(
             picks=self._resp_ch_name if ch_type == "resp" else self._ecg_ch_name
@@ -197,11 +200,14 @@ class Detector:
     def new_peak(self, ch_type: str) -> float | None:
         """Detect new peak entering the buffer.
 
+        Parameters
+        ----------
+        %(ch_type)s
+
         Returns
         -------
         peak : float | None
             The timestamp of the newly detected peak. None if no new peak is detected.
-        %(ch_type)s
         """
         self._check_ch_type(ch_type)
         ts_peaks = self._detect_peaks(ch_type)
