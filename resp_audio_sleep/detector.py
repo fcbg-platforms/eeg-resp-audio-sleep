@@ -70,6 +70,7 @@ class Detector:
             Viewer(ecg_ch_name, resp_ch_name, self._ecg_height) if viewer else None
         )
         # peak detection settings
+        self._last_acq_time = {"ecg": None, "resp": None}
         self._last_peak = {"ecg": None, "resp": None}
         self._peak_candidates = {"ecg": None, "resp": None}
         self._peak_candidates_count = {"ecg": None, "resp": None}
@@ -170,6 +171,8 @@ class Detector:
     def _detect_peaks(self, ch_type: str) -> NDArray[np.float64]:
         """Detect all peaks in the buffer.
 
+        If a buffer was already processed, it will not be re-processed.
+
         Parameters
         ----------
         %(ch_type)s
@@ -182,6 +185,13 @@ class Detector:
         data, ts = self._stream.get_data(
             picks=self._resp_ch_name if ch_type == "resp" else self._ecg_ch_name
         )
+        if (
+            self._last_acq_time[ch_type] is None
+            or self._last_acq_time[ch_type] != ts[-1]
+        ):
+            self._last_acq_time[ch_type] = ts[-1]
+        elif self._last_acq_time[ch_type] == ts[-1]:
+            return np.array([])  # nothing new to do
         data = data.squeeze()
         if ch_type == "resp":
             kwargs = {"prominence": self._resp_prominence}
