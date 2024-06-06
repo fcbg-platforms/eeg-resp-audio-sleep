@@ -18,8 +18,8 @@ classifiers = [
   'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
-  'byte_triggers',
-  'mne-lsl>=1.3.0',
+  'byte_triggers>=0.4.0',
+  'mne-lsl>=1.4.0',
   'numpy>=1.21',
   'packaging',
   'psutil',
@@ -119,13 +119,13 @@ match = '^(?!__init__|test_).*\.py'
 match-dir = '^resp_audio_sleep.*'
 
 [tool.pytest.ini_options]
-addopts = '--durations 20 --junit-xml=junit-results.xml --verbose'
+addopts = ['--color=yes', '--cov-report=', '--durations=20', '--junit-xml=junit-results.xml', '--strict-config', '--tb=short', '-ra', '-v']
+junit_family = 'xunit2'
 minversion = '8.0'
 
 [tool.ruff]
 extend-exclude = []
 line-length = 88
-target-version = 'py310'
 
 [tool.ruff.format]
 docstring-code-format = true
