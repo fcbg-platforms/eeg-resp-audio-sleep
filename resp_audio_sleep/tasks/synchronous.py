@@ -51,7 +51,7 @@ def synchronous_respiration(
     sequence = generate_sequence(target, deviant)
     # the sequence, sound and trigger generation validates the trigger dictionary, thus
     # we can safely map the target and deviant frequencies to their corresponding
-    # trigger values, and the target and deviant sounds.
+    # trigger values and sounds.
     stimulus = {
         TRIGGERS[f"target/{target}"]: sounds[str(target)],
         TRIGGERS[f"deviant/{deviant}"]: sounds[str(deviant)],
@@ -118,7 +118,7 @@ def synchronous_cardiac(
     sequence = generate_sequence(target, deviant)
     # the sequence, sound and trigger generation validates the trigger dictionary, thus
     # we can safely map the target and deviant frequencies to their corresponding
-    # trigger values, and the target and deviant sounds.
+    # trigger values and sounds.
     stimulus = {
         TRIGGERS[f"target/{target}"]: sounds[str(target)],
         TRIGGERS[f"deviant/{deviant}"]: sounds[str(deviant)],
