@@ -8,6 +8,7 @@ from byte_triggers import ParallelPortTrigger
 from psychopy.sound.backend_ptb import SoundPTB
 
 from ..utils._checks import check_type, check_value, ensure_int
+from ..utils._docs import fill_doc
 from ..utils.logs import logger
 from ._config import (
     N_DEVIANT,
@@ -22,8 +23,14 @@ if TYPE_CHECKING:
     from byte_triggers._base import BaseTrigger
 
 
+@fill_doc
 def _check_triggers(*, triggers: dict[str, int] = TRIGGERS) -> None:
-    """Check that the trigger dictionary is correctly formatted."""
+    """Check that the trigger dictionary is correctly formatted.
+
+    Parameters
+    ----------
+    %(triggers_dict)s
+    """
     pattern = re.compile(r"^\b(target|deviant)\b\/\d+(\.\d+)?$")
     for elt in triggers:
         check_type(elt, (str,), "trigger-key")
@@ -34,10 +41,18 @@ def _check_triggers(*, triggers: dict[str, int] = TRIGGERS) -> None:
             )
 
 
+@fill_doc
 def _check_target_deviant_frequencies(
     target: float, deviant: float, *, triggers: dict[str, int] = TRIGGERS
 ) -> None:
-    """Check that the target and deviant frequencies are valid."""
+    """Check that the target and deviant frequencies are valid.
+
+    Parameters
+    ----------
+    %(fq_target)s
+    %(fq_deviant)s
+    %(triggers_dict)s
+    """
     _check_triggers()
     for name, value in zip(("target", "deviant"), (target, deviant), strict=True):
         check_type(value, ("numeric",), name)
@@ -52,13 +67,13 @@ def _check_target_deviant_frequencies(
             )
 
 
+@fill_doc
 def create_sounds(*, triggers: dict[str, int] = TRIGGERS) -> dict[str, SoundPTB]:
     """Create auditory simuli.
 
     Parameters
     ----------
-    triggers : dict
-        Dictionary mapping trigger events string to their corresponding integer values.
+    %(triggers_dict)s
 
     Returns
     -------
@@ -92,6 +107,7 @@ def create_trigger() -> BaseTrigger:
     return trigger
 
 
+@fill_doc
 def generate_sequence(
     target: float, deviant: float, *, triggers: dict[str, int] = TRIGGERS
 ) -> list[int]:
@@ -99,12 +115,9 @@ def generate_sequence(
 
     Parameters
     ----------
-    target : float
-        Frequency of the target sound. Should be part of the trigger dictionary.
-    deviant : float
-        Frequency of the deviant sound. Should be part of the trigger dictionary.
-    triggers : dict
-        Dictionary mapping trigger events string to their corresponding integer values.
+    %(fq_target)s
+    %(fq_deviant)s
+    %(triggers_dict)s
 
     Returns
     -------

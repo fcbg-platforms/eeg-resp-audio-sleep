@@ -3,11 +3,13 @@ import time
 import psychtoolbox as ptb
 
 from ..utils._checks import check_type
+from ..utils._docs import fill_doc
 from ..utils.logs import logger
 from ._config import TARGET_DELAY, TRIGGERS
 from ._utils import create_sounds, create_trigger, generate_sequence
 
 
+@fill_doc
 def isochronous(delay: float, target: float, deviant: float) -> None:  # noqa: D401
     """Isochronous auditory stimulus.
 
@@ -15,10 +17,8 @@ def isochronous(delay: float, target: float, deviant: float) -> None:  # noqa: D
     ----------
     delay : float
         Delay between 2 stimuli in seconds.
-    target : float
-        Frequency of the target sound. Should be part of the trigger dictionary.
-    deviant : float
-        Frequency of the deviant sound. Should be part of the trigger dictionary.
+    %(fq_target)s
+    %(fq_deviant)s
     """
     check_type(delay, ("numeric",), "delay")
     if delay <= 0:

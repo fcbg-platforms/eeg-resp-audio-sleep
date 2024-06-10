@@ -36,6 +36,14 @@ ecg_ch_name : str | None
     signal recorded with 2 bipolar electrodes."""
 
 # -- F ---------------------------------------------------------------------------------
+docdict["fq_deviant"] = """
+deviant : float
+    Frequency of the deviant sound. Should be part of the trigger dictionary."""
+
+docdict["fq_target"] = """
+target : float
+    Frequency of the target sound. Should be part of the trigger dictionary."""
+
 # -- G ---------------------------------------------------------------------------------
 # -- H ---------------------------------------------------------------------------------
 # -- I ---------------------------------------------------------------------------------
@@ -61,6 +69,10 @@ stream_name : str
     an ECG channel."""
 
 # -- T ---------------------------------------------------------------------------------
+docdict["triggers_dict"] = """
+triggers : dict
+    Dictionary mapping trigger events string to their corresponding integer values."""
+
 # -- U ---------------------------------------------------------------------------------
 # -- V ---------------------------------------------------------------------------------
 docdict["verbose"] = """

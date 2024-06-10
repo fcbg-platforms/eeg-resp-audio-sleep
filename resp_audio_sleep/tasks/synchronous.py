@@ -37,10 +37,8 @@ def synchronous_respiration(
     ----------
     %(stream_name)s
     %(resp_ch_name)s
-    target : float
-        Frequency of the target sound. Should be part of the trigger dictionary.
-    deviant : float
-        Frequency of the deviant sound. Should be part of the trigger dictionary.
+    %(fq_target)s
+    %(fq_deviant)s
 
     Returns
     -------
@@ -108,10 +106,8 @@ def synchronous_cardiac(
         Target delay between 2 stimuli, in seconds. The stimulus will be synchronized
         with the cardiac peak signal, but will attempt to match the delay as closely as
         possible.
-    target : float
-        Frequency of the target sound. Should be part of the trigger dictionary.
-    deviant : float
-        Frequency of the deviant sound. Should be part of the trigger dictionary.
+    %(fq_target)s
+    %(fq_deviant)s
     """
     check_type(delay, ("numeric",), "delay")
     if delay <= 0:

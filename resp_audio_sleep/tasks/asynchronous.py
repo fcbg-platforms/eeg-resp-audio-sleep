@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 import psychtoolbox as ptb
 
+from ..utils._docs import fill_doc
 from ..utils.logs import logger
 from ._config import TARGET_DELAY, TRIGGERS
 from ._utils import create_sounds, create_trigger, generate_sequence
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
+@fill_doc
 def asynchronous(
     peaks: NDArray[np.float64],
     target: float,
@@ -25,10 +27,8 @@ def asynchronous(
     ----------
     peaks : array of shape (n_peaks,)
         The detected respiration peak timings in seconds.
-    target : float
-        Frequency of the target sound. Should be part of the trigger dictionary.
-    deviant : float
-        Frequency of the deviant sound. Should be part of the trigger dictionary.
+    %(fq_target)s
+    %(fq_deviant)s
     """
     # create sound stimuli, trigger and sequence
     sounds = create_sounds()
