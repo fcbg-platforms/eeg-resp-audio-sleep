@@ -92,7 +92,9 @@ def synchronous_cardiac(
     %(stream_name)s
     %(ecg_ch_name)s
     delay : float
-        Target delay between 2 stimuli, in seconds.
+        Target delay between 2 stimuli, in seconds. The stimulus will be synchronized
+        with the cardiac peak signal, but will attempt to match the delay as closely as
+        possible.
     """
     check_type(delay, ("numeric",), "delay")
     if delay <= 0:
@@ -125,10 +127,26 @@ def synchronous_cardiac(
         if not heartrate.initialized:
             continue
         if target_time is not None:
-            if abs(target_time - (pos + heartrate.mean_delay())) < abs(
-                target_time - pos
-            ):
+            distance_r_peak = abs(pos - target_time)
+            distance_next_r_peak = abs(target_time - (pos + heartrate.mean_delay()))
+            if distance_next_r_peak < distance_r_peak:
+                logger.debug(
+                    "\nDecision: wait\n\tTarget: %.3f\n\tPeak: %.3f\n\tDistance to "
+                    "peak: %.3f\n\tDistance to next peak: %.3f\n",
+                    target_time,
+                    pos,
+                    distance_r_peak,
+                    distance_next_r_peak,
+                )
                 continue  # next r-peak will be closer from the target
+            logger.debug(
+                "\nDecision: stim\n\tTarget: %.3f\n\tPeak: %.3f\n\tDistance to peak: "
+                "%.3f\n\tDistance to next peak: %.3f\n",
+                target_time,
+                pos,
+                distance_r_peak,
+                distance_next_r_peak,
+            )
         wait = pos + TARGET_DELAY - local_clock()
         if wait <= 0:
             logger.debug("Skipping bad detection/triggering.")
@@ -165,7 +183,9 @@ class _HeartRateMonitor:
         """Mean delay between two heartbeats in seconds."""
         if not self._initialized:
             raise ValueError("The monitor is not initialized yet.")
-        return np.mean(np.diff(self._times))
+        mean_delay = np.mean(np.diff(self._times))
+        logger.debug("Mean delay between heartbeats: %.3f s.", mean_delay)
+        return mean_delay
 
     def rate(self) -> float:
         """Heart rate in beats per second, i.e. Hz."""
