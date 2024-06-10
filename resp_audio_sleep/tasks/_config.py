@@ -1,12 +1,14 @@
-TRIGGERS: dict[str, int] = {"target": 1, "deviant": 2}
+TRIGGERS: dict[str, int] = {
+    "target/1000": 1,
+    "target/2000": 2,
+    "deviant/1000": 11,
+    "deviant/2000": 12,
+}
 TRIGGER_TYPE: str = "arduino"
 TRIGGER_ARGS: str | None = None
-# sequence settings
-N_TARGET: int = 25
-N_DEVIANT: int = 0
 # sound settings
-FQ_TARGET: float = 440.0
-FQ_DEVIANT: float = 2000.0
+N_TARGET: int = 25
+N_DEVIANT: int = 5
 SOUND_DURATION: float = 0.2
 # detector settings
 ECG_HEIGHT: float = 0.99

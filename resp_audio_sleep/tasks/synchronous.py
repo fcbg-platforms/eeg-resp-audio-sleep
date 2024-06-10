@@ -4,7 +4,6 @@ import time
 from typing import TYPE_CHECKING
 
 import numpy as np
-import psychtoolbox as ptb
 from mne_lsl.lsl import local_clock
 
 from ..detector import Detector
@@ -17,6 +16,7 @@ from ._config import (
     RESP_DISTANCE,
     RESP_PROMINENCE,
     TARGET_DELAY,
+    TRIGGERS,
 )
 from ._utils import create_sounds, create_trigger, generate_sequence
 
@@ -28,6 +28,8 @@ if TYPE_CHECKING:
 def synchronous_respiration(
     stream_name: str,
     resp_ch_name: str,
+    target: float,
+    deviant: float,
 ) -> NDArray[np.float64]:  # noqa: D401
     """Synchronous auditory stimulus with the respiration peak signal.
 
@@ -35,16 +37,28 @@ def synchronous_respiration(
     ----------
     %(stream_name)s
     %(resp_ch_name)s
+    target : float
+        Frequency of the target sound. Should be part of the trigger dictionary.
+    deviant : float
+        Frequency of the deviant sound. Should be part of the trigger dictionary.
 
     Returns
     -------
     peaks : array of shape (n_peaks,)
         The detected respiration peak timings in seconds.
     """
-    # create sound stimuli, trigger, sequence and detector
-    target, deviant = create_sounds()
+    # create sound stimuli, trigger, sequence
+    sounds = create_sounds()
     trigger = create_trigger()
-    sequence = generate_sequence()
+    sequence = generate_sequence(target, deviant)
+    # the sequence, sound and trigger generation validates the trigger dictionary, thus
+    # we can safely map the target and deviant frequencies to their corresponding
+    # trigger values, and the target and deviant sounds.
+    stimulus = {
+        TRIGGERS[f"target/{target}"]: sounds[str(target)],
+        TRIGGERS[f"deviant/{deviant}"]: sounds[str(deviant)],
+    }
+    # create detector
     detector = Detector(
         bufsize=4,
         stream_name=stream_name,
@@ -67,15 +81,12 @@ def synchronous_respiration(
         if wait <= 0:
             logger.debug("Skipping bad detection/triggering.")
             continue
-        if sequence[counter] == 1:
-            target.play(when=ptb.GetSecs() + wait)
-        elif sequence[counter] == 2:
-            deviant.play(when=ptb.GetSecs() + wait)
+        stimulus.get(sequence[counter]).play(when=wait)
         logger.debug("Triggering %i in %.3f ms.", sequence[counter], wait * 1000)
         time.sleep(wait)
         trigger.signal(sequence[counter])
-        counter += 1
         peaks.append(pos)
+        counter += 1
     return np.array(peaks)
 
 
@@ -84,6 +95,8 @@ def synchronous_cardiac(
     stream_name: str,
     ecg_ch_name: str,
     delay: float,
+    target: float,
+    deviant: float,
 ) -> None:  # noqa: D401
     """Synchronous auditory stimulus with the cardiac peak signal.
 
@@ -95,14 +108,26 @@ def synchronous_cardiac(
         Target delay between 2 stimuli, in seconds. The stimulus will be synchronized
         with the cardiac peak signal, but will attempt to match the delay as closely as
         possible.
+    target : float
+        Frequency of the target sound. Should be part of the trigger dictionary.
+    deviant : float
+        Frequency of the deviant sound. Should be part of the trigger dictionary.
     """
     check_type(delay, ("numeric",), "delay")
     if delay <= 0:
         raise ValueError("The delay must be strictly positive.")
-    # create sound stimuli, trigger, sequence and detector
-    target, deviant = create_sounds()
+    # create sound stimuli, trigger, sequence
+    sounds = create_sounds()
     trigger = create_trigger()
-    sequence = generate_sequence()
+    sequence = generate_sequence(target, deviant)
+    # the sequence, sound and trigger generation validates the trigger dictionary, thus
+    # we can safely map the target and deviant frequencies to their corresponding
+    # trigger values, and the target and deviant sounds.
+    stimulus = {
+        TRIGGERS[f"target/{target}"]: sounds[str(target)],
+        TRIGGERS[f"deviant/{deviant}"]: sounds[str(deviant)],
+    }
+    # create detector
     detector = Detector(
         bufsize=4,
         stream_name=stream_name,
@@ -151,10 +176,7 @@ def synchronous_cardiac(
         if wait <= 0:
             logger.debug("Skipping bad detection/triggering.")
             continue
-        if sequence[counter] == 1:
-            target.play(when=ptb.GetSecs() + wait)
-        elif sequence[counter] == 2:
-            deviant.play(when=ptb.GetSecs() + wait)
+        stimulus.get(sequence[counter]).play(when=wait)
         logger.debug("Triggering %i in %.3f ms.", sequence[counter], wait * 1000)
         time.sleep(wait)
         trigger.signal(sequence[counter])
