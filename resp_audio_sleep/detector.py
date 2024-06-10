@@ -154,7 +154,9 @@ class Detector:
         picks = [
             elt for elt in (self._ecg_ch_name, self._resp_ch_name) if elt is not None
         ]
-        self._stream = StreamLSL(bufsize, stream_name).connect(processing_flags="all")
+        self._stream = StreamLSL(bufsize, name=stream_name).connect(
+            processing_flags="all"
+        )
         self._stream.pick(picks)
         self._stream.set_channel_types(
             {ch: "misc" for ch in picks}, on_unit_change="ignore"
