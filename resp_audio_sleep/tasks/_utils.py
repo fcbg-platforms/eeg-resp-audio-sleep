@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from itertools import groupby
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -9,8 +10,9 @@ from psychopy.sound.backend_ptb import SoundPTB
 
 from ..utils._checks import check_type, check_value, ensure_int
 from ..utils._docs import fill_doc
-from ..utils.logs import logger
+from ..utils.logs import logger, warn
 from ._config import (
+    EDGE_PERC,
     N_DEVIANT,
     N_TARGET,
     SOUND_DURATION,
@@ -109,7 +111,13 @@ def create_trigger() -> BaseTrigger:
 
 @fill_doc
 def generate_sequence(
-    target: float, deviant: float, *, triggers: dict[str, int] = TRIGGERS
+    target: float,
+    deviant: float,
+    *,
+    edge_perc: int | float = EDGE_PERC,
+    max_iter: int = 500,
+    on_diverge: str = "warn",
+    triggers: dict[str, int] = TRIGGERS,
 ) -> list[int]:
     """Generate a random sequence of target and deviant stimuli.
 
@@ -117,6 +125,15 @@ def generate_sequence(
     ----------
     %(fq_target)s
     %(fq_deviant)s
+    edge_perc : int | float
+        Percentage of the total number of elements that have to be targets at
+        the beginning and at the end of the sequence.
+    max_iter : int
+        Maximum number of iteration to randomize the sequence.
+    on_diverge : str
+        Either 'warn' to log an error message or 'raise' to raise a RuntimeError when
+        the randomization does not converge within the maximum number of iteration
+        allowed.
     %(triggers_dict)s
 
     Returns
@@ -127,6 +144,21 @@ def generate_sequence(
     n_target = ensure_int(N_TARGET, "N_TARGET")
     n_deviant = ensure_int(N_DEVIANT, "N_DEVIANT")
     _check_target_deviant_frequencies(target, deviant, triggers=triggers)
+    check_type(edge_perc, ("numeric",), "edge_perc")
+    if not (0 <= edge_perc <= 100):
+        raise ValueError(
+            "Argument 'edge_perc' must be a valid percentage between 0 and 100. "
+            f"Provided '{edge_perc}%' is invalid."
+        )
+    max_iter = ensure_int(max_iter, "max_iter")
+    if max_iter <= 0:
+        raise ValueError(
+            "Argument 'max_iter' must be a strictly positive integer. "
+            f"Provided '{max_iter}' is invalid."
+        )
+    check_type(on_diverge, (str,), "on_diverge")
+    check_value(on_diverge, ("warn", "raise"), "on_diverge")
+    # retrieve trigger values
     trigger_target = triggers[f"target/{target}"]
     trigger_deviant = triggers[f"deviant/{deviant}"]
     logger.debug(
@@ -137,7 +169,51 @@ def generate_sequence(
         trigger_target,
         trigger_deviant,
     )
-    sequence = [trigger_target] * n_target + [trigger_deviant] * n_deviant
+    # pseudo-randomize the sequence
+    n_edge = np.ceil(edge_perc * (n_target + n_deviant) / 100).astype(int)
+    start = [trigger_target] * n_edge
+    middle = [trigger_target] * (n_target - 2 * n_edge) + [trigger_deviant] * n_deviant
+    end = [trigger_target] * n_edge
     rng = np.random.default_rng()
-    rng.shuffle(sequence)
+    rng.shuffle(middle)
+    iter_ = 0
+    while True:
+        groups = [(n, list(group)) for n, group in groupby(middle)]
+        if all(len(group[1]) == 1 for group in groups if group[0] == trigger_deviant):
+            converged = True
+            break
+        if max_iter < iter_:
+            msg = "Randomize sequence generation could not converge."
+            if on_diverge == "warn":
+                warn(msg)
+                converged = False
+                break
+            else:
+                raise RuntimeError(msg)
+        for i, (n, group) in enumerate(groups):
+            if n == trigger_target or len(group) == 1:
+                continue
+            # find the longest group of TRIGGERS['sound']
+            idx = np.argmax([len(g) if n == trigger_target else 0 for n, g in groups])
+            pos_sound = sum(len(g) for k, (_, g) in enumerate(groups) if k < idx)
+            pos_sound = pos_sound + len(groups[idx][1]) // 2  # center
+            # find position of current group
+            pos_omission = sum(len(g) for k, (_, g) in enumerate(groups) if k < i)
+            # swap first element from omissions with center of group of sounds
+            middle[pos_sound], middle[pos_omission] = (
+                middle[pos_omission],
+                middle[pos_sound],
+            )
+            break
+        iter_ += 1
+    sequence = start + middle + end
+    # sanity-checks
+    if converged:
+        assert all(len(group) == 1 for n, group in groups if n == trigger_deviant)
+        assert not any(
+            middle[i - 1] == middle[i] == trigger_deviant for i in range(1, len(middle))
+        )
+    assert len(sequence) == n_target + n_deviant
+    assert trigger_deviant not in start
+    assert trigger_deviant not in end
     return sequence
