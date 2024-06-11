@@ -50,10 +50,10 @@ def asynchronous(
     # generate delays between peaks
     delays = np.diff(peaks)
     rng = np.random.default_rng()
-    delays = rng.choice(delays, size=len(sequence), replace=True)
+    delays = rng.choice(delays, size=sequence.size, replace=True)
     # main loop
     counter = 0
-    while counter <= len(sequence) - 1:
+    while counter <= sequence.size - 1:
         wait = ptb.GetSecs() + TARGET_DELAY
         stimulus.get(sequence[counter]).play(when=wait)
         logger.debug("Triggering %i in %.2f ms.", sequence[counter], TARGET_DELAY)

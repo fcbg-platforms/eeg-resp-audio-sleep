@@ -23,6 +23,7 @@ from ._config import (
 
 if TYPE_CHECKING:
     from byte_triggers._base import BaseTrigger
+    from numpy.testing import NDArray
 
 
 @fill_doc
@@ -128,7 +129,7 @@ def generate_sequence(
     max_iter: int = 500,
     on_diverge: str = "warn",
     triggers: dict[str, int] = TRIGGERS,
-) -> list[int]:
+) -> NDArray[np.int32]:
     """Generate a random sequence of target and deviant stimuli.
 
     Parameters
@@ -148,7 +149,7 @@ def generate_sequence(
 
     Returns
     -------
-    sequence : list
+    sequence : array of int
         The sequence of stimuli, with the target and deviant sounds randomly ordered.
     """
     n_target = ensure_int(N_TARGET, "N_TARGET")
@@ -228,4 +229,4 @@ def generate_sequence(
     assert len(sequence) == n_target + n_deviant
     assert trigger_deviant not in start
     assert trigger_deviant not in end
-    return sequence
+    return np.array(sequence, dtype=np.int32)

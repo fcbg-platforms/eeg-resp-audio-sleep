@@ -73,7 +73,7 @@ def synchronous_respiration(
     # main loop
     counter = 0
     peaks = []
-    while counter <= len(sequence) - 1:
+    while counter <= sequence.size - 1:
         pos = detector.new_peak("resp")
         if pos is None:
             continue
@@ -147,7 +147,7 @@ def synchronous_cardiac(
     # main loop
     counter = 0
     target_time = None
-    while counter <= len(sequence) - 1:
+    while counter <= sequence.size - 1:
         pos = detector.new_peak("ecg")
         if pos is None:
             continue

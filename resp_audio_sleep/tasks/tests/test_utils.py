@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 
 from .._config import N_DEVIANT, N_TARGET
@@ -53,8 +54,12 @@ def test_generate_sequence():
     sequence = generate_sequence(
         1000, 2000, triggers={"target/1000.0": 1, "deviant/2000.0": 2}
     )
-    assert all(isinstance(elt, int) for elt in sequence)
-    if N_TARGET != 0:
-        assert sequence.count(1) == N_TARGET
-    if N_DEVIANT != 0:
-        assert sequence.count(2) == N_DEVIANT
+    assert sequence.ndim == 1
+    assert sequence.size == N_TARGET + N_DEVIANT
+    assert sequence.dtype == np.int32
+    unique, counts = np.unique(sequence, return_counts=True)
+    for elt, count in zip(unique, counts, strict=True):
+        if elt == 1:
+            assert count == N_TARGET
+        elif elt == 2:
+            assert count == N_DEVIANT

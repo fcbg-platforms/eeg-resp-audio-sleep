@@ -22,6 +22,7 @@ from .tasks import (
     synchronous_cardiac,
     synchronous_respiration,
 )
+from .testing import test_detector, test_sequence, test_triggers
 
 
 @click.group()
@@ -139,3 +140,6 @@ run.add_command(asynchronous)
 run.add_command(synchronous_respiration)
 run.add_command(synchronous_cardiac)
 run.add_command(paradigm)
+run.add_command(test_detector)
+run.add_command(test_sequence)
+run.add_command(test_triggers)
