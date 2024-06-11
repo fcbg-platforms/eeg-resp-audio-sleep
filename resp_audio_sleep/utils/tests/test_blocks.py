@@ -7,7 +7,7 @@ def test_generate_blocks_sequence():
     for _ in range(27):
         blocks.append(generate_blocks_sequence(blocks))
     assert blocks[0] == "baseline"
-    assert blocks[1] == "synchronous"
+    assert blocks[1] == "synchronous-respiration"
     assert set(blocks[2:5]) == {"isochronous", "asynchronous", "synchronous-cardiac"}
     assert set(blocks[5:10]) == _BLOCKS
     assert set(blocks[10:15]) == _BLOCKS
