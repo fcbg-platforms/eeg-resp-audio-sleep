@@ -19,6 +19,7 @@ classifiers = [
 ]
 dependencies = [
   'byte_triggers>=0.4.0',
+  'click>=8.1',
   'mne-lsl>=1.4.0',
   'numpy>=1.21',
   'packaging',
@@ -72,6 +73,7 @@ test = [
 ]
 
 [project.scripts]
+ras = 'resp_audio_sleep.commands.main:run'
 ras-sys_info = 'resp_audio_sleep.commands.sys_info:run'
 
 [project.urls]
