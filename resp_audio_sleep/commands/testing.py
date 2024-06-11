@@ -22,7 +22,7 @@ from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, ve
 @stream
 @ch_name_resp
 @click.option(
-    "--n_peaks", prompt="Number of peaks", help="Number of peaks to detect.", type=int
+    "--n-peaks", prompt="Number of peaks", help="Number of peaks to detect.", type=int
 )
 @verbose
 def test_detector_respiration(
@@ -58,7 +58,7 @@ def test_detector_respiration(
 @stream
 @ch_name_ecg
 @click.option(
-    "--n_peaks", prompt="Number of peaks", help="Number of peaks to detect.", type=int
+    "--n-peaks", prompt="Number of peaks", help="Number of peaks to detect.", type=int
 )
 @verbose
 def test_detector_ecg(

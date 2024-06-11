@@ -40,7 +40,7 @@ def run():
 
 @click.command()
 @click.option(
-    "-n-blocks", prompt="Number of blocks", help="Number of blocks.", type=int
+    "--n-blocks", prompt="Number of blocks", help="Number of blocks.", type=int
 )
 @stream
 @ch_name_resp
