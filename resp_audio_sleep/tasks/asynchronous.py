@@ -9,7 +9,7 @@ import psychtoolbox as ptb
 from ..utils._checks import check_type
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
-from ._config import TARGET_DELAY, TRIGGERS
+from ._config import SOUND_DURATION, TARGET_DELAY, TRIGGERS
 from ._utils import create_sounds, create_trigger, generate_sequence
 
 if TYPE_CHECKING:
@@ -61,4 +61,6 @@ def asynchronous(
         trigger.signal(sequence[counter])
         time.sleep(delays[counter])
         counter += 1
+    if delays[-1] < 1.1 * SOUND_DURATION:
+        time.sleep(delays[-1] - 1.1 * SOUND_DURATION)
     logger.info("Asynchronous block complete.")

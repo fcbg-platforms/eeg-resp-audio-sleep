@@ -15,6 +15,7 @@ from ._config import (
     ECG_HEIGHT,
     RESP_DISTANCE,
     RESP_PROMINENCE,
+    SOUND_DURATION,
     TARGET_DELAY,
     TRIGGERS,
 )
@@ -87,6 +88,7 @@ def synchronous_respiration(
         trigger.signal(sequence[counter])
         peaks.append(pos)
         counter += 1
+    time.sleep(1.1 * SOUND_DURATION)
     logger.info("Respiration synchronous block complete.")
     return np.array(peaks)
 
@@ -185,6 +187,7 @@ def synchronous_cardiac(
         trigger.signal(sequence[counter])
         counter += 1
         target_time = pos + delay if target_time is None else target_time + delay
+    time.sleep(1.1 * SOUND_DURATION)
     logger.info("Cardiac synchronous block complete.")
 
 

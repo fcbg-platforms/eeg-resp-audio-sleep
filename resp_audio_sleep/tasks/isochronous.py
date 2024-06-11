@@ -5,7 +5,7 @@ import psychtoolbox as ptb
 from ..utils._checks import check_type
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
-from ._config import TARGET_DELAY, TRIGGERS
+from ._config import SOUND_DURATION, TARGET_DELAY, TRIGGERS
 from ._utils import create_sounds, create_trigger, generate_sequence
 
 
@@ -45,4 +45,6 @@ def isochronous(delay: float, *, target: float, deviant: float) -> None:  # noqa
         trigger.signal(sequence[counter])
         time.sleep(delay)
         counter += 1
+    if delay < 1.1 * SOUND_DURATION:
+        time.sleep(delay - 1.1 * SOUND_DURATION)
     logger.info("Isochronous block complete.")
