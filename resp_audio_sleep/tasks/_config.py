@@ -1,8 +1,9 @@
+# triggers are defined in the format 'target|deviant/frequency' with frequency as float
 TRIGGERS: dict[str, int] = {
-    "target/1000": 1,
-    "target/2000": 2,
-    "deviant/1000": 11,
-    "deviant/2000": 12,
+    "target/1000.0": 1,
+    "target/2000.0": 2,
+    "deviant/1000.0": 11,
+    "deviant/2000.0": 12,
 }
 TRIGGER_TYPE: str = "arduino"
 TRIGGER_ARGS: str | None = None

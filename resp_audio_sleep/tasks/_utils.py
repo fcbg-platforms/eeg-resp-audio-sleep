@@ -33,40 +33,50 @@ def _check_triggers(*, triggers: dict[str, int] = TRIGGERS) -> None:
     ----------
     %(triggers_dict)s
     """
-    pattern = re.compile(r"^\b(target|deviant)\b\/\d+(\.\d+)?$")
+    pattern = re.compile(r"^\b(target|deviant)\b\/\d+(\.\d+)+$")
     for elt in triggers:
         check_type(elt, (str,), "trigger-key")
         if not re.fullmatch(pattern, elt):
             raise ValueError(
                 "The trigger names must be in the format 'name/frequency', "
-                f"but got '{elt}', with name set to 'target' or 'deviant'."
+                "with name set to 'target' or 'deviant' and frequency as float, but "
+                f"got '{elt}' with is invalid."
             )
 
 
 @fill_doc
-def _check_target_deviant_frequencies(
-    target: float, deviant: float, *, triggers: dict[str, int] = TRIGGERS
-) -> None:
-    """Check that the target and deviant frequencies are valid.
+def _ensure_valid_frequencies(
+    frequencies: dict[str, float | int], *, triggers: dict[str, int] = TRIGGERS
+) -> dict[str, float]:
+    """Check that the frequencies are valid.
 
     Parameters
     ----------
-    %(fq_target)s
-    %(fq_deviant)s
+    frequencies : dict
+        Dictionary of frequency name and value.
     %(triggers_dict)s
+
+    Returns
+    -------
+    frequencies : dict
+        Dictionary of frequency name and value, cast to float.
     """
+    check_type(frequencies, (dict,), "frequencies")
     _check_triggers()
-    for name, value in zip(("target", "deviant"), (target, deviant), strict=True):
+    for name, value in frequencies.items():
         check_type(value, ("numeric",), name)
         if value <= 0:
             raise ValueError(
                 f"The {name} frequency must be strictly positive. Provided {value} is "
                 "invalid."
             )
+        value = float(value)  # ensure float
         if f"{name}/{value}" not in triggers:
             raise ValueError(
                 f"The {name} frequency '{value}' is not in the trigger dictionary."
             )
+        frequencies[name] = value
+    return frequencies
 
 
 @fill_doc
@@ -143,7 +153,9 @@ def generate_sequence(
     """
     n_target = ensure_int(N_TARGET, "N_TARGET")
     n_deviant = ensure_int(N_DEVIANT, "N_DEVIANT")
-    _check_target_deviant_frequencies(target, deviant, triggers=triggers)
+    frequencies = _ensure_valid_frequencies(
+        {"target": target, "deviant": deviant}, triggers=triggers
+    )
     check_type(edge_perc, ("numeric",), "edge_perc")
     if not (0 <= edge_perc <= 100):
         raise ValueError(
@@ -159,8 +171,8 @@ def generate_sequence(
     check_type(on_diverge, (str,), "on_diverge")
     check_value(on_diverge, ("warn", "raise"), "on_diverge")
     # retrieve trigger values
-    trigger_target = triggers[f"target/{target}"]
-    trigger_deviant = triggers[f"deviant/{deviant}"]
+    trigger_target = triggers[f"target/{frequencies['target']}"]
+    trigger_deviant = triggers[f"deviant/{frequencies['deviant']}"]
     logger.debug(
         "Generating a sequence of %i target and %i deviant stimuli, using %s for "
         "target and %s for deviant.",
