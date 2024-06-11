@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 import psychtoolbox as ptb
 
+from ..utils._checks import check_type
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
 from ._config import TARGET_DELAY, TRIGGERS
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 @fill_doc
 def asynchronous(
     peaks: NDArray[np.float64],
+    *,
     target: float,
     deviant: float,
 ) -> None:  # noqa: D401
@@ -30,6 +32,10 @@ def asynchronous(
     %(fq_target)s
     %(fq_deviant)s
     """
+    check_type(peaks, (np.ndarray,), "peaks")
+    if peaks.ndim != 1:
+        raise ValueError("The peaks array must be one-dimensional.")
+    logger.info("Starting asynchronous block.")
     # create sound stimuli, trigger and sequence
     sounds = create_sounds()
     trigger = create_trigger()
@@ -55,3 +61,4 @@ def asynchronous(
         trigger.signal(sequence[counter])
         time.sleep(delays[counter])
         counter += 1
+    logger.info("Asynchronous block complete.")

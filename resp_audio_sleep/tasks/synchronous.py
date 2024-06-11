@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 def synchronous_respiration(
     stream_name: str,
     resp_ch_name: str,
+    *,
     target: float,
     deviant: float,
 ) -> NDArray[np.float64]:  # noqa: D401
@@ -45,6 +46,7 @@ def synchronous_respiration(
     peaks : array of shape (n_peaks,)
         The detected respiration peak timings in seconds.
     """
+    logger.info("Starting respiration synchronous block.")
     # create sound stimuli, trigger, sequence
     sounds = create_sounds()
     trigger = create_trigger()
@@ -85,6 +87,7 @@ def synchronous_respiration(
         trigger.signal(sequence[counter])
         peaks.append(pos)
         counter += 1
+    logger.info("Respiration synchronous block complete.")
     return np.array(peaks)
 
 
@@ -93,6 +96,7 @@ def synchronous_cardiac(
     stream_name: str,
     ecg_ch_name: str,
     delay: float,
+    *,
     target: float,
     deviant: float,
 ) -> None:  # noqa: D401
@@ -112,6 +116,9 @@ def synchronous_cardiac(
     check_type(delay, ("numeric",), "delay")
     if delay <= 0:
         raise ValueError("The delay must be strictly positive.")
+    logger.info(
+        "Starting cardiac synchronous block with delay set to %.2f seconds.", delay
+    )
     # create sound stimuli, trigger, sequence
     sounds = create_sounds()
     trigger = create_trigger()
@@ -178,6 +185,7 @@ def synchronous_cardiac(
         trigger.signal(sequence[counter])
         counter += 1
         target_time = pos + delay if target_time is None else target_time + delay
+    logger.info("Cardiac synchronous block complete.")
 
 
 class _HeartRateMonitor:

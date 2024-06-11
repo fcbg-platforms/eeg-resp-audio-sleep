@@ -15,6 +15,6 @@ def baseline(duration: float) -> None:  # noqa: D401
     check_type(duration, ("numeric",), "duration")
     if duration <= 0:
         raise ValueError("The duration must be strictly positive.")
-    logger.info("Starting baseline block of %.2f seconds", duration)
+    logger.info("Starting baseline block of %.2f seconds.", duration)
     time.sleep(duration)
     logger.info("Baseline block complete.")

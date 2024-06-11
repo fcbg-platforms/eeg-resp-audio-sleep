@@ -10,7 +10,7 @@ from ._utils import create_sounds, create_trigger, generate_sequence
 
 
 @fill_doc
-def isochronous(delay: float, target: float, deviant: float) -> None:  # noqa: D401
+def isochronous(delay: float, *, target: float, deviant: float) -> None:  # noqa: D401
     """Isochronous auditory stimulus.
 
     Parameters
@@ -23,6 +23,7 @@ def isochronous(delay: float, target: float, deviant: float) -> None:  # noqa: D
     check_type(delay, ("numeric",), "delay")
     if delay <= 0:
         raise ValueError("The delay must be strictly positive.")
+    logger.info("Starting isochronous block.")
     # create sound stimuli, trigger and sequence
     sounds = create_sounds()
     trigger = create_trigger()
@@ -44,3 +45,4 @@ def isochronous(delay: float, target: float, deviant: float) -> None:  # noqa: D
         trigger.signal(sequence[counter])
         time.sleep(delay)
         counter += 1
+    logger.info("Isochronous block complete.")
