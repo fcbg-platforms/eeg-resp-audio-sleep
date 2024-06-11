@@ -6,19 +6,94 @@ import click
 import numpy as np
 
 from .. import set_log_level
-from ..tasks._config import TRIGGERS
+from ..detector import Detector
+from ..tasks._config import (
+    ECG_DISTANCE,
+    ECG_HEIGHT,
+    RESP_DISTANCE,
+    RESP_PROMINENCE,
+    TRIGGERS,
+)
 from ..tasks._utils import create_trigger, generate_sequence
-from ._utils import fq_deviant, fq_target, verbose
+from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, verbose
 
 
 @click.command()
-def test_detector() -> None:
-    """Test the detector settings."""
+@stream
+@ch_name_resp
+@click.option(
+    "--n_peaks", prompt="Number of peaks", help="Number of peaks to detect.", type=int
+)
+@verbose
+def test_detector_respiration(
+    stream: str,
+    ch_name_resp: str,
+    n_peaks: int,
+    verbose: str,
+) -> None:
+    """Test the respiration detector settings."""
+    set_log_level(verbose)
+    if n_peaks <= 0:
+        raise ValueError("The number of peaks must be greater than 0.")
+    detector = Detector(
+        bufsize=4,
+        stream_name=stream,
+        ecg_ch_name=None,
+        resp_ch_name=ch_name_resp,
+        ecg_height=None,
+        ecg_distance=None,
+        resp_prominence=RESP_PROMINENCE,
+        resp_distance=RESP_DISTANCE,
+        viewer=True,
+    )
+    counter = 0
+    while counter < n_peaks:
+        peak = detector.new_peak("resp")
+        if peak is not None:
+            counter += 1
+            click.echo(f"Respiration peak {counter} / {n_peaks} detected.")
+
+
+@click.command()
+@stream
+@ch_name_ecg
+@click.option(
+    "--n_peaks", prompt="Number of peaks", help="Number of peaks to detect.", type=int
+)
+@verbose
+def test_detector_ecg(
+    stream: str,
+    ch_name_ecg: str,
+    n_peaks: int,
+    verbose: str,
+) -> None:
+    """Test the ECG detector settings."""
+    set_log_level(verbose)
+    if n_peaks <= 0:
+        raise ValueError("The number of peaks must be greater than 0.")
+    detector = Detector(
+        bufsize=4,
+        stream_name=stream,
+        ecg_ch_name=ch_name_ecg,
+        resp_ch_name=None,
+        ecg_height=ECG_HEIGHT,
+        ecg_distance=ECG_DISTANCE,
+        resp_prominence=None,
+        resp_distance=None,
+        viewer=True,
+    )
+    counter = 0
+    while counter < n_peaks:
+        peak = detector.new_peak("ecg")
+        if peak is not None:
+            counter += 1
+            click.echo(f"ECG peak {counter} / {n_peaks} detected.")
 
 
 @click.command()
 @fq_target
 @fq_deviant
+@verbose
 def test_sequence(target: float, deviant: float, verbose: str) -> None:
     """Test the sequence generation settings."""
     from matplotlib import pyplot as plt
@@ -41,7 +116,7 @@ def test_sequence(target: float, deviant: float, verbose: str) -> None:
 
 @click.command()
 @verbose
-def test_triggers(verbose) -> None:
+def test_triggers(verbose: str) -> None:
     """Test the trigger settings."""
     set_log_level(verbose)
     trigger = create_trigger()

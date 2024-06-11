@@ -10,7 +10,7 @@ from ..tasks import isochronous as isochronous_task
 from ..tasks import synchronous_cardiac as synchronous_cardiac_task
 from ..tasks import synchronous_respiration as synchronous_respiration_task
 from ..tasks._config import BASELINE_DURATION, N_DEVIANT, N_TARGET
-from ._utils import fq_deviant, fq_target, stream, verbose
+from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, verbose
 
 
 @click.command()
@@ -73,31 +73,21 @@ def asynchronous(
 
 @click.command()
 @stream
-@click.option(
-    "--ch-name",
-    prompt="Respiration channel name",
-    help="Name of the respiration channel in the stream.",
-    type=str,
-)
+@ch_name_resp
 @fq_target
 @fq_deviant
 @verbose
 def synchronous_respiration(
-    stream: str, ch_name: str, target: float, deviant: float, verbose: str
+    stream: str, ch_name_resp: str, target: float, deviant: float, verbose: str
 ) -> None:
     """Run a synchronous respiration task."""
     set_log_level(verbose)
-    synchronous_respiration_task(stream, ch_name, target=target, deviant=deviant)
+    synchronous_respiration_task(stream, ch_name_resp, target=target, deviant=deviant)
 
 
 @click.command()
 @stream
-@click.option(
-    "--ch-name",
-    prompt="ECG channel name",
-    help="Name of the ECG channel in the stream.",
-    type=str,
-)
+@ch_name_ecg
 @click.option(
     "--delay",
     prompt="Target delay between 2 stimulus (seconds)",
@@ -108,8 +98,13 @@ def synchronous_respiration(
 @fq_deviant
 @verbose
 def synchronous_cardiac(
-    stream: str, ch_name: str, delay: float, target: float, deviant: float, verbose: str
+    stream: str,
+    ch_name_ecg: str,
+    delay: float,
+    target: float,
+    deviant: float,
+    verbose: str,
 ) -> None:
     """Run a synchronous cardiac task."""
     set_log_level(verbose)
-    synchronous_cardiac_task(stream, ch_name, delay, target=target, deviant=deviant)
+    synchronous_cardiac_task(stream, ch_name_ecg, delay, target=target, deviant=deviant)

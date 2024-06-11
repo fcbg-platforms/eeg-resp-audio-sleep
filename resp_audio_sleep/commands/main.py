@@ -14,7 +14,7 @@ from ..tasks import synchronous_respiration as synchronous_respiration_task
 from ..tasks._config import BASELINE_DURATION, ConfigRepr
 from ..utils.blocks import _BLOCKS, generate_blocks_sequence
 from ..utils.logs import logger
-from ._utils import fq_deviant, fq_target, stream, verbose
+from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, verbose
 from .tasks import (
     asynchronous,
     baseline,
@@ -22,7 +22,12 @@ from .tasks import (
     synchronous_cardiac,
     synchronous_respiration,
 )
-from .testing import test_detector, test_sequence, test_triggers
+from .testing import (
+    test_detector_ecg,
+    test_detector_respiration,
+    test_sequence,
+    test_triggers,
+)
 
 
 @click.group()
@@ -37,18 +42,8 @@ def run():
     "-n-blocks", prompt="Number of blocks", help="Number of blocks.", type=int
 )
 @stream
-@click.option(
-    "--ch-name-resp",
-    prompt="Respiration channel name",
-    help="Name of the respiration channel in the stream.",
-    type=str,
-)
-@click.option(
-    "--ch-name-ecg",
-    prompt="ECG channel name",
-    help="Name of the ECG channel in the stream.",
-    type=str,
-)
+@ch_name_resp
+@ch_name_ecg
 @fq_target
 @fq_deviant
 @verbose
@@ -140,6 +135,7 @@ run.add_command(asynchronous)
 run.add_command(synchronous_respiration)
 run.add_command(synchronous_cardiac)
 run.add_command(paradigm)
-run.add_command(test_detector)
+run.add_command(test_detector_respiration)
+run.add_command(test_detector_ecg)
 run.add_command(test_sequence)
 run.add_command(test_triggers)
