@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import time
+
 import click
 import numpy as np
 
 from .. import set_log_level
 from ..tasks._config import TRIGGERS
-from ..tasks._utils import generate_sequence
+from ..tasks._utils import create_trigger, generate_sequence
 from ._utils import fq_deviant, fq_target, verbose
 
 
@@ -17,7 +19,6 @@ def test_detector() -> None:
 @click.command()
 @fq_target
 @fq_deviant
-@verbose
 def test_sequence(target: float, deviant: float, verbose: str) -> None:
     """Test the sequence generation settings."""
     from matplotlib import pyplot as plt
@@ -39,5 +40,12 @@ def test_sequence(target: float, deviant: float, verbose: str) -> None:
 
 
 @click.command()
-def test_triggers() -> None:
+@verbose
+def test_triggers(verbose) -> None:
     """Test the trigger settings."""
+    set_log_level(verbose)
+    trigger = create_trigger()
+    for key, value in TRIGGERS.items():
+        click.echo(f"Trigger {key}: {value}")
+        trigger.signal(value)
+        time.sleep(0.5)
