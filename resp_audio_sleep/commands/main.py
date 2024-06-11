@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from itertools import cycle
 
 import click
@@ -11,7 +12,7 @@ from ..tasks import baseline as baseline_task
 from ..tasks import isochronous as isochronous_task
 from ..tasks import synchronous_cardiac as synchronous_cardiac_task
 from ..tasks import synchronous_respiration as synchronous_respiration_task
-from ..tasks._config import BASELINE_DURATION, ConfigRepr
+from ..tasks._config import BASELINE_DURATION, INTER_BLOCK_DELAY, ConfigRepr
 from ..utils.blocks import _BLOCKS, generate_blocks_sequence
 from ..utils.logs import logger
 from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, verbose
@@ -126,6 +127,7 @@ def paradigm(
                     continue
                 elt["target"] = target
                 elt["deviant"] = deviant
+        time.sleep(INTER_BLOCK_DELAY)
     logger.info("Paradigm complete.")
 
 

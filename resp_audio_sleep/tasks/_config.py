@@ -21,6 +21,8 @@ RESP_PROMINENCE: float = 20
 RESP_DISTANCE: float = 0.8
 # target timing
 TARGET_DELAY: float = 0.2
+# other
+INTER_BLOCK_DELAY: float = 5  # delay in seconds between blocks
 
 
 # TODO: Define a configuration class to handle all configuration elements.
