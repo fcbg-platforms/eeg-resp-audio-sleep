@@ -74,7 +74,6 @@ test = [
 
 [project.scripts]
 ras = 'resp_audio_sleep.commands.main:run'
-ras-sys_info = 'resp_audio_sleep.commands.sys_info:run'
 
 [project.urls]
 source = 'https://github.com/fcbg-hnp-meeg/eeg-resp-audio-sleep'
