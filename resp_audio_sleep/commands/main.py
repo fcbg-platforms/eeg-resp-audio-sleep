@@ -1,5 +1,20 @@
-import click
+from __future__ import annotations
 
+from itertools import cycle
+
+import click
+import numpy as np
+
+from .. import set_log_level
+from ..tasks import asynchronous as asynchronous_task
+from ..tasks import baseline as baseline_task
+from ..tasks import isochronous as isochronous_task
+from ..tasks import synchronous_cardiac as synchronous_cardiac_task
+from ..tasks import synchronous_respiration as synchronous_respiration_task
+from ..tasks._config import BASELINE_DURATION, ConfigRepr
+from ..utils.blocks import _BLOCKS, generate_blocks_sequence
+from ..utils.logs import logger
+from ._utils import fq_deviant, fq_target, stream, verbose
 from .tasks import (
     asynchronous,
     baseline,
@@ -12,6 +27,110 @@ from .tasks import (
 @click.group()
 def run():
     """Entry point to start the tasks."""
+    config = ConfigRepr()
+    click.echo(config)
+
+
+@click.command()
+@click.option(
+    "-n-blocks", prompt="Number of blocks", help="Number of blocks.", type=int
+)
+@stream
+@click.option(
+    "--ch-name-resp",
+    prompt="Respiration channel name",
+    help="Name of the respiration channel in the stream.",
+    type=str,
+)
+@click.option(
+    "--ch-name-ecg",
+    prompt="ECG channel name",
+    help="Name of the ECG channel in the stream.",
+    type=str,
+)
+@fq_target
+@fq_deviant
+@verbose
+def paradigm(
+    n_blocks: int,
+    stream: str,
+    ch_name_resp: str,
+    ch_name_ecg: str,
+    target: float,
+    deviant: float,
+    verbose: str,
+) -> None:
+    """Run the paradigm, alternating between blocks."""
+    set_log_level(verbose)
+    if n_blocks <= 0:
+        raise ValueError(f"Number of blocks must be positive. '{n_blocks}' is invalid.")
+    # prepare mapping between function and block name
+    mapping_func = {
+        "baseline": baseline_task,
+        "isochronous": isochronous_task,
+        "asynchronous": asynchronous_task,
+        "synchronous-respiration": synchronous_respiration_task,
+        "synchronous-cardiac": synchronous_cardiac_task,
+    }
+    assert len(set(mapping_func) - set(_BLOCKS)) == 0  # sanity-check
+    # prepare mapping between argument and block name
+    mapping_args = {
+        "baseline": [BASELINE_DURATION],
+        "isochronous": [None],
+        "asynchronous": [None],
+        "synchronous-respiration": [stream, ch_name_resp],
+        "synchronous-cardiac": [stream, ch_name_ecg, None],
+    }
+    assert len(set(mapping_args) - set(_BLOCKS)) == 0
+    # prepare mapping between keyword argument and block name, including target and
+    # deviant cycling frequencis
+    targets = cycle([target, deviant])
+    deviants = cycle([deviant, target])
+    target = next(targets)
+    deviant = next(deviants)
+    mapping_kwargs = {
+        "baseline": {},
+        "isochronous": {"target": target, "deviant": deviant},
+        "asynchronous": {"target": target, "deviant": deviant},
+        "synchronous-respiration": {"target": target, "deviant": deviant},
+        "synchronous-cardiac": {"target": target, "deviant": deviant},
+    }
+    assert len(set(mapping_kwargs) - set(_BLOCKS)) == 0  # sanity-check
+
+    # Execute paradigm loop
+    blocks = list()
+    while len(blocks) < n_blocks:
+        blocks.append(generate_blocks_sequence(blocks))
+        logger.info("Running block %i / %i: %s.", len(blocks), n_blocks, blocks[-1])
+        result = mapping_func[blocks[-1]](
+            *mapping_args[blocks[-1]], **mapping_kwargs[blocks[-1]]
+        )
+        # prepare arguments for future blocks if we just ran a respiration synchronous
+        # block
+        if result is not None:
+            # sanity-check
+            assert blocks[-1] == "synchronous-respiration"
+            assert isinstance(result, np.ndarray)
+            assert result.ndim == 1
+            assert result.size != 0
+            mapping_args["asynchronous"][0] = result
+            delay = np.mean(np.diff(result))
+            mapping_args["isochronous"][0] = delay
+            mapping_args["synchronous-cardiac"][2] = delay
+            logger.info(
+                "Mean delay between respiration peaks set to %.3f seconds.", delay
+            )
+        # prepare keyword argument for future blocks if we just ran 5 blocks
+        if len(blocks) % 5 == 0:
+            logger.info("Cycling target and deviant frequencies.")
+            target = next(targets)
+            deviant = next(deviants)
+            for key, elt in mapping_kwargs.items():
+                if key == "baseline":
+                    continue
+                elt["target"] = target
+                elt["deviant"] = deviant
+    logger.info("Paradigm complete.")
 
 
 run.add_command(baseline)
@@ -19,3 +138,4 @@ run.add_command(isochronous)
 run.add_command(asynchronous)
 run.add_command(synchronous_respiration)
 run.add_command(synchronous_cardiac)
+run.add_command(paradigm)

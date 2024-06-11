@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import click
 import numpy as np
 
@@ -7,7 +9,7 @@ from ..tasks import baseline as baseline_task
 from ..tasks import isochronous as isochronous_task
 from ..tasks import synchronous_cardiac as synchronous_cardiac_task
 from ..tasks import synchronous_respiration as synchronous_respiration_task
-from ..tasks._config import N_DEVIANT, N_TARGET
+from ..tasks._config import BASELINE_DURATION, N_DEVIANT, N_TARGET
 from ._utils import fq_deviant, fq_target, stream, verbose
 
 
@@ -17,6 +19,7 @@ from ._utils import fq_deviant, fq_target, stream, verbose
     prompt="Duration of the baseline (seconds)",
     help="Duration of the baseline in seconds.",
     type=float,
+    default=BASELINE_DURATION,
 )
 @verbose
 def baseline(duration: float, verbose: str) -> None:
