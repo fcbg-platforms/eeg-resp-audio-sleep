@@ -83,6 +83,7 @@ def paradigm(
     # deviant cycling frequencis
     targets = cycle([target, deviant])
     deviants = cycle([deviant, target])
+    # overwrite the same variables
     target = next(targets)
     deviant = next(deviants)
     mapping_kwargs = {
@@ -94,7 +95,7 @@ def paradigm(
     }
     assert len(set(mapping_kwargs) - set(_BLOCKS)) == 0  # sanity-check
 
-    # Execute paradigm loop
+    # execute paradigm loop
     blocks = list()
     while len(blocks) < n_blocks:
         blocks.append(generate_blocks_sequence(blocks))
