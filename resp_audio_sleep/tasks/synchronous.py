@@ -167,7 +167,7 @@ def synchronous_cardiac(
         if wait <= 0:
             logger.debug("Skipping bad detection/triggering.")
             continue
-        stimulus.get(sequence[counter]).play(when=wait)
+        stimulus.get(sequence[counter]).play(when=ptb.GetSecs() + wait)
         logger.debug("Triggering %i in %.3f ms.", sequence[counter], wait * 1000)
         time.sleep(wait)
         trigger.signal(sequence[counter])
