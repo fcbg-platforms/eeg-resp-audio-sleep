@@ -83,7 +83,7 @@ def synchronous_respiration(
             continue
         wait = pos + TARGET_DELAY - local_clock()
         if wait <= 0:
-            logger.debug(
+            logger.info(
                 "Skipping bad detection/triggering, too late by %.3f ms.", -wait * 1000
             )
             continue
@@ -171,7 +171,7 @@ def synchronous_cardiac(
                 continue  # next r-peak will be closer from the target
         wait = pos + TARGET_DELAY - local_clock()
         if wait <= 0:
-            logger.debug(
+            logger.info(
                 "Skipping bad detection/triggering, too late by %.3f ms.", -wait * 1000
             )
             continue
