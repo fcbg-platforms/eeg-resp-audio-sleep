@@ -1,16 +1,20 @@
 from __future__ import annotations
 
-import click
+import argparse
 
-from .. import sys_info as sys_info_function
+from .. import sys_info
 
 
-@click.command()
-@click.option(
-    "--developer",
-    help="display information for optional dependencies",
-    is_flag=True,
-)
-def sys_info(developer: bool) -> None:
+def run() -> None:
     """Run sys_info() command."""
-    sys_info_function(developer=developer)
+    parser = argparse.ArgumentParser(
+        prog=f"{__package__.split('.')[0]}-sys_info", description="sys_info"
+    )
+    parser.add_argument(
+        "--developer",
+        help="display information for optional dependencies",
+        action="store_true",
+    )
+    args = parser.parse_args()
+
+    sys_info(developer=args.developer)
