@@ -2,6 +2,7 @@
 TRIGGERS: dict[str, int] = {
     "target/1000.0": 1,
     "target/2000.0": 2,
+    "target/440.0": 3,
     "deviant/1000.0": 11,
     "deviant/2000.0": 12,
 }
