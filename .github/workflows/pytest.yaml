@@ -43,7 +43,7 @@ jobs:
           python -m pip install --progress-bar off --upgrade pip setuptools
           python -m pip install --progress-bar off .[test]
       - name: Display system information
-        run: ras sys-info --developer
+        run: ras-sys_info --developer
       - name: Run pytest
         run: pytest resp_audio_sleep --cov=resp_audio_sleep --cov-report=xml --cov-config=pyproject.toml
       - name: Upload to codecov
