@@ -23,6 +23,7 @@ def isochronous(delay: float, *, target: float, deviant: float) -> None:  # noqa
     check_type(delay, ("numeric",), "delay")
     if delay <= 0:
         raise ValueError("The delay must be strictly positive.")
+    delay_post_trigger = delay - TARGET_DELAY
     logger.info("Starting isochronous block.")
     # create sound stimuli, trigger and sequence
     sounds = create_sounds()
@@ -43,8 +44,9 @@ def isochronous(delay: float, *, target: float, deviant: float) -> None:  # noqa
         logger.debug("Triggering %i in %.2f ms.", sequence[counter], TARGET_DELAY)
         time.sleep(TARGET_DELAY)
         trigger.signal(sequence[counter])
-        time.sleep(delay)
+        time.sleep(delay_post_trigger)
         counter += 1
-    if delay < 1.1 * SOUND_DURATION:
-        time.sleep(delay - 1.1 * SOUND_DURATION)
+    # wait for the last sound to finish
+    if delay_post_trigger < 1.1 * SOUND_DURATION:
+        time.sleep(delay_post_trigger - 1.1 * SOUND_DURATION)
     logger.info("Isochronous block complete.")
