@@ -74,7 +74,7 @@ test = [
 
 [project.scripts]
 ras = 'resp_audio_sleep.commands.main:run'
-ras-sys_info = 'resp_audio_sleep.commands.sys_info:sys_info'
+ras-sys_info = 'resp_audio_sleep.commands.sys_info:run'
 
 [project.urls]
 source = 'https://github.com/fcbg-hnp-meeg/eeg-resp-audio-sleep'
@@ -101,7 +101,6 @@ omit = [
   '**/__init__.py',
   '**/conftest.py',
   '**/resp_audio_sleep/_version.py',
-  '**/resp_audio_sleep/commands/*',
   '**/resp_audio_sleep/utils/_fixes.py',
   '**/tests/**',
 ]
