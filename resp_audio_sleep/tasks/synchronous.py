@@ -162,23 +162,7 @@ def synchronous_cardiac(
             distance_r_peak = abs(pos - target_time)
             distance_next_r_peak = abs(target_time - (pos + heartrate.mean_delay()))
             if distance_next_r_peak < distance_r_peak:
-                logger.debug(
-                    "\nDecision: wait\n\tTarget: %.3f\n\tPeak: %.3f\n\tDistance to "
-                    "peak: %.3f\n\tDistance to next peak: %.3f\n",
-                    target_time,
-                    pos,
-                    distance_r_peak,
-                    distance_next_r_peak,
-                )
                 continue  # next r-peak will be closer from the target
-            logger.debug(
-                "\nDecision: stim\n\tTarget: %.3f\n\tPeak: %.3f\n\tDistance to peak: "
-                "%.3f\n\tDistance to next peak: %.3f\n",
-                target_time,
-                pos,
-                distance_r_peak,
-                distance_next_r_peak,
-            )
         wait = pos + TARGET_DELAY - local_clock()
         if wait <= 0:
             logger.debug("Skipping bad detection/triggering.")
