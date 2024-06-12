@@ -4,6 +4,7 @@ import time
 from typing import TYPE_CHECKING
 
 import numpy as np
+import psychtoolbox as ptb
 from mne_lsl.lsl import local_clock
 
 from ..detector import Detector
@@ -82,12 +83,13 @@ def synchronous_respiration(
         if wait <= 0:
             logger.debug("Skipping bad detection/triggering.")
             continue
-        stimulus.get(sequence[counter]).play(when=wait)
+        stimulus.get(sequence[counter]).play(when=ptb.GetSecs() + wait)
         logger.debug("Triggering %i in %.3f ms.", sequence[counter], wait * 1000)
         time.sleep(wait)
         trigger.signal(sequence[counter])
         peaks.append(pos)
         counter += 1
+    # wait for the last sound to finish
     time.sleep(1.1 * SOUND_DURATION)
     logger.info("Respiration synchronous block complete.")
     return np.array(peaks)

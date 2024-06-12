@@ -8,8 +8,10 @@ from mne.io import read_raw_fif
 
 import resp_audio_sleep
 
-# %% Isochronous
 root = Path(resp_audio_sleep.__file__).parent.parent / "data" / "timings"
+
+
+# %% Isochronous
 fname = root / "isochronous-raw.fif"
 raw = read_raw_fif(fname, preload=True)
 events = find_events(raw)
@@ -29,7 +31,6 @@ facetgrid.fig.tight_layout()
 
 
 # %% Asynchronous
-root = Path(resp_audio_sleep.__file__).parent.parent / "data" / "timings"
 fname = root / "asynchronous-raw.fif"
 raw = read_raw_fif(fname, preload=True)
 events = find_events(raw)
