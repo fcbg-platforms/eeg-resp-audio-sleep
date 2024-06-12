@@ -54,13 +54,15 @@ def asynchronous(
     # main loop
     counter = 0
     while counter <= sequence.size - 1:
-        wait = ptb.GetSecs() + TARGET_DELAY
-        stimulus.get(sequence[counter]).play(when=wait)
+        start = ptb.GetSecs()
+        stimulus.get(sequence[counter]).play(when=start + TARGET_DELAY)
         logger.debug("Triggering %i in %.2f ms.", sequence[counter], TARGET_DELAY)
         time.sleep(TARGET_DELAY)
         trigger.signal(sequence[counter])
-        time.sleep(delays[counter])
+        wait = start + delays[counter] - ptb.GetSecs()
+        time.sleep(wait)
         counter += 1
-    if delays[-1] < 1.1 * SOUND_DURATION:
-        time.sleep(delays[-1] - 1.1 * SOUND_DURATION)
+    # wait for the last sound to finish
+    if wait < 1.1 * SOUND_DURATION:
+        time.sleep(wait - 1.1 * SOUND_DURATION)
     logger.info("Asynchronous block complete.")

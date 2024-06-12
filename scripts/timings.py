@@ -26,3 +26,21 @@ facetgrid.fig.suptitle(
     f"{np.std(delays):.1f}"
 )
 facetgrid.fig.tight_layout()
+
+
+# %% Asynchronous
+root = Path(resp_audio_sleep.__file__).parent.parent / "data" / "timings"
+fname = root / "asynchronous-raw.fif"
+raw = read_raw_fif(fname, preload=True)
+events = find_events(raw)
+epochs = Epochs(raw, events, tmin=-0.1, tmax=0.3, picks="misc")
+epochs.plot(picks="AUX9", n_epochs=1, events=events, scalings=dict(misc=4e5))
+
+# the target delay was 0.5 to 1.5 seconds (uniformly distributed)
+delays = np.diff(events[:, 0])
+facetgrid = sns.displot(delays, kde=True)
+facetgrid.fig.suptitle(
+    f"Distribution of delays in samples\nmean: {np.mean(delays):.1f} - std: "
+    f"{np.std(delays):.1f}"
+)
+facetgrid.fig.tight_layout()
