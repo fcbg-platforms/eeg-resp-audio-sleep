@@ -8,6 +8,13 @@ TRIGGERS: dict[str, int] = {
 }
 TRIGGER_TYPE: str = "arduino"
 TRIGGER_ARGS: str | None = None
+TRIGGER_TASKS: dict[str, tuple[int, int]] = {
+    "baseline": (200, 201),
+    "synchronous-respiration": (210, 211),
+    "synchronous-cardiac": (220, 221),
+    "isochronous": (230, 231),
+    "asynchronous": (240, 241),
+}
 # sound settings
 N_TARGET: int = 25
 N_DEVIANT: int = 5

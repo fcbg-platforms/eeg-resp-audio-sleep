@@ -18,6 +18,7 @@ from ._config import (
     RESP_PROMINENCE,
     SOUND_DURATION,
     TARGET_DELAY,
+    TRIGGER_TASKS,
     TRIGGERS,
 )
 from ._utils import create_sounds, create_trigger, generate_sequence
@@ -75,6 +76,7 @@ def synchronous_respiration(
     # main loop
     counter = 0
     peaks = []
+    trigger.signal(TRIGGER_TASKS["synchronous-respiration"][0])
     while counter <= sequence.size - 1:
         pos = detector.new_peak("resp")
         if pos is None:
@@ -93,6 +95,7 @@ def synchronous_respiration(
         counter += 1
     # wait for the last sound to finish
     time.sleep(1.1 * SOUND_DURATION)
+    trigger.signal(TRIGGER_TASKS["synchronous-respiration"][1])
     logger.info("Respiration synchronous block complete.")
     return np.array(peaks)
 
@@ -153,6 +156,7 @@ def synchronous_cardiac(
     # main loop
     counter = 0
     target_time = None
+    trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][0])
     while counter <= sequence.size - 1:
         pos = detector.new_peak("ecg")
         if pos is None:
@@ -178,6 +182,7 @@ def synchronous_cardiac(
         counter += 1
         target_time = pos + delay if target_time is None else target_time + delay
     time.sleep(1.1 * SOUND_DURATION)
+    trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][1])
     logger.info("Cardiac synchronous block complete.")
 
 
