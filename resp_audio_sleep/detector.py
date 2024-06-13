@@ -155,7 +155,7 @@ class Detector:
             elt for elt in (self._ecg_ch_name, self._resp_ch_name) if elt is not None
         ]
         self._stream = StreamLSL(bufsize, name=stream_name).connect(
-            processing_flags="all"
+            acquisition_delay=0, processing_flags="all"
         )
         self._stream.pick(picks)
         self._stream.set_channel_types(
@@ -207,6 +207,10 @@ class Detector:
         if self._viewer is not None:
             self._viewer.plot(ts, data, ch_type)
         return ts[peaks]
+
+    def acquire(self) -> None:
+        """Acquire data from the stream manually."""
+        self._stream.acquire()
 
     @fill_doc
     def new_peak(self, ch_type: str) -> float | None:

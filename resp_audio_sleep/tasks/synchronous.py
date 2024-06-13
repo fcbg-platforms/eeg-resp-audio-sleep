@@ -78,6 +78,7 @@ def synchronous_respiration(
     peaks = []
     trigger.signal(TRIGGER_TASKS["synchronous-respiration"][0])
     while counter <= sequence.size - 1:
+        detector.acquire()
         pos = detector.new_peak("resp")
         if pos is None:
             continue
@@ -158,6 +159,7 @@ def synchronous_cardiac(
     target_time = None
     trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][0])
     while counter <= sequence.size - 1:
+        detector.acquire()
         pos = detector.new_peak("ecg")
         if pos is None:
             continue
