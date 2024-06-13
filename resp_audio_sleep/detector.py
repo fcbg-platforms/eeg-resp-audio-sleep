@@ -16,6 +16,10 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
+# number of consecutive windows in which a peak has to be detected to be considered
+_N_CONSECUTIVE_WINDOWS: int = 4
+
+
 @fill_doc
 class Detector:
     """Real-time single channel peak detector.
@@ -255,7 +259,7 @@ class Detector:
         idx = [
             k
             for k, count in enumerate(self._peak_candidates_count[ch_type])
-            if 4 <= count
+            if _N_CONSECUTIVE_WINDOWS <= count
         ]
         if len(idx) == 0:
             return None
