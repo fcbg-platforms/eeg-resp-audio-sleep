@@ -157,14 +157,14 @@ class Detector:
         self._stream.notch_filter(50, picks=picks)
         self._stream.notch_filter(100, picks=picks)
         logger.info("Prefilling buffer of %.2f seconds.", self._stream._bufsize)
-        while self._stream.n_new_samples < self._stream.n_buffer:
-            self._stream.acquire()
+        while self._stream._n_new_samples < self._stream._timestamps.size:
+            self._stream._acquire()
             sleep(0.01)
         logger.info("Buffer prefilled.")
 
     @fill_doc
     def _detect_peaks(self, ch_type: str) -> NDArray[np.float64]:
-        """Detect all peaks in the buffer.
+        """Acquire new samples and detect all peaks in the buffer.
 
         If a buffer was already processed, it will not be re-processed.
 
@@ -177,7 +177,8 @@ class Detector:
         peaks : array of shape (n_peaks,)
             The timestamps of all detected peaks.
         """
-        if self._stream.n_new_samples == 0:
+        self._stream._acquire()
+        if self._stream._n_new_samples == 0:
             return np.array([])  # nothing new to do
         data, ts = self._stream.get_data(
             picks=self._resp_ch_name if ch_type == "resp" else self._ecg_ch_name
@@ -197,10 +198,6 @@ class Detector:
         if self._viewer is not None:
             self._viewer.plot(ts, data, ch_type)
         return ts[peaks]
-
-    def acquire(self) -> None:
-        """Acquire data from the stream manually."""
-        self._stream.acquire()
 
     @fill_doc
     def new_peak(self, ch_type: str) -> float | None:

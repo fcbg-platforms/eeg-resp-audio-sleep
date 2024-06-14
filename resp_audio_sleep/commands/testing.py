@@ -52,7 +52,6 @@ def test_detector_respiration(
     )
     counter = 0
     while counter < n_peaks:
-        detector.acquire()
         peak = detector.new_peak("resp")
         if peak is not None:
             delay = local_clock() - peak
@@ -93,7 +92,6 @@ def test_detector_ecg(
     )
     counter = 0
     while counter < n_peaks:
-        detector.acquire()
         peak = detector.new_peak("ecg")
         if peak is not None:
             delay = local_clock() - peak
