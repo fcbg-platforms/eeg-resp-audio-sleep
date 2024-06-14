@@ -4,6 +4,7 @@ import time
 
 import click
 import numpy as np
+from mne_lsl.lsl import local_clock
 
 from .. import set_log_level
 from ..detector import Detector
@@ -15,7 +16,15 @@ from ..tasks._config import (
     TRIGGERS,
 )
 from ..tasks._utils import create_trigger, generate_sequence
-from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, verbose
+from ._utils import (
+    ch_name_ecg,
+    ch_name_resp,
+    fq_deviant,
+    fq_target,
+    no_viewer,
+    stream,
+    verbose,
+)
 
 
 @click.command()
@@ -24,11 +33,13 @@ from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, ve
 @click.option(
     "--n-peaks", prompt="Number of peaks", help="Number of peaks to detect.", type=int
 )
+@no_viewer
 @verbose
 def test_detector_respiration(
     stream: str,
     ch_name_resp: str,
     n_peaks: int,
+    no_viewer: bool,
     verbose: str,
 ) -> None:
     """Test the respiration detector settings."""
@@ -44,15 +55,18 @@ def test_detector_respiration(
         ecg_distance=None,
         resp_prominence=RESP_PROMINENCE,
         resp_distance=RESP_DISTANCE,
-        viewer=True,
+        viewer=not no_viewer,
     )
     counter = 0
     while counter < n_peaks:
         detector.acquire()
         peak = detector.new_peak("resp")
         if peak is not None:
+            delay = local_clock() - peak
             counter += 1
-            click.echo(f"Respiration peak {counter} / {n_peaks} detected.")
+            click.echo(
+                f"Respiration peak {counter} / {n_peaks} detected after {delay:.3f}s."
+            )
 
 
 @click.command()
@@ -61,11 +75,13 @@ def test_detector_respiration(
 @click.option(
     "--n-peaks", prompt="Number of peaks", help="Number of peaks to detect.", type=int
 )
+@no_viewer
 @verbose
 def test_detector_ecg(
     stream: str,
     ch_name_ecg: str,
     n_peaks: int,
+    no_viewer: bool,
     verbose: str,
 ) -> None:
     """Test the ECG detector settings."""
@@ -81,15 +97,16 @@ def test_detector_ecg(
         ecg_distance=ECG_DISTANCE,
         resp_prominence=None,
         resp_distance=None,
-        viewer=True,
+        viewer=not no_viewer,
     )
     counter = 0
     while counter < n_peaks:
         detector.acquire()
         peak = detector.new_peak("ecg")
         if peak is not None:
+            delay = local_clock() - peak
             counter += 1
-            click.echo(f"ECG peak {counter} / {n_peaks} detected.")
+            click.echo(f"ECG peak {counter} / {n_peaks} detected after {delay:.3f}s.")
 
 
 @click.command()

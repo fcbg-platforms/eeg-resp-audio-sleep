@@ -5,7 +5,7 @@ import psychtoolbox as ptb
 from ..utils._checks import check_type
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
-from ..utils.times import high_precision_sleep
+from ..utils.time import high_precision_sleep
 from ._config import SOUND_DURATION, TARGET_DELAY, TRIGGER_TASKS, TRIGGERS
 from ._utils import create_sounds, create_trigger, generate_sequence
 

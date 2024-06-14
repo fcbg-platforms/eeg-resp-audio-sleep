@@ -25,7 +25,7 @@ EDGE_PERC: float = 10  # percentage between 0 and 100
 # detector settings
 ECG_HEIGHT: float = 0.99
 ECG_DISTANCE: float = 0.3
-RESP_PROMINENCE: float = 20
+RESP_PROMINENCE: float = 10
 RESP_DISTANCE: float = 0.8
 # target timing
 TARGET_DELAY: float = 0.2

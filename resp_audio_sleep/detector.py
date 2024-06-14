@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 # number of consecutive windows in which a peak has to be detected to be considered
-_N_CONSECUTIVE_WINDOWS: int = 4
+_N_CONSECUTIVE_WINDOWS: int = 2
 
 
 @fill_doc

@@ -37,3 +37,4 @@ verbose = click.option(
     default="INFO",
     show_default=True,
 )
+no_viewer = click.option("--no-viewer", help="Disable the viewer.", is_flag=True)
