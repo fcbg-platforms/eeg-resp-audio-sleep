@@ -216,7 +216,7 @@ class Detector:
         self._check_ch_type(ch_type)
         ts_peaks = self._detect_peaks(ch_type)
         if ts_peaks.size == 0:
-            return None  # unlikely to happen, but let's exit early if we have nothing
+            return None
         if (
             self._peak_candidates[ch_type] is None
             and self._peak_candidates_count[ch_type] is None
