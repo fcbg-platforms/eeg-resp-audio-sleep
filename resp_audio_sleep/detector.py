@@ -4,6 +4,7 @@ from time import sleep
 from typing import TYPE_CHECKING
 
 import numpy as np
+from mne.filter import _overlap_add_filter, create_filter
 from mne_lsl.stream import StreamLSL
 from scipy.signal import find_peaks
 
@@ -70,6 +71,9 @@ class Detector:
             ecg_height, ecg_distance, resp_prominence, resp_distance
         )
         self._create_stream(bufsize, stream_name)
+        self._filter_respiration = create_filter(
+            None, self._stream.info["sfreq"], None, 15
+        )
         self._viewer = (
             Viewer(ecg_ch_name, resp_ch_name, self._ecg_height) if viewer else None
         )
@@ -166,8 +170,6 @@ class Detector:
         )
         self._stream.notch_filter(50, picks=picks)
         self._stream.notch_filter(100, picks=picks)
-        if self._resp_ch_name:
-            self._stream.filter(None, 60, picks=self._resp_ch_name)
         logger.info("Prefilling buffer of %.2f seconds.", self._stream._bufsize)
         sleep(bufsize)
         logger.info("Buffer prefilled.")
@@ -194,6 +196,8 @@ class Detector:
         )
         data = data.squeeze()
         if ch_type == "resp":
+            # FIR low-pass filter @ 15 Hz
+            data = _overlap_add_filter(data, self._filter_respiration, None, copy=False)
             kwargs = {"prominence": self._resp_prominence}
         elif ch_type == "ecg":
             kwargs = {"height": np.percentile(data, self._ecg_height * 100)}
