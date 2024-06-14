@@ -20,12 +20,10 @@ raw.crop(5, None)
 
 peaks = find_peaks(
     raw.get_data(picks="AUX7").squeeze(),
-    prominence=20,
     distance=0.8 * raw.info["sfreq"],
 )[0]
 peaks_stream = find_peaks(
     raw_stream.get_data(picks="AUX7").squeeze(),
-    prominence=20,
     distance=0.8 * raw_stream.info["sfreq"],
 )[0]
 

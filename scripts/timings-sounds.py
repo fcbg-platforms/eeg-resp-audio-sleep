@@ -45,7 +45,7 @@ events = find_events(raw_stream, stim_channel="TRIGGER")
 resp_events = events[np.where(events[:, 2] == 1)[0]]
 resp_events[:, 0] = resp_events[:, 0] - raw_stream.first_samp
 resp = raw_stream.get_data(picks="AUX7").squeeze()
-peaks_resp = find_peaks(resp, prominence=20, distance=0.8 * raw.info["sfreq"])[0]
+peaks_resp = find_peaks(resp, distance=0.8 * raw.info["sfreq"])[0]
 
 
 # %% Match closest peak and event

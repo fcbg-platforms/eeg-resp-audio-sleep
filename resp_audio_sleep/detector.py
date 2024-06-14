@@ -35,8 +35,6 @@ class Detector:
         The height of the ECG peaks as a percentage of the data range, between 0 and 1.
     ecg_distance : float | None
         The minimum distance between two ECG peaks in seconds.
-    resp_prominence : float | None
-        The prominence of the respiration peaks in arbitrary units.
     resp_distance : float | None
         The minimum distance between two respiration peaks in seconds.
     viewer : bool
@@ -53,7 +51,6 @@ class Detector:
         resp_ch_name: str | None,
         ecg_height: float | None = None,
         ecg_distance: float | None = None,
-        resp_prominence: float | None = None,
         resp_distance: float | None = None,
         *,
         viewer: bool = False,
@@ -67,9 +64,7 @@ class Detector:
         check_type(viewer, (bool,), "viewer")
         self._ecg_ch_name = ecg_ch_name
         self._resp_ch_name = resp_ch_name
-        self._set_peak_detection_parameters(
-            ecg_height, ecg_distance, resp_prominence, resp_distance
-        )
+        self._set_peak_detection_parameters(ecg_height, ecg_distance, resp_distance)
         self._create_stream(bufsize, stream_name)
         self._filter_respiration = create_filter(
             None, self._stream.info["sfreq"], None, 15
@@ -101,7 +96,6 @@ class Detector:
         self,
         ecg_height: float | None,
         ecg_distance: float | None,
-        resp_prominence: float | None,
         resp_distance: float | None,
     ) -> None:
         """Check validity of peak detection parameters."""
@@ -117,16 +111,12 @@ class Detector:
             raise ValueError(
                 "ECG peak detection parameters were not set while ECG channel was set."
             )
-        if self._resp_ch_name is None and any(
-            elt is not None for elt in (resp_prominence, resp_distance)
-        ):
+        if self._resp_ch_name is None and resp_distance is not None:
             raise ValueError(
                 "Respiration peak detection parameters were set without respiration "
                 "channel."
             )
-        elif self._resp_ch_name is not None and any(
-            elt is None for elt in (resp_prominence, resp_distance)
-        ):
+        elif self._resp_ch_name is not None and resp_distance is None:
             raise ValueError(
                 "Respiration peak detection parameters were not set while respiration "
                 "channel was set."
@@ -139,15 +129,11 @@ class Detector:
             if ecg_distance <= 0:
                 raise ValueError("ECG distance must be positive.")
         if self._resp_ch_name is not None:
-            check_type(resp_prominence, ("numeric",), "resp_prominence")
-            if resp_prominence <= 0:
-                raise ValueError("Respiration prominence must be positive.")
             check_type(resp_distance, ("numeric",), "resp_distance")
             if resp_distance <= 0:
                 raise ValueError("Respiration distance must be positive.")
         self._distances = {"ecg": ecg_distance, "resp": resp_distance}
         self._ecg_height = ecg_height
-        self._resp_prominence = resp_prominence
 
     @fill_doc
     def _create_stream(self, bufsize: float, stream_name: str) -> None:
@@ -198,7 +184,7 @@ class Detector:
         if ch_type == "resp":
             # FIR low-pass filter @ 15 Hz
             data = _overlap_add_filter(data, self._filter_respiration, None, copy=False)
-            kwargs = {"prominence": self._resp_prominence}
+            kwargs = {"height": np.mean(data)}
         elif ch_type == "ecg":
             kwargs = {"height": np.percentile(data, self._ecg_height * 100)}
         peaks, _ = find_peaks(

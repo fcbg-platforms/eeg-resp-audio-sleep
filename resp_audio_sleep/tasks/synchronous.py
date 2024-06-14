@@ -15,7 +15,6 @@ from ._config import (
     ECG_DISTANCE,
     ECG_HEIGHT,
     RESP_DISTANCE,
-    RESP_PROMINENCE,
     SOUND_DURATION,
     TARGET_DELAY,
     TRIGGER_TASKS,
@@ -69,7 +68,6 @@ def synchronous_respiration(
         resp_ch_name=resp_ch_name,
         ecg_height=None,
         ecg_distance=None,
-        resp_prominence=RESP_PROMINENCE,
         resp_distance=RESP_DISTANCE,
         viewer=False,
     )
@@ -146,7 +144,6 @@ def synchronous_cardiac(
         resp_ch_name=None,
         ecg_height=ECG_HEIGHT,
         ecg_distance=ECG_DISTANCE,
-        resp_prominence=None,
         resp_distance=None,
         viewer=False,
     )

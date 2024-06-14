@@ -13,7 +13,6 @@ detector = Detector(
     resp_ch_name="AUX7",
     ecg_height=0.98,
     ecg_distance=0.2,
-    resp_prominence=20,
     resp_distance=0.8,
     viewer=False,
 )
@@ -37,7 +36,6 @@ detector = Detector(
     resp_ch_name="AUX7",
     ecg_height=None,
     ecg_distance=None,
-    resp_prominence=20,
     resp_distance=0.8,
     viewer=False,
 )
@@ -57,7 +55,6 @@ detector = Detector(
     resp_ch_name=None,
     ecg_height=0.98,
     ecg_distance=0.2,
-    resp_prominence=None,
     resp_distance=None,
     viewer=False,
 )
