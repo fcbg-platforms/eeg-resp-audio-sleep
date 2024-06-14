@@ -66,7 +66,7 @@ class Detector:
         self._set_peak_detection_parameters(ecg_height, ecg_distance, resp_distance)
         self._create_stream(_BUFSIZE, stream_name)
         self._filter_respiration = create_filter(
-            None, self._stream.info["sfreq"], None, 15
+            None, self._stream._info["sfreq"], None, 15
         )
         self._viewer = (
             Viewer(ecg_ch_name, resp_ch_name, self._ecg_height) if viewer else None
@@ -193,7 +193,7 @@ class Detector:
             kwargs = {"height": np.percentile(data, self._ecg_height * 100)}
         peaks, _ = find_peaks(
             data,
-            distance=self._distances[ch_type] * self._stream.info["sfreq"],
+            distance=self._distances[ch_type] * self._stream._info["sfreq"],
             **kwargs,
         )
         if self._viewer is not None:
