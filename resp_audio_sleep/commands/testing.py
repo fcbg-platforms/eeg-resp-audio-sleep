@@ -41,7 +41,6 @@ def test_detector_respiration(
     if n_peaks <= 0:
         raise ValueError("The number of peaks must be greater than 0.")
     detector = Detector(
-        bufsize=4,
         stream_name=stream,
         ecg_ch_name=None,
         resp_ch_name=ch_name_resp,
@@ -81,7 +80,6 @@ def test_detector_ecg(
     if n_peaks <= 0:
         raise ValueError("The number of peaks must be greater than 0.")
     detector = Detector(
-        bufsize=4,
         stream_name=stream,
         ecg_ch_name=ch_name_ecg,
         resp_ch_name=None,

@@ -18,11 +18,6 @@ docdict: dict[str, str] = dict()
 
 # -- A ---------------------------------------------------------------------------------
 # -- B ---------------------------------------------------------------------------------
-docdict["bufsize"] = """
-bufsize : float
-    Size of the buffer in seconds. The buffer will be filled on instantiation, thus
-    the program will hold during this duration."""
-
 # -- C ---------------------------------------------------------------------------------
 docdict["ch_type"] = """
 ch_type : str

@@ -10,13 +10,16 @@ from scipy.signal import find_peaks
 
 from .utils._checks import check_type
 from .utils._docs import fill_doc
-from .utils.logs import logger, warn
+from .utils.logs import logger
 from .viz import Viewer
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
+# if the buffer size is changed, the FIR filter used for respiration detection might
+# need to be modified
+_BUFSIZE: float = 4.0
 # number of consecutive windows in which a peak has to be detected to be considered
 _N_CONSECUTIVE_WINDOWS: int = 2
 
@@ -27,7 +30,6 @@ class Detector:
 
     Parameters
     ----------
-    %(bufsize)s
     %(stream_name)s
     %(ecg_ch_name)s
     %(resp_ch_name)s
@@ -45,7 +47,6 @@ class Detector:
 
     def __init__(
         self,
-        bufsize: float,
         stream_name: str,
         ecg_ch_name: str | None,
         resp_ch_name: str | None,
@@ -55,8 +56,6 @@ class Detector:
         *,
         viewer: bool = False,
     ) -> None:
-        if bufsize < 2:
-            warn("Buffer size shorter than 2 second might be too short.")
         if ecg_ch_name is None and resp_ch_name is None:
             raise ValueError(
                 "At least one of 'ecg_ch_name' or 'resp_ch_name' must be set."
@@ -65,7 +64,7 @@ class Detector:
         self._ecg_ch_name = ecg_ch_name
         self._resp_ch_name = resp_ch_name
         self._set_peak_detection_parameters(ecg_height, ecg_distance, resp_distance)
-        self._create_stream(bufsize, stream_name)
+        self._create_stream(_BUFSIZE, stream_name)
         self._filter_respiration = create_filter(
             None, self._stream.info["sfreq"], None, 15
         )
@@ -141,7 +140,9 @@ class Detector:
 
         Parameters
         ----------
-        %(bufsize)s
+        bufsize : float
+            Size of the buffer in seconds. The buffer will be filled on instantiation,
+            thus the program will hold during this duration.
         %(stream_name)s
         """
         picks = [

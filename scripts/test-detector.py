@@ -7,7 +7,6 @@ stream_name = "eegoSports 000325"
 
 # %% Simultaneous detection of ECG and RESP peaks
 detector = Detector(
-    4,
     stream_name,
     ecg_ch_name="AUX8",
     resp_ch_name="AUX7",
@@ -30,7 +29,6 @@ while counter <= 100:
 
 # %% Respiration-only detector
 detector = Detector(
-    4,
     stream_name,
     ecg_ch_name=None,
     resp_ch_name="AUX7",
@@ -49,7 +47,6 @@ while counter <= 20:
 
 # %% ECG-only detector
 detector = Detector(
-    4,
     stream_name,
     ecg_ch_name="AUX8",
     resp_ch_name=None,

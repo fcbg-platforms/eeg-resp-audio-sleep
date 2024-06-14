@@ -62,7 +62,6 @@ def synchronous_respiration(
     }
     # create detector
     detector = Detector(
-        bufsize=4,
         stream_name=stream_name,
         ecg_ch_name=None,
         resp_ch_name=resp_ch_name,
@@ -137,7 +136,6 @@ def synchronous_cardiac(
     delays = rng.choice(np.diff(peaks), size=sequence.size, replace=True)
     # create detector
     detector = Detector(
-        bufsize=4,
         stream_name=stream_name,
         ecg_ch_name=ecg_ch_name,
         resp_ch_name=None,
