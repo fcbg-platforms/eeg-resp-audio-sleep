@@ -105,7 +105,7 @@ def synchronous_respiration(
 def synchronous_cardiac(
     stream_name: str,
     ecg_ch_name: str,
-    delay: float,
+    peaks: NDArray[np.float64],
     *,
     target: float,
     deviant: float,
@@ -116,19 +116,14 @@ def synchronous_cardiac(
     ----------
     %(stream_name)s
     %(ecg_ch_name)s
-    delay : float
-        Target delay between 2 stimuli, in seconds. The stimulus will be synchronized
-        with the cardiac peak signal, but will attempt to match the delay as closely as
-        possible.
+    %(peaks)s
     %(fq_target)s
     %(fq_deviant)s
     """
-    check_type(delay, ("numeric",), "delay")
-    if delay <= 0:
-        raise ValueError("The delay must be strictly positive.")
-    logger.info(
-        "Starting cardiac synchronous block with delay set to %.2f seconds.", delay
-    )
+    check_type(peaks, (np.ndarray,), "peaks")
+    if peaks.ndim != 1:
+        raise ValueError("The peaks array must be one-dimensional.")
+    logger.info("Starting cardiac synchronous block.")
     # create sound stimuli, trigger, sequence
     sounds = create_sounds()
     trigger = create_trigger()
@@ -140,6 +135,9 @@ def synchronous_cardiac(
         TRIGGERS[f"target/{target}"]: sounds[str(target)],
         TRIGGERS[f"deviant/{deviant}"]: sounds[str(deviant)],
     }
+    # generate delays between peaks and rng to select delays
+    rng = np.random.default_rng()
+    delays = rng.choice(np.diff(peaks), size=sequence.size, replace=True)
     # create detector
     detector = Detector(
         bufsize=4,
@@ -157,6 +155,7 @@ def synchronous_cardiac(
     # main loop
     counter = 0
     target_time = None
+    last_pos = None
     trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][0])
     while counter <= sequence.size - 1:
         detector.acquire()
@@ -182,7 +181,21 @@ def synchronous_cardiac(
         time.sleep(wait)
         trigger.signal(sequence[counter])
         counter += 1
-        target_time = pos + delay if target_time is None else target_time + delay
+        # figure out what our next target time should be, based on the delays in the
+        # previous synchronous respiration block and based on the last triggered
+        # R-peak.
+        if target_time is None:
+            mask = np.zeros(delays.size, dtype=bool)
+            mask[0] = True
+            rng.shuffle(mask)
+        else:
+            # look for the closest delay to the last R-peak
+            idx = np.argmin(np.abs(delays - (pos - last_pos)))
+            mask = np.zeros(delays.size, dtype=bool)
+            mask[idx] = True
+        target_time = pos + delays[mask][0]
+        delays = delays[~mask]
+        last_pos = pos
     time.sleep(1.1 * SOUND_DURATION)
     trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][1])
     logger.info("Cardiac synchronous block complete.")

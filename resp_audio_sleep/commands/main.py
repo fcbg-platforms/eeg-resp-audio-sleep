@@ -112,9 +112,9 @@ def paradigm(
             assert result.ndim == 1
             assert result.size != 0
             mapping_args["asynchronous"][0] = result
+            mapping_args["synchronous-cardiac"][2] = result
             delay = np.mean(np.diff(result))
             mapping_args["isochronous"][0] = delay
-            mapping_args["synchronous-cardiac"][2] = delay
             logger.info(
                 "Mean delay between respiration peaks set to %.3f seconds.", delay
             )

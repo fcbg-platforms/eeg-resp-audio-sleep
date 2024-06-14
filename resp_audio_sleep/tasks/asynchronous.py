@@ -27,8 +27,7 @@ def asynchronous(
 
     Parameters
     ----------
-    peaks : array of shape (n_peaks,)
-        The detected respiration peak timings in seconds.
+    %(peaks)s
     %(fq_target)s
     %(fq_deviant)s
     """
@@ -48,9 +47,8 @@ def asynchronous(
         TRIGGERS[f"deviant/{deviant}"]: sounds[str(deviant)],
     }
     # generate delays between peaks
-    delays = np.diff(peaks)
     rng = np.random.default_rng()
-    delays = rng.choice(delays, size=sequence.size, replace=True)
+    delays = rng.choice(np.diff(peaks), size=sequence.size, replace=True)
     # main loop
     counter = 0
     trigger.signal(TRIGGER_TASKS["asynchronous"][0])

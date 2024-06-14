@@ -89,10 +89,11 @@ def synchronous_respiration(
 @stream
 @ch_name_ecg
 @click.option(
-    "--delay",
-    prompt="Target delay between 2 stimulus (seconds)",
-    help="Target delay between 2 stimulus in seconds.",
-    type=float,
+    "--delays",
+    help="Min and max delays between 2 stimuli in seconds.",
+    type=(float, float),
+    default=(0.5, 1.5),
+    show_default=True,
 )
 @fq_target
 @fq_deviant
@@ -100,11 +101,19 @@ def synchronous_respiration(
 def synchronous_cardiac(
     stream: str,
     ch_name_ecg: str,
-    delay: float,
+    delays: tuple[float, float],
     target: float,
     deviant: float,
     verbose: str,
 ) -> None:
     """Run a synchronous cardiac task."""
     set_log_level(verbose)
-    synchronous_cardiac_task(stream, ch_name_ecg, delay, target=target, deviant=deviant)
+    # create random peak position based on the min/max delays requested
+    if delays[0] <= 0:
+        raise ValueError("The minimum delay must be strictly positive.")
+    if delays[1] <= 0:
+        raise ValueError("The maximum delay must be strictly positive.")
+    rng = np.random.default_rng()
+    delays = rng.uniform(low=delays[0], high=delays[1], size=N_TARGET + N_DEVIANT - 1)
+    peaks = np.hstack(([0], np.cumsum(delays)))
+    synchronous_cardiac_task(stream, ch_name_ecg, peaks, target=target, deviant=deviant)
