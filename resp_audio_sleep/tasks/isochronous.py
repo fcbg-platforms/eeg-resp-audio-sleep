@@ -1,10 +1,11 @@
-import time
+from __future__ import annotations
 
 import psychtoolbox as ptb
 
 from ..utils._checks import check_type
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
+from ..utils.times import high_precision_sleep
 from ._config import SOUND_DURATION, TARGET_DELAY, TRIGGER_TASKS, TRIGGERS
 from ._utils import create_sounds, create_trigger, generate_sequence
 
@@ -42,13 +43,15 @@ def isochronous(delay: float, *, target: float, deviant: float) -> None:  # noqa
         start = ptb.GetSecs()
         stimulus.get(sequence[counter]).play(when=start + TARGET_DELAY)
         logger.debug("Triggering %i in %.2f ms.", sequence[counter], TARGET_DELAY)
-        time.sleep(TARGET_DELAY)
+        high_precision_sleep(TARGET_DELAY)
         trigger.signal(sequence[counter])
+        # note that if 'delay' is too short, the value 'wait' could end up negative
+        # which (1) makes no sense and (2) would raise in the sleep function.
         wait = start + delay - ptb.GetSecs()
-        time.sleep(wait)
+        high_precision_sleep(wait)
         counter += 1
     # wait for the last sound to finish
     if wait < 1.1 * SOUND_DURATION:
-        time.sleep(wait - 1.1 * SOUND_DURATION)
+        high_precision_sleep(1.1 * SOUND_DURATION - wait)
     trigger.signal(TRIGGER_TASKS["isochronous"][1])
     logger.info("Isochronous block complete.")

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import time
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -11,6 +10,7 @@ from ..detector import Detector
 from ..utils._checks import check_type, ensure_int
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
+from ..utils.times import high_precision_sleep
 from ._config import (
     ECG_DISTANCE,
     ECG_HEIGHT,
@@ -90,12 +90,12 @@ def synchronous_respiration(
             continue
         stimulus.get(sequence[counter]).play(when=ptb.GetSecs() + wait)
         logger.debug("Triggering %i in %.3f ms.", sequence[counter], wait * 1000)
-        time.sleep(wait)
+        high_precision_sleep(wait)
         trigger.signal(sequence[counter])
         peaks.append(pos)
         counter += 1
     # wait for the last sound to finish
-    time.sleep(1.1 * SOUND_DURATION)
+    high_precision_sleep(1.1 * SOUND_DURATION)
     trigger.signal(TRIGGER_TASKS["synchronous-respiration"][1])
     logger.info("Respiration synchronous block complete.")
     return np.array(peaks)
@@ -178,7 +178,7 @@ def synchronous_cardiac(
             continue
         stimulus.get(sequence[counter]).play(when=ptb.GetSecs() + wait)
         logger.debug("Triggering %i in %.3f ms.", sequence[counter], wait * 1000)
-        time.sleep(wait)
+        high_precision_sleep(wait)
         trigger.signal(sequence[counter])
         counter += 1
         # figure out what our next target time should be, based on the delays in the
@@ -196,7 +196,7 @@ def synchronous_cardiac(
         target_time = pos + delays[mask][0]
         delays = delays[~mask]
         last_pos = pos
-    time.sleep(1.1 * SOUND_DURATION)
+    high_precision_sleep(1.1 * SOUND_DURATION)
     trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][1])
     logger.info("Cardiac synchronous block complete.")
 
