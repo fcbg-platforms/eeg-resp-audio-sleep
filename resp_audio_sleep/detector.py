@@ -157,7 +157,8 @@ class Detector:
         self._stream.notch_filter(50, picks=picks)
         self._stream.notch_filter(100, picks=picks)
         logger.info("Prefilling buffer of %.2f seconds.", self._stream._bufsize)
-        sleep(bufsize)
+        while self._stream.n_new_samples < self._stream.n_buffer:
+            sleep(0.01)
         logger.info("Buffer prefilled.")
 
     @fill_doc
