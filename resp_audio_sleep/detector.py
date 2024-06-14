@@ -243,7 +243,7 @@ class Detector:
         idx = [
             k
             for k, count in enumerate(self._peak_candidates_count[ch_type])
-            if _N_CONSECUTIVE_WINDOWS <= count
+            if _N_CONSECUTIVE_WINDOWS == count
         ]
         if len(idx) == 0:
             return None
