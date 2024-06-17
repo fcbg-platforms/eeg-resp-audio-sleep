@@ -21,7 +21,7 @@ dependencies = [
   'byte_triggers>=0.4.0',
   'click>=8.1',
   'mne-lsl>=1.4.0',
-  'numpy>=1.21',
+  'numpy>=1.21, <2.0',
   'packaging',
   'psutil',
   'psychopy',
