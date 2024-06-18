@@ -39,6 +39,8 @@ class Detector:
         The minimum distance between two ECG peaks in seconds.
     resp_distance : float | None
         The minimum distance between two respiration peaks in seconds.
+    detrend : bool
+        If True, apply a linear detrending prior to peak detection.
     viewer : bool
         If True, a viewer will be created to display the real-time signal and detected
         peaks. Useful for debugging or calibration, but should be set to False for
@@ -54,12 +56,14 @@ class Detector:
         ecg_distance: float | None = None,
         resp_distance: float | None = None,
         *,
+        detrend: bool = True,
         viewer: bool = False,
     ) -> None:
         if ecg_ch_name is None and resp_ch_name is None:
             raise ValueError(
                 "At least one of 'ecg_ch_name' or 'resp_ch_name' must be set."
             )
+        check_type(detrend, (bool,), "detrend")
         check_type(viewer, (bool,), "viewer")
         self._ecg_ch_name = ecg_ch_name
         self._resp_ch_name = resp_ch_name
@@ -68,6 +72,7 @@ class Detector:
         self._filter_respiration = create_filter(
             None, self._stream._info["sfreq"], None, 15
         )
+        self._detrend = detrend
         self._viewer = (
             Viewer(ecg_ch_name, resp_ch_name, self._ecg_height) if viewer else None
         )
@@ -185,12 +190,18 @@ class Detector:
             picks=self._resp_ch_name if ch_type == "resp" else self._ecg_ch_name
         )
         data = data.squeeze()
+        # linear detrending
+        if self._detrend:
+            z = np.polyfit(ts, data, 1)
+            data -= z[0] * ts + z[1]
+        # channel-specific settings
         if ch_type == "resp":
             # FIR low-pass filter @ 15 Hz
             data = _overlap_add_filter(data, self._filter_respiration, None, copy=False)
             kwargs = {"height": np.mean(data)}
         elif ch_type == "ecg":
             kwargs = {"height": np.percentile(data, self._ecg_height * 100)}
+        # peak detection
         peaks, _ = find_peaks(
             data,
             distance=self._distances[ch_type] * self._stream._info["sfreq"],

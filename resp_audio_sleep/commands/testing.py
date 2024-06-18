@@ -68,14 +68,14 @@ def test_detector_respiration(
 )
 @no_viewer
 @verbose
-def test_detector_ecg(
+def test_detector_cardiac(
     stream: str,
     ch_name_ecg: str,
     n_peaks: int,
     no_viewer: bool,
     verbose: str,
 ) -> None:
-    """Test the ECG detector settings."""
+    """Test the cardiac detector settings."""
     set_log_level(verbose)
     if n_peaks <= 0:
         raise ValueError("The number of peaks must be greater than 0.")
