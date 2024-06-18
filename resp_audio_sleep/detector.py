@@ -4,7 +4,6 @@ from time import sleep
 from typing import TYPE_CHECKING
 
 import numpy as np
-from mne.filter import _overlap_add_filter, create_filter
 from mne_lsl.stream import StreamLSL
 from scipy.signal import find_peaks
 
@@ -17,8 +16,6 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
-# if the buffer size is changed, the FIR filter used for respiration detection might
-# need to be modified
 _BUFSIZE: float = 4.0
 # number of consecutive windows in which a peak has to be detected to be considered
 _N_CONSECUTIVE_WINDOWS: int = 2
@@ -37,6 +34,8 @@ class Detector:
         The height of the ECG peaks as a percentage of the data range, between 0 and 1.
     ecg_distance : float | None
         The minimum distance between two ECG peaks in seconds.
+    resp_prominence : float | None
+        The minimum prominence of the respiration peaks.
     resp_distance : float | None
         The minimum distance between two respiration peaks in seconds.
     detrend : bool
@@ -54,6 +53,7 @@ class Detector:
         resp_ch_name: str | None,
         ecg_height: float | None = None,
         ecg_distance: float | None = None,
+        resp_prominence: float | None = None,
         resp_distance: float | None = None,
         *,
         detrend: bool = True,
@@ -67,11 +67,10 @@ class Detector:
         check_type(viewer, (bool,), "viewer")
         self._ecg_ch_name = ecg_ch_name
         self._resp_ch_name = resp_ch_name
-        self._set_peak_detection_parameters(ecg_height, ecg_distance, resp_distance)
-        self._create_stream(_BUFSIZE, stream_name)
-        self._filter_respiration = create_filter(
-            None, self._stream._info["sfreq"], None, 15
+        self._set_peak_detection_parameters(
+            ecg_height, ecg_distance, resp_distance, resp_prominence
         )
+        self._create_stream(_BUFSIZE, stream_name)
         self._detrend = detrend
         self._viewer = (
             Viewer(ecg_ch_name, resp_ch_name, self._ecg_height) if viewer else None
@@ -101,6 +100,7 @@ class Detector:
         ecg_height: float | None,
         ecg_distance: float | None,
         resp_distance: float | None,
+        resp_prominence: float | None,
     ) -> None:
         """Check validity of peak detection parameters."""
         if self._ecg_ch_name is None and any(
@@ -120,7 +120,9 @@ class Detector:
                 "Respiration peak detection parameters were set without respiration "
                 "channel."
             )
-        elif self._resp_ch_name is not None and resp_distance is None:
+        elif self._resp_ch_name is not None and any(
+            elt is None for elt in (resp_distance, resp_prominence)
+        ):
             raise ValueError(
                 "Respiration peak detection parameters were not set while respiration "
                 "channel was set."
@@ -136,8 +138,12 @@ class Detector:
             check_type(resp_distance, ("numeric",), "resp_distance")
             if resp_distance <= 0:
                 raise ValueError("Respiration distance must be positive.")
+            check_type(resp_prominence, ("numeric",), "resp_prominence")
+            if resp_prominence <= 0:
+                raise ValueError("Respiration prominence must be positive.")
         self._distances = {"ecg": ecg_distance, "resp": resp_distance}
         self._ecg_height = ecg_height
+        self._resp_prominence = resp_prominence
 
     @fill_doc
     def _create_stream(self, bufsize: float, stream_name: str) -> None:
@@ -162,6 +168,8 @@ class Detector:
         )
         self._stream.notch_filter(50, picks=picks)
         self._stream.notch_filter(100, picks=picks)
+        if self._resp_ch_name is not None:
+            self._stream.filter(None, 20, picks=self._resp_ch_name)
         logger.info("Prefilling buffer of %.2f seconds.", self._stream._bufsize)
         while self._stream._n_new_samples < self._stream._timestamps.size:
             self._stream._acquire()
@@ -196,9 +204,7 @@ class Detector:
             data -= z[0] * ts + z[1]
         # channel-specific settings
         if ch_type == "resp":
-            # FIR low-pass filter @ 15 Hz
-            data = _overlap_add_filter(data, self._filter_respiration, None, copy=False)
-            kwargs = {"height": np.mean(data)}
+            kwargs = {"prominence": self._resp_prominence}
         elif ch_type == "ecg":
             kwargs = {"height": np.percentile(data, self._ecg_height * 100)}
         # peak detection

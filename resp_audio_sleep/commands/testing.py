@@ -8,7 +8,13 @@ from mne_lsl.lsl import local_clock
 
 from .. import set_log_level
 from ..detector import Detector
-from ..tasks._config import ECG_DISTANCE, ECG_HEIGHT, RESP_DISTANCE, TRIGGERS
+from ..tasks._config import (
+    ECG_DISTANCE,
+    ECG_HEIGHT,
+    RESP_DISTANCE,
+    RESP_PROMINENCE,
+    TRIGGERS,
+)
 from ..tasks._utils import create_trigger, generate_sequence
 from ._utils import (
     ch_name_ecg,
@@ -46,6 +52,7 @@ def test_detector_respiration(
         resp_ch_name=ch_name_resp,
         ecg_height=None,
         ecg_distance=None,
+        resp_prominence=RESP_PROMINENCE,
         resp_distance=RESP_DISTANCE,
         viewer=not no_viewer,
     )
@@ -85,6 +92,7 @@ def test_detector_cardiac(
         resp_ch_name=None,
         ecg_height=ECG_HEIGHT,
         ecg_distance=ECG_DISTANCE,
+        resp_prominence=None,
         resp_distance=None,
         viewer=not no_viewer,
     )

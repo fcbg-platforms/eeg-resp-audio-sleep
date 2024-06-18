@@ -16,18 +16,19 @@ TRIGGER_TASKS: dict[str, tuple[int, int]] = {
     "asynchronous": (240, 241),
 }
 # sound settings
-N_TARGET: int = 25
-N_DEVIANT: int = 5
+N_TARGET: int = 50
+N_DEVIANT: int = 0
 SOUND_DURATION: float = 0.2
 # sequence and task settings
 BASELINE_DURATION: float = 60
 EDGE_PERC: float = 10  # percentage between 0 and 100
 # detector settings
-ECG_HEIGHT: float = 0.99
+ECG_HEIGHT: float = 0.985
 ECG_DISTANCE: float = 0.3
+RESP_PROMINENCE: float = 5
 RESP_DISTANCE: float = 0.8
 # target timing
-TARGET_DELAY: float = 0.2
+TARGET_DELAY: float = 0.25
 # other
 INTER_BLOCK_DELAY: float = 5  # delay in seconds between blocks
 
