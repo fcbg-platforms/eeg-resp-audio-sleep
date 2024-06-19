@@ -113,7 +113,7 @@ data -= z[0] * raw.times + z[1]
 peaks = find_peaks(data, distance=0.8 * raw.info["sfreq"], height=np.mean(data))[0]
 
 f, ax = plt.subplots(1, 1, layout="constrained")
-ax.plot(raw.times, data, color="lightblue")
+ax.plot(raw.times, data, color="blue")
 for peak in peaks:
     ax.axvline(raw.times[peak], color="red", linestyle="--")
 events = find_events(raw)
