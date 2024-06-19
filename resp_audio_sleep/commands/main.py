@@ -100,9 +100,12 @@ def paradigm(
     while len(blocks) < n_blocks:
         blocks.append(generate_blocks_sequence(blocks))
         logger.info("Running block %i / %i: %s.", len(blocks), n_blocks, blocks[-1])
+        start = time.time()
         result = mapping_func[blocks[-1]](
             *mapping_args[blocks[-1]], **mapping_kwargs[blocks[-1]]
         )
+        end = time.time()
+        logger.info("Block '%s' took %.3f seconds.", blocks[-1], end - start)
         # prepare arguments for future blocks if we just ran a respiration synchronous
         # block
         if result is not None:
@@ -111,6 +114,7 @@ def paradigm(
             assert isinstance(result, np.ndarray)
             assert result.ndim == 1
             assert result.size != 0
+            mapping_args["baseline"][0] = end - start
             mapping_args["asynchronous"][0] = result
             mapping_args["synchronous-cardiac"][2] = result
             delay = np.mean(np.diff(result))

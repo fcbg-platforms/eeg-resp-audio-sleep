@@ -20,7 +20,7 @@ N_TARGET: int = 50
 N_DEVIANT: int = 0
 SOUND_DURATION: float = 0.2
 # sequence and task settings
-BASELINE_DURATION: float = 60
+BASELINE_DURATION: float = 60  # default setting when nothing is available
 EDGE_PERC: float = 10  # percentage between 0 and 100
 # detector settings
 ECG_HEIGHT: float = 0.985
