@@ -197,7 +197,7 @@ for k in range(0, data.size, winsize):
     peaks = find_peaks(data_, distance=0.3 * raw.info["sfreq"], height=height)[0]
     cardiac_peaks.extend(peaks + k)
     # iterative plot
-    ax.plot(times_, data_, color="lightblue")
+    ax.plot(times_, data_, color="blue")
     ax.axhline(y=height, color="red", linestyle="--", xmin=times_[0], xmax=times_[-1])
     for peak in peaks:
         ax.axvline(times_[peak], color="red", linestyle="--")
