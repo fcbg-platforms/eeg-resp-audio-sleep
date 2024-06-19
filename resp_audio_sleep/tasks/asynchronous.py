@@ -48,7 +48,10 @@ def asynchronous(
     }
     # generate delays between peaks
     rng = np.random.default_rng()
-    delays = rng.choice(np.diff(peaks), size=sequence.size, replace=True)
+    delays = np.diff(peaks)
+    edges = np.percentile(delays, [10, 90])
+    delays = delays[np.where((edges[0] < delays) & (delays < edges[1]))]
+    delays = rng.choice(delays, size=sequence.size, replace=True)
     # main loop
     counter = 0
     trigger.signal(TRIGGER_TASKS["asynchronous"][0])
