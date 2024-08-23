@@ -24,7 +24,7 @@ dependencies = [
   'numpy>=1.21,<2.0',
   'packaging',
   'psutil',
-  'psychopy',
+  'psychopy==2024.1.4',
   'psychtoolbox',
 ]
 description = 'Project to study sound stimulus synchronous, asynchronous and isochronous with the respiration during sleep.'
