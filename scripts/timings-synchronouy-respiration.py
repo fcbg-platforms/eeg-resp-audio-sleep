@@ -59,6 +59,7 @@ for event in events:
 
 # peak to trigger (sound) delay
 def match_positions(x, y, threshold: int):
+    """Match positions between X and Y."""
     x = np.array(x)
     y = np.array(y)
     d = np.repeat(x, y.shape[0]).reshape(x.shape[0], y.shape[0])
@@ -158,6 +159,7 @@ for event in events:
 
 # peak to trigger (sound) delay
 def match_positions(x, y, threshold: int):
+    """Match positions between X and Y."""
     x = np.array(x)
     y = np.array(y)
     d = np.repeat(x, y.shape[0]).reshape(x.shape[0], y.shape[0])

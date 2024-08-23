@@ -11,7 +11,7 @@ from ._utils import create_sounds, create_trigger, generate_sequence
 
 
 @fill_doc
-def isochronous(delay: float, *, target: float, deviant: float) -> None:  # noqa: D401
+def isochronous(delay: float, *, target: float, deviant: float) -> None:
     """Isochronous auditory stimulus.
 
     Parameters
@@ -20,7 +20,7 @@ def isochronous(delay: float, *, target: float, deviant: float) -> None:  # noqa
         Delay between 2 stimuli in seconds.
     %(fq_target)s
     %(fq_deviant)s
-    """
+    """  # noqa: D401
     check_type(delay, ("numeric",), "delay")
     if delay <= 0:
         raise ValueError("The delay must be strictly positive.")

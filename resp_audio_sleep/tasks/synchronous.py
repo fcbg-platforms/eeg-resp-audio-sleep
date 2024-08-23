@@ -34,7 +34,7 @@ def synchronous_respiration(
     *,
     target: float,
     deviant: float,
-) -> NDArray[np.float64]:  # noqa: D401
+) -> NDArray[np.float64]:
     """Synchronous auditory stimulus with the respiration peak signal.
 
     Parameters
@@ -48,7 +48,7 @@ def synchronous_respiration(
     -------
     peaks : array of shape (n_peaks,)
         The detected respiration peak timings in seconds.
-    """
+    """  # noqa: D401
     logger.info("Starting respiration synchronous block.")
     # create sound stimuli, trigger, sequence
     sounds = create_sounds()
@@ -107,7 +107,7 @@ def synchronous_cardiac(
     *,
     target: float,
     deviant: float,
-) -> None:  # noqa: D401
+) -> None:
     """Synchronous auditory stimulus with the cardiac peak signal.
 
     Parameters
@@ -117,7 +117,7 @@ def synchronous_cardiac(
     %(peaks)s
     %(fq_target)s
     %(fq_deviant)s
-    """
+    """  # noqa: D401
     check_type(peaks, (np.ndarray,), "peaks")
     if peaks.ndim != 1:
         raise ValueError("The peaks array must be one-dimensional.")

@@ -7,14 +7,14 @@ from ._config import TRIGGER_TASKS
 from ._utils import create_trigger
 
 
-def baseline(duration: float) -> None:  # noqa: D401
+def baseline(duration: float) -> None:
     """Baseline block corresponding to a resting-state recording.
 
     Parameters
     ----------
     duration : float
         Duration of the baseline in seconds.
-    """
+    """  # noqa: D401
     check_type(duration, ("numeric",), "duration")
     if duration <= 0:
         raise ValueError("The duration must be strictly positive.")

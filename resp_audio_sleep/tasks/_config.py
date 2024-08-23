@@ -35,8 +35,8 @@ INTER_BLOCK_DELAY: float = 5  # delay in seconds between blocks
 
 # TODO: Define a configuration class to handle all configuration elements.
 class ConfigRepr:  # noqa: D101
-    def __repr__(self) -> str:  # noqa: D401
-        """String representation of the configuration."""
+    def __repr__(self) -> str:
+        """String representation of the configuration."""  # noqa: D401
         repr_str = "Configuration of the system:\n"
         repr_str += len(repr_str.strip()) * "-" + "\n"
         # triggers

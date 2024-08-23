@@ -19,6 +19,7 @@ def test_heartrate_monitor(size: int):
 
 
 def test_heartrate_monitor_errors():
+    """Test invalid heart-rate monitor object."""
     hrm = _HeartRateMonitor(size=5)
     with pytest.raises(ValueError, match="The monitor is not initialized yet."):
         hrm.mean_delay()

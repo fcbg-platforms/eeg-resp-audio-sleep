@@ -22,7 +22,7 @@ def asynchronous(
     *,
     target: float,
     deviant: float,
-) -> None:  # noqa: D401
+) -> None:
     """Asynchronous blocks where a synchronous sequence is repeated.
 
     Parameters
@@ -30,7 +30,7 @@ def asynchronous(
     %(peaks)s
     %(fq_target)s
     %(fq_deviant)s
-    """
+    """  # noqa: D401
     check_type(peaks, (np.ndarray,), "peaks")
     if peaks.ndim != 1:
         raise ValueError("The peaks array must be one-dimensional.")
