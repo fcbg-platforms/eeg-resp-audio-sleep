@@ -24,7 +24,9 @@ from ._config import (
 from ._utils import create_sounds, create_trigger, generate_sequence
 
 if TYPE_CHECKING:
+    from byte_triggers._base import BaseTrigger
     from numpy.typing import NDArray
+    from psychopy.sound.backend_ptb import SoundPTB
 
 
 @fill_doc
@@ -80,18 +82,11 @@ def synchronous_respiration(
         pos = detector.new_peak("resp")
         if pos is None:
             continue
-        wait = pos + TARGET_DELAY - local_clock()
-        if wait <= 0:
-            logger.info(
-                "Skipping bad detection/triggering, too late by %.3f ms.", -wait * 1000
-            )
+        success = _deliver_stimuli(pos, sequence[counter], stimulus, trigger)
+        if not success:
             continue
-        stimulus.get(sequence[counter]).play(when=ptb.GetSecs() + wait)
-        logger.debug("Triggering %i in %.3f ms.", sequence[counter], wait * 1000)
-        high_precision_sleep(wait)
-        trigger.signal(sequence[counter])
-        peaks.append(pos)
         counter += 1
+        peaks.append(pos)
     # wait for the last sound to finish
     high_precision_sleep(1.1 * SOUND_DURATION)
     trigger.signal(TRIGGER_TASKS["synchronous-respiration"][1])
@@ -169,16 +164,9 @@ def synchronous_cardiac(
             distance_next_r_peak = abs(target_time - (pos + heartrate.mean_delay()))
             if distance_next_r_peak < distance_r_peak:
                 continue  # next r-peak will be closer from the target
-        wait = pos + TARGET_DELAY - local_clock()
-        if wait <= 0:
-            logger.info(
-                "Skipping bad detection/triggering, too late by %.3f ms.", -wait * 1000
-            )
+        success = _deliver_stimuli(pos, sequence[counter], stimulus, trigger)
+        if not success:
             continue
-        stimulus.get(sequence[counter]).play(when=ptb.GetSecs() + wait)
-        logger.debug("Triggering %i in %.3f ms.", sequence[counter], wait * 1000)
-        high_precision_sleep(wait)
-        trigger.signal(sequence[counter])
         counter += 1
         # figure out what our next target time should be, based on the delays in the
         # previous synchronous respiration block and based on the last triggered
@@ -237,3 +225,20 @@ class _HeartRateMonitor:
     def initialized(self) -> bool:
         """Whether the monitor is initialized."""
         return self._initialized
+
+
+def _deliver_stimuli(
+    pos: float, elt: int, stimulus: dict[int, SoundPTB], trigger: BaseTrigger
+) -> bool:
+    """Deliver precisely a sound and its trigger."""
+    wait = pos + TARGET_DELAY - local_clock()
+    if wait <= 0:
+        logger.info(
+            "Skipping bad detection/triggering, too late by %.3f ms.", -wait * 1000
+        )
+        return False
+    stimulus.get(elt).play(when=ptb.GetSecs() + wait)
+    logger.debug("Triggering %i in %.3f ms.", elt, wait * 1000)
+    high_precision_sleep(wait)
+    trigger.signal(elt)
+    return True
