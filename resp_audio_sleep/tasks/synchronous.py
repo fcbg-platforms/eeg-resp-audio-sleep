@@ -86,6 +86,7 @@ def synchronous_respiration(
         if not success:
             continue
         counter += 1
+        logger.info("Stimulus %i / %i complete.", counter, sequence.size)
         peaks.append(pos)
     # wait for the last sound to finish
     high_precision_sleep(1.1 * SOUND_DURATION)
@@ -168,6 +169,7 @@ def synchronous_cardiac(
         if not success:
             continue
         counter += 1
+        logger.info("Stimulus %i / %i complete.", counter, sequence.size)
         # figure out what our next target time should be, based on the delays in the
         # previous synchronous respiration block and based on the last triggered
         # R-peak.

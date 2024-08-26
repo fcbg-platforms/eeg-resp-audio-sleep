@@ -61,6 +61,7 @@ def asynchronous(
         logger.debug("Triggering %i in %.2f ms.", sequence[counter], TARGET_DELAY)
         high_precision_sleep(TARGET_DELAY)
         trigger.signal(sequence[counter])
+        logger.info("Stimulus %i / %i complete.", counter + 1, sequence.size)
         # note that if the delays are too short, the value 'wait' could end up negative
         # which (1) makes no sense and (2) would raise in the sleep function.
         wait = start + delays[counter] - ptb.GetSecs()
