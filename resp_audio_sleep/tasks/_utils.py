@@ -12,6 +12,7 @@ from ..utils._checks import check_type, check_value, ensure_int
 from ..utils._docs import fill_doc
 from ..utils.logs import logger, warn
 from ._config import (
+    BLOCKSIZE,
     EDGE_PERC,
     N_DEVIANT,
     N_TARGET,
@@ -97,7 +98,9 @@ def create_sounds(*, triggers: dict[str, int] = TRIGGERS) -> dict[str, SoundPTB]
     _check_triggers(triggers=triggers)
     frequencies = set(elt.split("/")[1] for elt in triggers)
     return {
-        frequency: SoundPTB(value=float(frequency), secs=SOUND_DURATION, blockSize=128)
+        frequency: SoundPTB(
+            value=float(frequency), secs=SOUND_DURATION, blockSize=BLOCKSIZE
+        )
         for frequency in frequencies
     }
 

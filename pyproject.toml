@@ -129,7 +129,6 @@ select = ['A', 'B', 'D', 'E', 'F', 'G', 'I', 'LOG', 'NPY', 'PIE', 'PT', 'T20', '
   'D107', # 'Missing docstring in __init__'
 ]
 '__init__.py' = ['F401']
-'peak-detection.ipynb' = ['F821', 'I001']
 
 [tool.ruff.lint.pydocstyle]
 convention = 'numpy'
