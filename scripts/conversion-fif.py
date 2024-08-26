@@ -4,8 +4,8 @@ from mne import create_info
 from mne.io import RawArray
 from pyxdf import load_xdf
 
-root = Path(r"/home/scheltie/Documents/CurrentStudy")
-fname = "synchronous-cardiac-raw.xdf"
+root = Path(r"/home/mscheltienne/Documents/ras-data")
+fname = "synchronous-respiration-raw.xdf"
 stream = load_xdf(root / fname)[0][0]
 ch_names = [
     ch["label"][0] for ch in stream["info"]["desc"][0]["channels"][0]["channel"]

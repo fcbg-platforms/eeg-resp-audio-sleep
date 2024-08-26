@@ -234,10 +234,17 @@ def _deliver_stimuli(
 ) -> bool:
     """Deliver precisely a sound and its trigger."""
     wait = pos + TARGET_DELAY - local_clock()
-    if wait <= 0:
-        logger.info(
-            "Skipping bad detection/triggering, too late by %.3f ms.", -wait * 1000
-        )
+    if wait <= 0.015:  # headroom to schedule, buffer and play the sound.
+        if wait <= 0:
+            logger.info(
+                "Skipping bad detection/triggering, too late by %.3f ms.", -wait * 1000
+            )
+        else:
+            logger.info(
+                "Skipping sound delivery, %.3f ms remaining to buffer and play is too "
+                "short.",
+                wait * 1000,
+            )
         return False
     stimulus.get(elt).play(when=ptb.GetSecs() + wait)
     logger.debug("Triggering %i in %.3f ms.", elt, wait * 1000)
