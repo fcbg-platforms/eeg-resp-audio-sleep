@@ -1,6 +1,6 @@
 import pytest
 
-from ..synchronous import _HeartRateMonitor
+from resp_audio_sleep.tasks.synchronous import _HeartRateMonitor
 
 
 @pytest.mark.parametrize("size", [10, 15])

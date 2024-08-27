@@ -1,4 +1,4 @@
-from ..blocks import _BLOCKS, generate_blocks_sequence
+from resp_audio_sleep.utils.blocks import _BLOCKS, generate_blocks_sequence
 
 
 def test_generate_blocks_sequence():

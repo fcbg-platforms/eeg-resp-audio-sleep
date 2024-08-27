@@ -1,6 +1,6 @@
 import time
 
-from ..time import high_precision_sleep
+from resp_audio_sleep.utils.time import high_precision_sleep
 
 
 def test_high_precision_sleep():

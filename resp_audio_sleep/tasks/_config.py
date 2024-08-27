@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # triggers are defined in the format 'target|deviant/frequency' with frequency as float
 TRIGGERS: dict[str, int] = {
     "target/1000.0": 1,

@@ -1,8 +1,12 @@
 import numpy as np
 import pytest
 
-from .._config import N_DEVIANT, N_TARGET
-from .._utils import _check_triggers, _ensure_valid_frequencies, generate_sequence
+from resp_audio_sleep.tasks._config import N_DEVIANT, N_TARGET
+from resp_audio_sleep.tasks._utils import (
+    _check_triggers,
+    _ensure_valid_frequencies,
+    generate_sequence,
+)
 
 
 def test_check_triggers():

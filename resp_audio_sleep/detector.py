@@ -7,6 +7,8 @@ import numpy as np
 from mne_lsl.stream import StreamLSL
 from scipy.signal import find_peaks
 
+from ._config import RECORDER_BUFSIZE
+from .record import Recorder
 from .utils._checks import check_type
 from .utils._docs import fill_doc
 from .utils.logs import logger
@@ -44,6 +46,9 @@ class Detector:
         If True, a viewer will be created to display the real-time signal and detected
         peaks. Useful for debugging or calibration, but should be set to False for
         production.
+    recorder : bool
+        If True, a recorder is started. Useful for debugging, but should be set to False
+        for production.
     """
 
     def __init__(
@@ -58,6 +63,7 @@ class Detector:
         *,
         detrend: bool = True,
         viewer: bool = False,
+        recorder: bool = False,
     ) -> None:
         if ecg_ch_name is None and resp_ch_name is None:
             raise ValueError(
@@ -65,6 +71,7 @@ class Detector:
             )
         check_type(detrend, (bool,), "detrend")
         check_type(viewer, (bool,), "viewer")
+        check_type(recorder, (bool,), "recorder")
         self._ecg_ch_name = ecg_ch_name
         self._resp_ch_name = resp_ch_name
         self._set_peak_detection_parameters(
@@ -75,6 +82,15 @@ class Detector:
         self._viewer = (
             Viewer(ecg_ch_name, resp_ch_name, self._ecg_height) if viewer else None
         )
+        if recorder:
+            channels = ["TRIGGER"]
+            if ecg_ch_name is not None:
+                channels.append(ecg_ch_name)
+            if resp_ch_name is not None:
+                channels.append(resp_ch_name)
+            self._recorder = Recorder(self._stream, channels, bufsize=RECORDER_BUFSIZE)
+        else:
+            self._recorder = None
         # peak detection settings
         self._last_peak = {"ecg": None, "resp": None}
         self._peak_candidates = {"ecg": None, "resp": None}
@@ -194,6 +210,8 @@ class Detector:
         self._stream._acquire()
         if self._stream._n_new_samples == 0:
             return np.array([])  # nothing new to do
+        if self._recorder is not None:
+            self._recorder.get_data(self._stream._n_new_samples)
         data, ts = self._stream.get_data(
             picks=self._resp_ch_name if ch_type == "resp" else self._ecg_ch_name
         )
@@ -283,3 +301,13 @@ class Detector:
         self._peak_candidates[ch_type] = None
         self._peak_candidates_count[ch_type] = None
         return new_peak
+
+    @property
+    def recorder(self) -> Recorder | None:
+        """The attached recorder instance."""
+        return self._recorder
+
+    @property
+    def viewer(self) -> Viewer | None:
+        """The attached viewer instance."""
+        return self._viewer
