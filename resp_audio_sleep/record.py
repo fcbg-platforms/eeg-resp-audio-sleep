@@ -9,7 +9,6 @@ from mne._fiff.pick import _picks_to_idx
 from mne.io import RawArray
 from mne_lsl.stream import StreamLSL
 
-from ._config import RECORDER_PATH
 from .utils._checks import check_type, check_value, ensure_path
 from .utils.logs import warn
 
@@ -88,9 +87,7 @@ class Recorder:
         self._annotations_onset.append(self._start + offset - 1)
         self._annotations_description.append(description)
 
-    def save(
-        self, fname: str | Path = RECORDER_PATH, *, overwrite: bool = False
-    ) -> None:
+    def save(self, fname: str | Path, *, overwrite: bool = False) -> None:
         """Save the buffer to a FIF file.
 
         Parameters

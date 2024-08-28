@@ -6,6 +6,7 @@ import numpy as np
 import psychtoolbox as ptb
 from mne_lsl.lsl import local_clock
 
+from .._config import RECORDER, RECORDER_PATH_CARDIAC, RECORDER_PATH_RESPIRATION
 from ..detector import Detector
 from ..utils._checks import check_type, ensure_int
 from ..utils._docs import fill_doc
@@ -74,7 +75,7 @@ def synchronous_respiration(
         resp_distance=RESP_DISTANCE,
         detrend=False,  # DC would be OK, but not linear with slow waves.
         viewer=False,
-        recorder=False,
+        recorder=RECORDER,
     )
     # main loop
     counter = 0
@@ -95,7 +96,7 @@ def synchronous_respiration(
     trigger.signal(TRIGGER_TASKS["synchronous-respiration"][1])
     logger.info("Respiration synchronous block complete.")
     if detector.recorder is not None:
-        detector.recorder.save()
+        detector.recorder.save(RECORDER_PATH_RESPIRATION)
     return np.array(peaks)
 
 
@@ -150,7 +151,7 @@ def synchronous_cardiac(
         resp_distance=None,
         detrend=True,
         viewer=False,
-        recorder=False,
+        recorder=RECORDER,
     )
     # create heart-rate monitor
     heartrate = _HeartRateMonitor()
@@ -195,7 +196,7 @@ def synchronous_cardiac(
     trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][1])
     logger.info("Cardiac synchronous block complete.")
     if detector.recorder is not None:
-        detector.recorder.save()
+        detector.recorder.save(RECORDER_PATH_CARDIAC)
 
 
 class _HeartRateMonitor:
