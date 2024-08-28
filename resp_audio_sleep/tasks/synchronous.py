@@ -73,6 +73,7 @@ def synchronous_respiration(
         resp_prominence=RESP_PROMINENCE,
         resp_distance=RESP_DISTANCE,
         viewer=False,
+        recorder=True,  # TODO: set to False for production
     )
     # main loop
     counter = 0
@@ -92,6 +93,8 @@ def synchronous_respiration(
     high_precision_sleep(1.1 * SOUND_DURATION)
     trigger.signal(TRIGGER_TASKS["synchronous-respiration"][1])
     logger.info("Respiration synchronous block complete.")
+    if detector.recorder is not None:
+        detector.recorder.save()
     return np.array(peaks)
 
 
@@ -145,6 +148,7 @@ def synchronous_cardiac(
         resp_prominence=None,
         resp_distance=None,
         viewer=False,
+        recorder=False,
     )
     # create heart-rate monitor
     heartrate = _HeartRateMonitor()
@@ -188,6 +192,8 @@ def synchronous_cardiac(
     high_precision_sleep(1.1 * SOUND_DURATION)
     trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][1])
     logger.info("Cardiac synchronous block complete.")
+    if detector.recorder is not None:
+        detector.recorder.save()
 
 
 class _HeartRateMonitor:

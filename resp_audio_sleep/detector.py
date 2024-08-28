@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 _BUFSIZE: float = 4.0
 # number of consecutive windows in which a peak has to be detected to be considered
 _N_CONSECUTIVE_WINDOWS: int = 2
+_TRG_CHANNEL: str = "TRIGGER"
 
 
 @fill_doc
@@ -77,13 +78,13 @@ class Detector:
         self._set_peak_detection_parameters(
             ecg_height, ecg_distance, resp_distance, resp_prominence
         )
-        self._create_stream(_BUFSIZE, stream_name)
+        self._create_stream(_BUFSIZE, stream_name, recorder)
         self._detrend = detrend
         self._viewer = (
             Viewer(ecg_ch_name, resp_ch_name, self._ecg_height) if viewer else None
         )
         if recorder:
-            channels = ["TRIGGER"]
+            channels = [_TRG_CHANNEL]
             if ecg_ch_name is not None:
                 channels.append(ecg_ch_name)
             if resp_ch_name is not None:
@@ -162,7 +163,7 @@ class Detector:
         self._resp_prominence = resp_prominence
 
     @fill_doc
-    def _create_stream(self, bufsize: float, stream_name: str) -> None:
+    def _create_stream(self, bufsize: float, stream_name: str, recorder: bool) -> None:
         """Create the LSL stream and prefill the buffer.
 
         Parameters
@@ -171,6 +172,9 @@ class Detector:
             Size of the buffer in seconds. The buffer will be filled on instantiation,
             thus the program will hold during this duration.
         %(stream_name)s
+        recorder : bool
+            If True, a recorder will be attached to the stream and the channel selection
+            differs.
         """
         picks = [
             elt for elt in (self._ecg_ch_name, self._resp_ch_name) if elt is not None
@@ -178,7 +182,13 @@ class Detector:
         self._stream = StreamLSL(bufsize, name=stream_name).connect(
             acquisition_delay=0, processing_flags="all"
         )
-        self._stream.pick(picks)
+        if recorder:
+            self._stream.pick(picks + [_TRG_CHANNEL])
+            self._stream.set_channel_types(
+                {_TRG_CHANNEL: "stim"}, on_unit_change="ignore"
+            )
+        else:
+            self._stream.pick(picks)
         self._stream.set_channel_types(
             {ch: "misc" for ch in picks}, on_unit_change="ignore"
         )
