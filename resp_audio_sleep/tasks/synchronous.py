@@ -148,6 +148,7 @@ def synchronous_cardiac(
         ecg_distance=ECG_DISTANCE,
         resp_prominence=None,
         resp_distance=None,
+        detrend=True,
         viewer=False,
         recorder=False,
     )

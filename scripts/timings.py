@@ -105,8 +105,6 @@ raw.notch_filter(100, picks="AUX8", method="iir", phase="forward")
 raw.filter(None, 20, picks="AUX8", method="iir", phase="forward")
 raw.crop(5, None)  # time for the filter without initial state to settle
 data = raw.get_data(picks="AUX8").squeeze()
-z = np.polyfit(raw.times, data, 1)
-data -= z[0] * raw.times + z[1]
 peaks = find_peaks(data, distance=0.8 * raw.info["sfreq"], height=np.mean(data))[0]
 
 f, ax = plt.subplots(1, 1, layout="constrained")
@@ -120,9 +118,8 @@ for event in events:
     ax.axvline(raw.times[event[0]], color="black", linestyle="--")
 
 
-# peak to trigger (sound) delay
 def match_positions(x, y, threshold: int):
-    """Match positions between X and Y."""
+    """Match position between X and Y."""
     x = np.array(x)
     y = np.array(y)
     d = np.repeat(x, y.shape[0]).reshape(x.shape[0], y.shape[0])
@@ -141,7 +138,7 @@ f, ax = plt.subplots(1, 2, layout="constrained")
 f.suptitle("Task: synchronous respiration - target: 250 ms post R-peak")
 ax[0].hist(
     delays_sample,
-    bins=np.arange(np.min(delays_sample) - 0.5, np.max(delays_sample) + 1.5, 2),
+    bins=np.arange(np.min(delays_sample) - 0.5, np.max(delays_sample) + 1.5, 1),
     edgecolor="black",
 )
 ax[0].set_title("Distribution of delays in samples")
@@ -152,7 +149,7 @@ ax[1].hist(
     bins=np.arange(
         np.min(delays_ms) - 0.5 * 1000 / raw.info["sfreq"],
         np.max(delays_ms) + 1.5 * 1000 / raw.info["sfreq"],
-        2000 / raw.info["sfreq"],
+        1000 / raw.info["sfreq"],
     ),
     edgecolor="black",
 )
@@ -161,7 +158,7 @@ ax[1].set_xticks(
     np.arange(
         np.min(delays_ms),
         np.max(delays_ms) + 1000 / raw.info["sfreq"],
-        60000 / raw.info["sfreq"],
+        1000 / raw.info["sfreq"],
     )
 )
 ax[1].set_xlabel("ms")
@@ -228,7 +225,6 @@ ax[0].set_xlabel("ms")
 ax[1].set_xlabel("ms")
 
 
-# r-peak to event delay
 def match_positions(x, y, threshold: int):
     """Match position between X and Y."""
     x = np.array(x)
