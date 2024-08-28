@@ -72,8 +72,9 @@ def synchronous_respiration(
         ecg_distance=None,
         resp_prominence=RESP_PROMINENCE,
         resp_distance=RESP_DISTANCE,
+        detrend=False,  # DC would be OK, but not linear with slow waves.
         viewer=False,
-        recorder=True,  # TODO: set to False for production
+        recorder=False,
     )
     # main loop
     counter = 0
