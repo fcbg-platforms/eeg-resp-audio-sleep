@@ -54,6 +54,7 @@ def test_detector_respiration(
         ecg_distance=None,
         resp_prominence=RESP_PROMINENCE,
         resp_distance=RESP_DISTANCE,
+        detrend=False,
         viewer=not no_viewer,
     )
     counter = 0
