@@ -9,7 +9,7 @@ from ..utils._checks import check_type
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
 from ..utils.time import high_precision_sleep
-from ._config import SOUND_DURATION, TARGET_DELAY, TRIGGER_TASKS, TRIGGERS
+from ._config import OUTLIER_PERC, SOUND_DURATION, TARGET_DELAY, TRIGGER_TASKS, TRIGGERS
 from ._utils import create_sounds, create_trigger, generate_sequence
 
 if TYPE_CHECKING:
@@ -49,7 +49,7 @@ def asynchronous(
     # generate delays between peaks
     rng = np.random.default_rng()
     delays = np.diff(peaks)
-    edges = np.percentile(delays, [10, 90])
+    edges = np.percentile(delays, [OUTLIER_PERC, 100 - OUTLIER_PERC])
     delays = delays[np.where((edges[0] < delays) & (delays < edges[1]))]
     delays = rng.choice(delays, size=sequence.size, replace=True)
     # main loop

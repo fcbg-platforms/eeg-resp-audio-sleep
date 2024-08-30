@@ -15,6 +15,7 @@ from ..utils.time import high_precision_sleep
 from ._config import (
     ECG_DISTANCE,
     ECG_HEIGHT,
+    OUTLIER_PERC,
     RESP_DISTANCE,
     RESP_PROMINENCE,
     SOUND_DURATION,
@@ -137,7 +138,7 @@ def synchronous_cardiac(
     # generate delays between peaks and rng to select delays
     rng = np.random.default_rng()
     delays = np.diff(peaks)
-    edges = np.percentile(delays, [10, 90])
+    edges = np.percentile(delays, [OUTLIER_PERC, 100 - OUTLIER_PERC])
     delays = delays[np.where((edges[0] < delays) & (delays < edges[1]))]
     delays = rng.choice(delays, size=sequence.size, replace=True)
     # create detector

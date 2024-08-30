@@ -24,7 +24,8 @@ SOUND_DURATION: float = 0.2
 BLOCKSIZE: int = 4  # default 128, controls part of the latency <-> stability trade-off
 # sequence and task settings
 BASELINE_DURATION: float = 60  # default setting when nothing is available
-EDGE_PERC: float = 10  # percentage between 0 and 100
+EDGE_PERC: float = 10  # percentage between 0 and 100 in which deviant are absent
+OUTLIER_PERC: float = 10  # percentag between 0 and 100 to remove outliers PTP delays
 # detector settings
 ECG_HEIGHT: float = 0.985
 ECG_DISTANCE: float = 0.3
