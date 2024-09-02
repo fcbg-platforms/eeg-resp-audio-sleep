@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from ._config_detector import ECG_DISTANCE, ECG_HEIGHT, RESP_DISTANCE, RESP_PROMINENCE
+
 # triggers are defined in the format 'target|deviant/frequency' with frequency as float
 TRIGGERS: dict[str, int] = {
     "target/1000.0": 1,
@@ -26,11 +28,6 @@ BLOCKSIZE: int = 4  # default 128, controls part of the latency <-> stability tr
 BASELINE_DURATION: float = 60  # default setting when nothing is available
 EDGE_PERC: float = 10  # percentage between 0 and 100 in which deviant are absent
 OUTLIER_PERC: float = 10  # percentag between 0 and 100 to remove outliers PTP delays
-# detector settings
-ECG_HEIGHT: float = 0.985
-ECG_DISTANCE: float = 0.3
-RESP_PROMINENCE: float = 5
-RESP_DISTANCE: float = 0.8
 # target timing
 TARGET_DELAY: float = 0.25
 # other
@@ -63,4 +60,5 @@ class ConfigRepr:  # noqa: D101
         repr_str += f"Detector settings:\n  ECG height: {ECG_HEIGHT}\n"
         repr_str += f"  ECG distance: {ECG_DISTANCE}\n"
         repr_str += f"  respiration distance: {RESP_DISTANCE}\n"
+        repr_str += f"  respiration prominence: {RESP_PROMINENCE}\n"
         return repr_str
