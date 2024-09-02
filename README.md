@@ -18,7 +18,7 @@ Recommended OS: Ubuntu 22.04 LTS or 24.04 LTS, generic kernel.
 > [!Tip]
 > On Ubuntu 24.04 LTS, Wayland is the default display server and replaces X11. In
 > theory, it should be more performant and have lower latencies than X11. In practice,
-> the stimulation softwares (PsychoPy, psychtoolbox, ...) and the rendering softwares
+> the stimulation software (PsychoPy, psychtoolbox, ...) and the rendering software
 > (pyvistaqt, ...) don't support Wayland well yet which can lead to crash or unexpected
 > behaviors / latencies.
 
@@ -162,7 +162,7 @@ $ ras test-sequence --help
 ```
 
 > [!TIP]
-> Everytime a command is invoked, the current configuration is displayed, including
+> Every time a command is invoked, the current configuration is displayed, including
 > the type of trigger, the sound settings, the detection settings, ...
 
 The arguments of a command can be entered following this pattern:
