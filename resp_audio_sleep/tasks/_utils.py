@@ -12,6 +12,7 @@ from ..utils._docs import fill_doc
 from ..utils.logs import logger, warn
 from ._config import (
     BLOCKSIZE,
+    DEVICE,
     EDGE_PERC,
     N_DEVIANT,
     N_TARGET,
@@ -104,6 +105,11 @@ def create_sounds(
     frequencies = set(elt.split("/")[1] for elt in triggers)
     check_value(backend, ("ptb", "stimuli"), "backend")
     if backend == "ptb":
+        if DEVICE is not None:
+            from psychopy.sound import setDevice
+
+            setDevice(DEVICE, kind="output")
+
         from psychopy.sound.backend_ptb import SoundPTB
 
         sounds = {
@@ -121,6 +127,7 @@ def create_sounds(
                 volume=100,
                 duration=SOUND_DURATION,
                 block_size=BLOCKSIZE,
+                device=DEVICE,
             )
             for frequency in frequencies
         }

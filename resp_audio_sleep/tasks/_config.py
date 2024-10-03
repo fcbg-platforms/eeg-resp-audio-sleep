@@ -21,6 +21,7 @@ TRIGGER_TASKS: dict[str, tuple[int, int]] = {
 }
 # sound settings
 BACKEND: str = "ptb"  # "ptb" or "stimuli" to select the audio playback backend
+DEVICE: str | int | None = None  # None to use the default device
 N_TARGET: int = 50
 N_DEVIANT: int = 0
 SOUND_DURATION: float = 0.2
@@ -51,8 +52,9 @@ class ConfigRepr:  # noqa: D101
         # sounds
         repr_str += f"Sounds:\n  number of targets: {N_TARGET}\n"
         repr_str += f"  number of deviants: {N_DEVIANT}\n"
-        repr_str += f"  backend : {BACKEND}\n"
         repr_str += f"  duration: {SOUND_DURATION} s\n"
+        repr_str += f"  backend: {BACKEND}\n"
+        repr_str += f"  device: {DEVICE}\n"
         # sequence settings
         repr_str += f"Sequence/Task settings:\n  edge percentage: {EDGE_PERC}%\n"
         repr_str += f"  baseline duration: {BASELINE_DURATION} s\n"
