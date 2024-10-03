@@ -23,6 +23,7 @@ from ._config import (
 
 if TYPE_CHECKING:
     from numpy.testing import NDArray
+    from psychopy.sound.backend_ptb import SoundPTB
     from stimuli.audio import Tone
     from stimuli.trigger._base import BaseTrigger
 

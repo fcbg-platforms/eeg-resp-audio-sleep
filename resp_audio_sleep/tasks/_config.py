@@ -49,10 +49,9 @@ class ConfigRepr:  # noqa: D101
         for key, value in TRIGGERS.items():
             repr_str += f"    {key}: {value}\n"
         # sounds
-        repr_str += (
-            f"Sounds:\n  number of targets: {N_TARGET}\n  "
-            f"number of deviants: {N_DEVIANT}\n"
-        )
+        repr_str += f"Sounds:\n  number of targets: {N_TARGET}\n"
+        repr_str += f"  number of deviants: {N_DEVIANT}\n"
+        repr_str += f"  backend : {BACKEND}\n"
         repr_str += f"  duration: {SOUND_DURATION} s\n"
         # sequence settings
         repr_str += f"Sequence/Task settings:\n  edge percentage: {EDGE_PERC}%\n"
