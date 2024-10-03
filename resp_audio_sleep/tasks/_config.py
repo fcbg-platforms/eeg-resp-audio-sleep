@@ -20,6 +20,7 @@ TRIGGER_TASKS: dict[str, tuple[int, int]] = {
     "asynchronous": (240, 241),
 }
 # sound settings
+BACKEND: str = "ptb"  # "ptb" or "stimuli" to select the audio playback backend
 N_TARGET: int = 50
 N_DEVIANT: int = 0
 SOUND_DURATION: float = 0.2

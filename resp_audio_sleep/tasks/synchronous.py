@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-import psychtoolbox as ptb
 from mne_lsl.lsl import local_clock
 
 from .._config import RECORDER, RECORDER_PATH_CARDIAC, RECORDER_PATH_RESPIRATION
@@ -13,6 +12,7 @@ from ..utils._docs import fill_doc
 from ..utils.logs import logger
 from ..utils.time import high_precision_sleep
 from ._config import (
+    BACKEND,
     ECG_DISTANCE,
     ECG_HEIGHT,
     OUTLIER_PERC,
@@ -25,9 +25,13 @@ from ._config import (
 )
 from ._utils import create_sounds, create_trigger, generate_sequence
 
+if BACKEND == "ptb":
+    import psychtoolbox as ptb
+
 if TYPE_CHECKING:
     from numpy.typing import NDArray
     from psychopy.sound.backend_ptb import SoundPTB
+    from stimuli.audio import Tone
     from stimuli.trigger._base import BaseTrigger
 
 
@@ -240,7 +244,7 @@ class _HeartRateMonitor:
 
 
 def _deliver_stimuli(
-    pos: float, elt: int, stimulus: dict[int, SoundPTB], trigger: BaseTrigger
+    pos: float, elt: int, stimulus: dict[int, SoundPTB | Tone], trigger: BaseTrigger
 ) -> bool:
     """Deliver precisely a sound and its trigger."""
     wait = pos + TARGET_DELAY - local_clock()
@@ -256,7 +260,7 @@ def _deliver_stimuli(
                 wait * 1000,
             )
         return False
-    stimulus.get(elt).play(when=ptb.GetSecs() + wait)
+    stimulus.get(elt).play(when=ptb.GetSecs() + wait if BACKEND == "ptb" else wait)
     logger.debug("Triggering %i in %.3f ms.", elt, wait * 1000)
     high_precision_sleep(wait)
     trigger.signal(elt)

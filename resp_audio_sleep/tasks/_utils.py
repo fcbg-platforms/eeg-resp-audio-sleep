@@ -5,7 +5,6 @@ from itertools import groupby
 from typing import TYPE_CHECKING
 
 import numpy as np
-from psychopy.sound.backend_ptb import SoundPTB
 from stimuli.trigger import ParallelPortTrigger
 
 from ..utils._checks import check_type, check_value, ensure_int
@@ -24,6 +23,7 @@ from ._config import (
 
 if TYPE_CHECKING:
     from numpy.testing import NDArray
+    from stimuli.audio import Tone
     from stimuli.trigger._base import BaseTrigger
 
 
@@ -82,27 +82,48 @@ def _ensure_valid_frequencies(
 
 
 @fill_doc
-def create_sounds(*, triggers: dict[str, int] = TRIGGERS) -> dict[str, SoundPTB]:
+def create_sounds(
+    *, triggers: dict[str, int] = TRIGGERS, backend: str = "ptb"
+) -> dict[str, SoundPTB | Tone]:
     """Create auditory simuli.
 
     Parameters
     ----------
     %(triggers_dict)s
+    backend : ``"ptb"`` | ``"stimuli"``
+        The backend to use for the sound generation.
 
     Returns
     -------
     sounds : dict
         The sounds to use in the task, with the keys as sound frequency (str) and the
-        values as the corresponding SoundPTB object.
+        values as the corresponding SoundPTB or Tone object.
     """
     _check_triggers(triggers=triggers)
     frequencies = set(elt.split("/")[1] for elt in triggers)
-    return {
-        frequency: SoundPTB(
-            value=float(frequency), secs=SOUND_DURATION, blockSize=BLOCKSIZE
-        )
-        for frequency in frequencies
-    }
+    check_value(backend, ("ptb", "stimuli"), "backend")
+    if backend == "ptb":
+        from psychopy.sound.backend_ptb import SoundPTB
+
+        sounds = {
+            frequency: SoundPTB(
+                value=float(frequency), secs=SOUND_DURATION, blockSize=BLOCKSIZE
+            )
+            for frequency in frequencies
+        }
+    elif backend == "stimuli":
+        from stimuli.audio import Tone
+
+        sounds = {
+            frequency: Tone(
+                frequency=float(frequency),
+                volume=100,
+                duration=SOUND_DURATION,
+                block_size=BLOCKSIZE,
+            )
+            for frequency in frequencies
+        }
+    return sounds
 
 
 def create_trigger() -> BaseTrigger:

@@ -3,14 +3,23 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-import psychtoolbox as ptb
 
 from ..utils._checks import check_type
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
 from ..utils.time import high_precision_sleep
-from ._config import OUTLIER_PERC, SOUND_DURATION, TARGET_DELAY, TRIGGER_TASKS, TRIGGERS
+from ._config import (
+    BACKEND,
+    OUTLIER_PERC,
+    SOUND_DURATION,
+    TARGET_DELAY,
+    TRIGGER_TASKS,
+    TRIGGERS,
+)
 from ._utils import create_sounds, create_trigger, generate_sequence
+
+if BACKEND == "ptb":
+    import psychtoolbox as ptb
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
@@ -56,15 +65,16 @@ def asynchronous(
     counter = 0
     trigger.signal(TRIGGER_TASKS["asynchronous"][0])
     while counter <= sequence.size - 1:
-        start = ptb.GetSecs()
-        stimulus.get(sequence[counter]).play(when=start + TARGET_DELAY)
+        stimulus.get(sequence[counter]).play(
+            when=ptb.GetSecs() + TARGET_DELAY if BACKEND == "ptb" else TARGET_DELAY
+        )
         logger.debug("Triggering %i in %.2f ms.", sequence[counter], TARGET_DELAY)
         high_precision_sleep(TARGET_DELAY)
         trigger.signal(sequence[counter])
         logger.info("Stimulus %i / %i complete.", counter + 1, sequence.size)
         # note that if the delays are too short, the value 'wait' could end up negative
         # which (1) makes no sense and (2) would raise in the sleep function.
-        wait = start + delays[counter] - ptb.GetSecs()
+        wait = delays[counter] - TARGET_DELAY
         high_precision_sleep(wait)
         counter += 1
     # wait for the last sound to finish
