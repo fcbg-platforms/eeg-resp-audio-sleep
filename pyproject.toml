@@ -26,7 +26,7 @@ dependencies = [
   'psutil',
   'psychopy==2024.1.4',
   'psychtoolbox',
-  'stimuli>=1.0.1',
+  'stimuli[pport]>=1.0.2',
 ]
 description = 'Project to study sound stimulus synchronous, asynchronous and isochronous with the respiration during sleep.'
 keywords = [
