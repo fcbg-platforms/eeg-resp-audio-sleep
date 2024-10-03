@@ -5,8 +5,8 @@ from itertools import groupby
 from typing import TYPE_CHECKING
 
 import numpy as np
-from byte_triggers import ParallelPortTrigger
 from psychopy.sound.backend_ptb import SoundPTB
+from stimuli.trigger import ParallelPortTrigger
 
 from ..utils._checks import check_type, check_value, ensure_int
 from ..utils._docs import fill_doc
@@ -23,8 +23,8 @@ from ._config import (
 )
 
 if TYPE_CHECKING:
-    from byte_triggers._base import BaseTrigger
     from numpy.testing import NDArray
+    from stimuli.trigger._base import BaseTrigger
 
 
 @fill_doc

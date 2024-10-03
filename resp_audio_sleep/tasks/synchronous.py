@@ -26,9 +26,9 @@ from ._config import (
 from ._utils import create_sounds, create_trigger, generate_sequence
 
 if TYPE_CHECKING:
-    from byte_triggers._base import BaseTrigger
     from numpy.typing import NDArray
     from psychopy.sound.backend_ptb import SoundPTB
+    from stimuli.trigger._base import BaseTrigger
 
 
 @fill_doc

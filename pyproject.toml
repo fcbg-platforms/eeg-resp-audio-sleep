@@ -18,7 +18,6 @@ classifiers = [
   'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
-  'byte_triggers>=0.4.0',
   'click>=8.1',
   'mne-lsl>=1.4.0',
   'mne>=1.6',
@@ -27,6 +26,7 @@ dependencies = [
   'psutil',
   'psychopy==2024.1.4',
   'psychtoolbox',
+  'stimuli>=1.0.1',
 ]
 description = 'Project to study sound stimulus synchronous, asynchronous and isochronous with the respiration during sleep.'
 keywords = [
