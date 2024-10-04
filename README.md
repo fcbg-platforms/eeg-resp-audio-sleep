@@ -120,8 +120,8 @@ $ uv pip install -e .[all]
 
 > [!IMPORTANT]
 > Note that we install `stimuli` first with the flag `--ignore-requires-python` because
-> `stimuli` requires python 3.11 and above while `PsychoPy` requires python 3.10 and
-> above. The version pin on `stimuli` is due to limitation on Windows and does not
+> `stimuli` requires python 3.11 and above while `PsychoPy` requires python 3.10
+> maximum. The version pin on `stimuli` is due to limitation on Windows and does not
 > impact performance on Linux, thus it is safe to ignore the version pin.
 
 > [!IMPORTANT]
