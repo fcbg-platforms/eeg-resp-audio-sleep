@@ -113,9 +113,16 @@ From within the created virtual environment:
 
 ```bash
 $ pip install uv
+$ pip install stimuli --ignore-requires-python
 $ cd ~/git/eeg-resp-audio-sleep  # not in this directory already
 $ uv pip install -e .[all]
 ```
+
+> [!IMPORTANT]
+> Note that we install `stimuli` first with the flag `--ignore-requires-python` because
+> `stimuli` requires python 3.11 and above while `PsychoPy` requires python 3.10 and
+> above. The version pin on `stimuli` is due to limitation on Windows and does not
+> impact performance on Linux, thus it is safe to ignore the version pin.
 
 > [!IMPORTANT]
 > Note the `-e` flag used for an editable install. As the configuration files are within
