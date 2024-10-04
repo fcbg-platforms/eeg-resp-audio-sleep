@@ -114,7 +114,10 @@ def create_sounds(
 
         sounds = {
             frequency: SoundPTB(
-                value=float(frequency), secs=SOUND_DURATION, blockSize=BLOCKSIZE
+                value=float(frequency),
+                secs=SOUND_DURATION,
+                blockSize=BLOCKSIZE,
+                stereo=True,
             )
             for frequency in frequencies
         }

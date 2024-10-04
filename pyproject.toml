@@ -24,7 +24,7 @@ dependencies = [
   'numpy>=1.21,<2.0',
   'packaging',
   'psutil',
-  'psychopy==2024.1.4',
+  'psychopy',
   'psychtoolbox',
   'stimuli[pport]>=1.0.2',
 ]
