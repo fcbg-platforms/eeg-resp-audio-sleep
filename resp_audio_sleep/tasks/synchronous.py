@@ -4,13 +4,13 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from mne_lsl.lsl import local_clock
+from stimuli.time import sleep
 
 from .._config import RECORDER, RECORDER_PATH_CARDIAC, RECORDER_PATH_RESPIRATION
 from ..detector import Detector
 from ..utils._checks import check_type, ensure_int
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
-from ..utils.time import high_precision_sleep
 from ._config import (
     BACKEND,
     ECG_DISTANCE,
@@ -97,7 +97,7 @@ def synchronous_respiration(
         logger.info("Stimulus %i / %i complete.", counter, sequence.size)
         peaks.append(pos)
     # wait for the last sound to finish
-    high_precision_sleep(1.1 * SOUND_DURATION)
+    sleep(1.1 * SOUND_DURATION)
     trigger.signal(TRIGGER_TASKS["synchronous-respiration"][1])
     logger.info("Respiration synchronous block complete.")
     if detector.recorder is not None:
@@ -197,7 +197,7 @@ def synchronous_cardiac(
         target_time = pos + delays[mask][0]
         delays = delays[~mask]
         last_pos = pos
-    high_precision_sleep(1.1 * SOUND_DURATION)
+    sleep(1.1 * SOUND_DURATION)
     trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][1])
     logger.info("Cardiac synchronous block complete.")
     if detector.recorder is not None:
@@ -262,6 +262,6 @@ def _deliver_stimuli(
         return False
     stimulus.get(elt).play(when=ptb.GetSecs() + wait if BACKEND == "ptb" else wait)
     logger.debug("Triggering %i in %.3f ms.", elt, wait * 1000)
-    high_precision_sleep(wait)
+    sleep(wait)
     trigger.signal(elt)
     return True

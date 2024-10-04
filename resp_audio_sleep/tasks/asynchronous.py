@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+from stimuli.time import Clock, sleep
 
 from ..utils._checks import check_type
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
-from ..utils.time import high_precision_sleep
 from ._config import (
     BACKEND,
     OUTLIER_PERC,
@@ -44,10 +44,11 @@ def asynchronous(
     if peaks.ndim != 1:
         raise ValueError("The peaks array must be one-dimensional.")
     logger.info("Starting asynchronous block.")
-    # create sound stimuli, trigger and sequence
+    # create sound stimuli, trigger, sequence and clock
     sounds = create_sounds()
     trigger = create_trigger()
     sequence = generate_sequence(target, deviant)
+    clock = Clock()
     # the sequence, sound and trigger generation validates the trigger dictionary, thus
     # we can safely map the target and deviant frequencies to their corresponding
     # trigger values and sounds.
@@ -65,20 +66,21 @@ def asynchronous(
     counter = 0
     trigger.signal(TRIGGER_TASKS["asynchronous"][0])
     while counter <= sequence.size - 1:
+        start = clock.get_time()
         stimulus.get(sequence[counter]).play(
             when=ptb.GetSecs() + TARGET_DELAY if BACKEND == "ptb" else TARGET_DELAY
         )
         logger.debug("Triggering %i in %.2f ms.", sequence[counter], TARGET_DELAY)
-        high_precision_sleep(TARGET_DELAY)
+        sleep(TARGET_DELAY)
         trigger.signal(sequence[counter])
         logger.info("Stimulus %i / %i complete.", counter + 1, sequence.size)
         # note that if the delays are too short, the value 'wait' could end up negative
         # which (1) makes no sense and (2) would raise in the sleep function.
-        wait = delays[counter] - TARGET_DELAY
-        high_precision_sleep(wait)
+        wait = start + delays[counter] - clock.get_time()
+        sleep(wait)
         counter += 1
     # wait for the last sound to finish
     if wait < 1.1 * SOUND_DURATION:
-        high_precision_sleep(1.1 * SOUND_DURATION - wait)
+        sleep(1.1 * SOUND_DURATION - wait)
     trigger.signal(TRIGGER_TASKS["asynchronous"][1])
     logger.info("Asynchronous block complete.")

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from stimuli.time import sleep
+
 from ..utils._checks import check_type
 from ..utils.logs import logger
-from ..utils.time import high_precision_sleep
 from ._config import TRIGGER_TASKS
 from ._utils import create_trigger
 
@@ -21,6 +22,6 @@ def baseline(duration: float) -> None:
     trigger = create_trigger()
     logger.info("Starting baseline block of %.2f seconds.", duration)
     trigger.signal(TRIGGER_TASKS["baseline"][0])
-    high_precision_sleep(duration)
+    sleep(duration)
     trigger.signal(TRIGGER_TASKS["baseline"][1])
     logger.info("Baseline block complete.")
