@@ -122,6 +122,7 @@ def create_sounds(
             for frequency in frequencies
         }
     elif backend == "stimuli":
+        from scipy.signal.windows import hann
         from stimuli.audio import Tone
 
         sounds = {
@@ -134,6 +135,11 @@ def create_sounds(
             )
             for frequency in frequencies
         }
+        n_samples = sounds[frequencies[0]].times.size
+        assert all(sound.times.size == n_samples for sound in sounds)  # sanity-check
+        window = hann(n_samples)
+        for sound in sounds.values():
+            sound.window = window
     return sounds
 
 
