@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from stimuli.time import Clock, sleep
 
+from ..detector import _BUFSIZE
 from ..utils._checks import check_type
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
@@ -63,6 +64,7 @@ def asynchronous(
     delays = delays[np.where((edges[0] < delays) & (delays < edges[1]))]
     delays = rng.choice(delays, size=sequence.size, replace=True)
     # main loop
+    sleep(_BUFSIZE)  # fake a buffer filling
     counter = 0
     trigger.signal(TRIGGER_TASKS["asynchronous"][0])
     while counter <= sequence.size - 1:

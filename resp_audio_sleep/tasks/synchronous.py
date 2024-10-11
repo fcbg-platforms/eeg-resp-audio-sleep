@@ -194,8 +194,8 @@ def synchronous_cardiac(
             idx = np.argmin(np.abs(delays - (pos - last_pos)))
             mask = np.zeros(delays.size, dtype=bool)
             mask[idx] = True
-        target_time = pos + delays[mask][0]
         delays = delays[~mask]
+        target_time = pos + rng.choice(delays)
         last_pos = pos
     sleep(1.1 * SOUND_DURATION)
     trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][1])

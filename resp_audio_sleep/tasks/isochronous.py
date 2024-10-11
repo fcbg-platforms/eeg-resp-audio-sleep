@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from stimuli.time import Clock, sleep
 
+from ..detector import _BUFSIZE
 from ..utils._checks import check_type
 from ..utils._docs import fill_doc
 from ..utils.logs import logger
@@ -40,6 +41,7 @@ def isochronous(delay: float, *, target: float, deviant: float) -> None:
         TRIGGERS[f"deviant/{deviant}"]: sounds[str(deviant)],
     }
     # main loop
+    sleep(_BUFSIZE)  # fake a buffer filling
     counter = 0
     trigger.signal(TRIGGER_TASKS["isochronous"][0])
     while counter <= sequence.size - 1:
