@@ -11,3 +11,4 @@ RECORDER_PATH_RESPIRATION: Path = (
 RECORDER_PATH_CARDIAC: Path = (
     Path.home() / "Documents" / "ras-data" / "debug-buffer-cardiac-raw.fif"
 )
+TRG_CHANNEL: str = "TRIGGER"

@@ -7,7 +7,7 @@ import numpy as np
 from mne_lsl.stream import StreamLSL
 from scipy.signal import find_peaks
 
-from ._config import RECORDER_BUFSIZE
+from ._config import RECORDER_BUFSIZE, TRG_CHANNEL
 from .record import Recorder
 from .utils._checks import check_type
 from .utils._docs import fill_doc
@@ -21,7 +21,6 @@ if TYPE_CHECKING:
 _BUFSIZE: float = 4.0
 # number of consecutive windows in which a peak has to be detected to be considered
 _N_CONSECUTIVE_WINDOWS: int = 2
-_TRG_CHANNEL: str = "TRIGGER"
 
 
 @fill_doc
@@ -84,7 +83,7 @@ class Detector:
             Viewer(ecg_ch_name, resp_ch_name, self._ecg_height) if viewer else None
         )
         if recorder:
-            channels = [_TRG_CHANNEL]
+            channels = [TRG_CHANNEL]
             if ecg_ch_name is not None:
                 channels.append(ecg_ch_name)
             if resp_ch_name is not None:
@@ -183,9 +182,9 @@ class Detector:
             acquisition_delay=0, processing_flags="all"
         )
         if recorder:
-            self._stream.pick(picks + [_TRG_CHANNEL])
+            self._stream.pick(picks + [TRG_CHANNEL])
             self._stream.set_channel_types(
-                {_TRG_CHANNEL: "stim"}, on_unit_change="ignore"
+                {TRG_CHANNEL: "stim"}, on_unit_change="ignore"
             )
         else:
             self._stream.pick(picks)
