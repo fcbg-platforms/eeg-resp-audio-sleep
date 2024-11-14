@@ -29,7 +29,7 @@ BLOCKSIZE: int = 4  # default 128, controls part of the latency <-> stability tr
 # sequence and task settings
 BASELINE_DURATION: float = 60  # default setting when nothing is available
 EDGE_PERC: float = 10  # percentage between 0 and 100 in which deviant are absent
-OUTLIER_PERC: float = 10  # percentag between 0 and 100 to remove outliers PTP delays
+OUTLIER_PERC: float = 10  # percentage between 0 and 100 to remove outliers PTP delays
 # target timing
 TARGET_DELAY: float = 0.25
 # other
