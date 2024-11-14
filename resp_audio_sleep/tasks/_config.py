@@ -1,6 +1,12 @@
 from __future__ import annotations
 
-from ._config_detector import ECG_DISTANCE, ECG_HEIGHT, RESP_DISTANCE, RESP_PROMINENCE
+from ._config_detector import (
+    ECG_DISTANCE,
+    ECG_HEIGHT,
+    ECG_PROMINENCE,
+    RESP_DISTANCE,
+    RESP_PROMINENCE,
+)
 
 # triggers are defined in the format 'target|deviant/frequency' with frequency as float
 TRIGGERS: dict[str, int] = {
@@ -50,17 +56,21 @@ class ConfigRepr:  # noqa: D101
         for key, value in TRIGGERS.items():
             repr_str += f"    {key}: {value}\n"
         # sounds
-        repr_str += f"Sounds:\n  number of targets: {N_TARGET}\n"
+        repr_str += "Sounds:\n"
+        repr_str += f"  number of targets: {N_TARGET}\n"
         repr_str += f"  number of deviants: {N_DEVIANT}\n"
         repr_str += f"  duration: {SOUND_DURATION} s\n"
         repr_str += f"  backend: {BACKEND}\n"
         repr_str += f"  device: {DEVICE}\n"
         # sequence settings
-        repr_str += f"Sequence/Task settings:\n  edge percentage: {EDGE_PERC}%\n"
+        repr_str += "Sequence/Task settings:\n"
+        repr_str += f"  edge percentage: {EDGE_PERC}%\n"
         repr_str += f"  baseline duration: {BASELINE_DURATION} s\n"
         # detector settings
-        repr_str += f"Detector settings:\n  ECG height: {ECG_HEIGHT}\n"
+        repr_str += "Detector settings:\n"
+        repr_str += f"  ECG height: {ECG_HEIGHT}\n"
         repr_str += f"  ECG distance: {ECG_DISTANCE}\n"
+        repr_str += f"  ECG prominence: {ECG_PROMINENCE}\n"
         repr_str += f"  respiration distance: {RESP_DISTANCE}\n"
         repr_str += f"  respiration prominence: {RESP_PROMINENCE}\n"
         return repr_str

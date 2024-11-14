@@ -11,6 +11,7 @@ from ..detector import Detector
 from ..tasks._config import (
     ECG_DISTANCE,
     ECG_HEIGHT,
+    ECG_PROMINENCE,
     RESP_DISTANCE,
     RESP_PROMINENCE,
     TRIGGERS,
@@ -52,6 +53,7 @@ def test_detector_respiration(
         resp_ch_name=ch_name_resp,
         ecg_height=None,
         ecg_distance=None,
+        ecg_prominence=None,
         resp_prominence=RESP_PROMINENCE,
         resp_distance=RESP_DISTANCE,
         detrend=False,
@@ -93,6 +95,7 @@ def test_detector_cardiac(
         resp_ch_name=None,
         ecg_height=ECG_HEIGHT,
         ecg_distance=ECG_DISTANCE,
+        ecg_prominence=ECG_PROMINENCE,
         resp_prominence=None,
         resp_distance=None,
         viewer=not no_viewer,

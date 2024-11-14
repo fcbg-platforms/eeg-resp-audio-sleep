@@ -36,6 +36,9 @@ class Detector:
         The height of the ECG peaks as a percentage of the data range, between 0 and 1.
     ecg_distance : float | None
         The minimum distance between two ECG peaks in seconds.
+    ecg_prominence : float | None
+        The minimum prominence of the ECG peaks. Can be set to None which will disable
+        the prominence constraint.
     resp_prominence : float | None
         The minimum prominence of the respiration peaks.
     resp_distance : float | None
@@ -58,6 +61,7 @@ class Detector:
         resp_ch_name: str | None,
         ecg_height: float | None = None,
         ecg_distance: float | None = None,
+        ecg_prominence: float | None = None,
         resp_prominence: float | None = None,
         resp_distance: float | None = None,
         *,
@@ -75,7 +79,7 @@ class Detector:
         self._ecg_ch_name = ecg_ch_name
         self._resp_ch_name = resp_ch_name
         self._set_peak_detection_parameters(
-            ecg_height, ecg_distance, resp_distance, resp_prominence
+            ecg_height, ecg_distance, ecg_prominence, resp_distance, resp_prominence
         )
         self._create_stream(_BUFSIZE, stream_name, recorder)
         self._detrend = detrend
@@ -115,12 +119,13 @@ class Detector:
         self,
         ecg_height: float | None,
         ecg_distance: float | None,
+        ecg_prominence: float | None,
         resp_distance: float | None,
         resp_prominence: float | None,
     ) -> None:
         """Check validity of peak detection parameters."""
         if self._ecg_ch_name is None and any(
-            elt is not None for elt in (ecg_height, ecg_distance)
+            elt is not None for elt in (ecg_height, ecg_distance, ecg_prominence)
         ):
             raise ValueError(
                 "ECG peak detection parameters were set without ECG channel."
@@ -131,7 +136,9 @@ class Detector:
             raise ValueError(
                 "ECG peak detection parameters were not set while ECG channel was set."
             )
-        if self._resp_ch_name is None and resp_distance is not None:
+        if self._resp_ch_name is None and any(
+            elt is not None for elt in (resp_distance, resp_prominence)
+        ):
             raise ValueError(
                 "Respiration peak detection parameters were set without respiration "
                 "channel."
@@ -150,6 +157,10 @@ class Detector:
             check_type(ecg_distance, ("numeric",), "ecg_distance")
             if ecg_distance <= 0:
                 raise ValueError("ECG distance must be positive.")
+            if ecg_prominence is not None:
+                check_type(ecg_prominence, ("numeric",), "ecg_prominence")
+                if ecg_prominence <= 0:
+                    raise ValueError("ECG prominence must be positive.")
         if self._resp_ch_name is not None:
             check_type(resp_distance, ("numeric",), "resp_distance")
             if resp_distance <= 0:
@@ -158,8 +169,8 @@ class Detector:
             if resp_prominence <= 0:
                 raise ValueError("Respiration prominence must be positive.")
         self._distances = {"ecg": ecg_distance, "resp": resp_distance}
+        self._prominences = {"ecg": ecg_prominence, "resp": resp_prominence}
         self._ecg_height = ecg_height
-        self._resp_prominence = resp_prominence
 
     @fill_doc
     def _create_stream(self, bufsize: float, stream_name: str, recorder: bool) -> None:
@@ -230,14 +241,13 @@ class Detector:
             z = np.polyfit(ts, data, 1)
             data -= z[0] * ts + z[1]
         # channel-specific settings
-        if ch_type == "resp":
-            kwargs = {"prominence": self._resp_prominence}
-        elif ch_type == "ecg":
+        if ch_type == "ecg":
             kwargs = {"height": np.percentile(data, self._ecg_height * 100)}
         # peak detection
         peaks, _ = find_peaks(
             data,
             distance=self._distances[ch_type] * self._stream._info["sfreq"],
+            prominence=self._prominences[ch_type],
             **kwargs,
         )
         if self._viewer is not None:

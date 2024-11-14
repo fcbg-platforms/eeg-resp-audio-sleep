@@ -15,6 +15,7 @@ from ._config import (
     BACKEND,
     ECG_DISTANCE,
     ECG_HEIGHT,
+    ECG_PROMINENCE,
     OUTLIER_PERC,
     RESP_DISTANCE,
     RESP_PROMINENCE,
@@ -76,6 +77,7 @@ def synchronous_respiration(
         resp_ch_name=resp_ch_name,
         ecg_height=None,
         ecg_distance=None,
+        ecg_prominence=None,
         resp_prominence=RESP_PROMINENCE,
         resp_distance=RESP_DISTANCE,
         detrend=False,  # DC would be OK, but not linear with slow waves.
@@ -152,6 +154,7 @@ def synchronous_cardiac(
         resp_ch_name=None,
         ecg_height=ECG_HEIGHT,
         ecg_distance=ECG_DISTANCE,
+        ecg_prominence=ECG_PROMINENCE,
         resp_prominence=None,
         resp_distance=None,
         detrend=True,
