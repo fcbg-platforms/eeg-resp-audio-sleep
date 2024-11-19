@@ -145,7 +145,7 @@ The paradigm is controlled by command-line from the activated environment.
 
 > [!Tip]
 > If you use VSCode, the environment will always be activated provided that your
-> workspace is set to `eeg-resp-audio-sleep`, i.e. thjat you opened the folder
+> workspace is set to `eeg-resp-audio-sleep`, i.e. that you opened the folder
 > `~/git/eeg-resp-audio-sleep`.
 
 In the terminal, enter:
