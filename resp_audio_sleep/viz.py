@@ -60,7 +60,7 @@ class Viewer:
         Parameters
         ----------
         ts : array of shape (n_samples,)
-            Timestamps of the respiration data.
+            Timestamps of the respiration or cardiac data.
         data : array of shape (n_samples,)
             Respiration or cardiac data.
         %(ch_type)s
