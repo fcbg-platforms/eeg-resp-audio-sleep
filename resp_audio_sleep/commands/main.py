@@ -120,7 +120,7 @@ def paradigm(
             delay = np.median(np.diff(result))
             mapping_args["isochronous"][0] = delay
             logger.info(
-                "Mean delay between respiration peaks set to %.3f seconds.", delay
+                "Median delay between respiration peaks set to %.3f seconds.", delay
             )
         # prepare keyword argument for future blocks if we just ran 5 blocks
         if len(blocks) % 5 == 0:
