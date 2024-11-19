@@ -44,7 +44,7 @@ def _check_triggers(*, triggers: dict[str, int] = TRIGGERS) -> None:
             raise ValueError(
                 "The trigger names must be in the format 'name/frequency', "
                 "with name set to 'target' or 'deviant' and frequency as float, but "
-                f"got '{elt}' with is invalid."
+                f"got '{elt}' which is invalid."
             )
 
 
