@@ -70,7 +70,7 @@ Recommended OS: Ubuntu 22.04 LTS or 24.04 LTS, generic kernel.
 > [!Tip]
 > If you are using VSCode, a pop-up on the bottom right detects the new environment
 > and ask if it should be the default environment for this folder. Select `Yes`, you
-> will not always have this environment activated in VSCode when you open the folder
+> will now always have this environment activated in VSCode when you open the folder
 > `~/git/eeg-resp-audio-sleep`.
 
 ### PsychoPy preparation
