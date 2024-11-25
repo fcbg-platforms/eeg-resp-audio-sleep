@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-import time
+import warnings
 from itertools import cycle
 
 import click
 import numpy as np
+from psychopy.hardware.keyboard import Keyboard
+from stimuli.time import Clock, sleep
 
 from .. import set_log_level
 from ..tasks import asynchronous as asynchronous_task
@@ -14,7 +16,7 @@ from ..tasks import synchronous_cardiac as synchronous_cardiac_task
 from ..tasks import synchronous_respiration as synchronous_respiration_task
 from ..tasks._config import BASELINE_DURATION, INTER_BLOCK_DELAY, ConfigRepr
 from ..utils.blocks import _BLOCKS, generate_blocks_sequence
-from ..utils.logs import logger
+from ..utils.logs import logger, warn
 from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, verbose
 from .tasks import (
     asynchronous,
@@ -95,17 +97,21 @@ def paradigm(
     }
     assert len(set(mapping_kwargs) - set(_BLOCKS)) == 0  # sanity-check
 
+    # create a keyboard object to monitor for breaks
+    keyboard = Keyboard()
+    keyboard.stop()
+
     # execute paradigm loop
     blocks = list()
     while len(blocks) < n_blocks:
         blocks.append(generate_blocks_sequence(blocks))
         logger.info("Running block %i / %i: %s.", len(blocks), n_blocks, blocks[-1])
-        start = time.time()
+        clock = Clock()
         result = mapping_func[blocks[-1]](
             *mapping_args[blocks[-1]], **mapping_kwargs[blocks[-1]]
         )
-        end = time.time()
-        logger.info("Block '%s' took %.3f seconds.", blocks[-1], end - start)
+        duration = clock.get_time()
+        logger.info("Block '%s' took %.3f seconds.", blocks[-1], duration)
         # prepare arguments for future blocks if we just ran a respiration synchronous
         # block
         if result is not None:
@@ -114,7 +120,7 @@ def paradigm(
             assert isinstance(result, np.ndarray)
             assert result.ndim == 1
             assert result.size != 0
-            mapping_args["baseline"][0] = end - start
+            mapping_args["baseline"][0] = duration
             mapping_args["asynchronous"][0] = result
             mapping_args["synchronous-cardiac"][2] = result
             delay = np.median(np.diff(result))
@@ -132,8 +138,46 @@ def paradigm(
                     continue
                 elt["target"] = target
                 elt["deviant"] = deviant
-        time.sleep(INTER_BLOCK_DELAY)
-    logger.info("Paradigm complete.")
+
+        # wait in the inter block delay or a space key press
+        clock = Clock()
+        target_delay = INTER_BLOCK_DELAY
+        keyboard.start()
+        logger.info("Inter-block for %.3f seconds or a space key press.", target_delay)
+        while True:
+            keys = keyboard.getKeys(keyList=["space"], waitRelease=True)
+            if len(keys) > 1:
+                warn("Multiple space key pressed simultaneously. Skipping.")
+                continue
+            elif len(keys) == 1:
+                logger.info("Space key pressed, pausing execution.")
+                start_hold = clock.get_time_ns()
+                while True:
+                    keys = keyboard.getKeys(keyList=["space"], waitRelease=True)
+                    if len(keys) > 1:
+                        warn("Multiple space key pressed simultaneously. Skipping.")
+                        continue
+                    elif len(keys) == 1:
+                        break
+                    sleep(0.05)
+                stop_hold = clock.get_time_ns()
+                target_delay += (stop_hold - start_hold) / 1e9
+                logger.info(
+                    "Space key pressed, resuming execution. Inter-block delay "
+                    "remaining duration: %2.f seconds.",
+                    target_delay - clock.get_time(),
+                )
+            if clock.get_time() > target_delay:
+                break
+            sleep(0.05)
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message="Stopping key buffers but this could be dangerous",
+            )
+            keyboard.stop()
+        logger.info("Inter-block complete.")
+    logger.info("Paradigm complete. Exiting.")
 
 
 run.add_command(baseline)
