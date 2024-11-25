@@ -29,7 +29,7 @@ TRIGGER_TASKS: dict[str, tuple[int, int]] = {
 BACKEND: str = "ptb"  # "ptb" or "stimuli" to select the audio playback backend
 DEVICE: str | int | None = None  # None to use the default device
 N_TARGET: int = 50
-N_DEVIANT: int = 0
+N_DEVIANT: int = 10
 SOUND_DURATION: float = 0.2
 BLOCKSIZE: int = 4  # default 128, controls part of the latency <-> stability trade-off
 # sequence and task settings
