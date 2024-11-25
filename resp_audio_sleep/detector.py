@@ -241,8 +241,11 @@ class Detector:
             z = np.polyfit(ts, data, 1)
             data -= z[0] * ts + z[1]
         # channel-specific settings
-        if ch_type == "ecg":
-            kwargs = {"height": np.percentile(data, self._ecg_height * 100)}
+        kwargs = (
+            {"height": np.percentile(data, self._ecg_height * 100)}
+            if ch_type == "ecg"
+            else dict()
+        )
         # peak detection
         peaks, _ = find_peaks(
             data,
