@@ -143,7 +143,7 @@ def paradigm(
         clock = Clock()
         target_delay = INTER_BLOCK_DELAY
         keyboard.start()
-        logger.info("Inter-block for %.3f seconds or a space key press.", target_delay)
+        logger.info("Inter-block for %.1f seconds or a space key press.", target_delay)
         while True:
             keys = keyboard.getKeys(keyList=["space"], waitRelease=True)
             if len(keys) > 1:
@@ -164,7 +164,7 @@ def paradigm(
                 target_delay += (stop_hold - start_hold) / 1e9
                 logger.info(
                     "Space key pressed, resuming execution. Inter-block delay "
-                    "remaining duration: %2.f seconds.",
+                    "remaining duration: %.1f seconds.",
                     target_delay - clock.get_time(),
                 )
             if clock.get_time() > target_delay:
