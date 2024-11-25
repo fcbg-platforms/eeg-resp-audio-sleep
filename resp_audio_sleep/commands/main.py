@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import warnings
 from itertools import cycle
 
 import click
 import numpy as np
+from psychopy import logging
 from psychopy.hardware.keyboard import Keyboard
 from stimuli.time import Clock, sleep
 
@@ -96,11 +96,10 @@ def paradigm(
         "synchronous-cardiac": {"target": target, "deviant": deviant},
     }
     assert len(set(mapping_kwargs) - set(_BLOCKS)) == 0  # sanity-check
-
     # create a keyboard object to monitor for breaks
     keyboard = Keyboard()
-    keyboard.stop()
-
+    with _disable_psychopy_logs():
+        keyboard.stop()
     # execute paradigm loop
     blocks = list()
     while len(blocks) < n_blocks:
@@ -138,46 +137,62 @@ def paradigm(
                     continue
                 elt["target"] = target
                 elt["deviant"] = deviant
-
         # wait in the inter block delay or a space key press
-        clock = Clock()
-        target_delay = INTER_BLOCK_DELAY
-        keyboard.start()
-        logger.info("Inter-block for %.1f seconds or a space key press.", target_delay)
-        while True:
-            keys = keyboard.getKeys(keyList=["space"], waitRelease=True)
-            if len(keys) > 1:
-                warn("Multiple space key pressed simultaneously. Skipping.")
-                continue
-            elif len(keys) == 1:
-                logger.info("Space key pressed, pausing execution.")
-                start_hold = clock.get_time_ns()
-                while True:
-                    keys = keyboard.getKeys(keyList=["space"], waitRelease=True)
-                    if len(keys) > 1:
-                        warn("Multiple space key pressed simultaneously. Skipping.")
-                        continue
-                    elif len(keys) == 1:
-                        break
-                    sleep(0.05)
-                stop_hold = clock.get_time_ns()
-                target_delay += (stop_hold - start_hold) / 1e9
-                logger.info(
-                    "Space key pressed, resuming execution. Inter-block delay "
-                    "remaining duration: %.1f seconds.",
-                    target_delay - clock.get_time(),
-                )
-            if clock.get_time() > target_delay:
-                break
-            sleep(0.05)
-        with warnings.catch_warnings():
-            warnings.filterwarnings(
-                "ignore",
-                message="Stopping key buffers but this could be dangerous",
-            )
-            keyboard.stop()
-        logger.info("Inter-block complete.")
+        _wait_inter_block(INTER_BLOCK_DELAY, keyboard)
     logger.info("Paradigm complete. Exiting.")
+
+
+def _wait_inter_block(delay: float, keyboard: Keyboard) -> None:
+    """Wait the inter-block delay.
+
+    Parameters
+    ----------
+    delay : float
+        The delay to wait in seconds.
+    keyboard : Keyboard
+        The PsychoPy keyboard object used to monitor the space key press.
+    """
+    assert 0 < delay  # sanity-check
+    clock = Clock()
+    keyboard.start()
+    logger.info("Inter-block for %.1f seconds or a space key press.", delay)
+    while True:
+        keys = keyboard.getKeys(keyList=["space"], waitRelease=True)
+        if len(keys) > 1:
+            warn("Multiple space key pressed simultaneously. Skipping.")
+            continue
+        elif len(keys) == 1:
+            logger.info("Space key pressed, pausing execution.")
+            start_hold = clock.get_time_ns()
+            while True:
+                keys = keyboard.getKeys(keyList=["space"], waitRelease=True)
+                if len(keys) > 1:
+                    warn("Multiple space key pressed simultaneously. Skipping.")
+                    continue
+                elif len(keys) == 1:
+                    break
+                sleep(0.05)
+            stop_hold = clock.get_time_ns()
+            delay += (stop_hold - start_hold) / 1e9
+            logger.info(
+                "Space key pressed, resuming execution. Inter-block delay "
+                "remaining duration: %.1f seconds.",
+                delay - clock.get_time(),
+            )
+        if clock.get_time() > delay:
+            break
+        sleep(0.05)
+    with _disable_psychopy_logs():
+        keyboard.stop()
+    logger.info("Inter-block complete.")
+
+
+class _disable_psychopy_logs:
+    def __enter__(self) -> None:
+        logging.console.setLevel(logging.CRITICAL)
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        logging.console.setLevel(logging.WARNING)
 
 
 run.add_command(baseline)
