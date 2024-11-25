@@ -9,6 +9,7 @@ from psychopy.hardware.keyboard import Keyboard
 from stimuli.time import Clock, sleep
 
 from .. import set_log_level
+from ..detector import _BUFSIZE
 from ..tasks import asynchronous as asynchronous_task
 from ..tasks import baseline as baseline_task
 from ..tasks import isochronous as isochronous_task
@@ -110,7 +111,7 @@ def paradigm(
             *mapping_args[blocks[-1]], **mapping_kwargs[blocks[-1]]
         )
         duration = clock.get_time()
-        logger.info("Block '%s' took %.3f seconds.", blocks[-1], duration)
+        logger.info("Block '%s' took %.3f seconds.", blocks[-1], duration - _BUFSIZE)
         # prepare arguments for future blocks if we just ran a respiration synchronous
         # block
         if result is not None:
@@ -119,7 +120,7 @@ def paradigm(
             assert isinstance(result, np.ndarray)
             assert result.ndim == 1
             assert result.size != 0
-            mapping_args["baseline"][0] = duration
+            mapping_args["baseline"][0] = duration - _BUFSIZE
             mapping_args["asynchronous"][0] = result
             mapping_args["synchronous-cardiac"][2] = result
             delay = np.median(np.diff(result))
