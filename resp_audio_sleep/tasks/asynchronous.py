@@ -46,7 +46,7 @@ def asynchronous(
         raise ValueError("The peaks array must be one-dimensional.")
     logger.info("Starting asynchronous block.")
     # create sound stimuli, trigger, sequence and clock
-    sounds = create_sounds()
+    sounds = create_sounds(backend=BACKEND)
     trigger = create_trigger()
     sequence = generate_sequence(target, deviant)
     clock = Clock()

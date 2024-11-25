@@ -60,7 +60,7 @@ def synchronous_respiration(
     """  # noqa: D401
     logger.info("Starting respiration synchronous block.")
     # create sound stimuli, trigger, sequence
-    sounds = create_sounds()
+    sounds = create_sounds(backend=BACKEND)
     trigger = create_trigger()
     sequence = generate_sequence(target, deviant)
     # the sequence, sound and trigger generation validates the trigger dictionary, thus
@@ -131,7 +131,7 @@ def synchronous_cardiac(
         raise ValueError("The peaks array must be one-dimensional.")
     logger.info("Starting cardiac synchronous block.")
     # create sound stimuli, trigger, sequence
-    sounds = create_sounds()
+    sounds = create_sounds(backend=BACKEND)
     trigger = create_trigger()
     sequence = generate_sequence(target, deviant)
     # the sequence, sound and trigger generation validates the trigger dictionary, thus

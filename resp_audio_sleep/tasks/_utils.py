@@ -85,7 +85,7 @@ def _ensure_valid_frequencies(
 
 @fill_doc
 def create_sounds(
-    *, triggers: dict[str, int] = TRIGGERS, backend: str = "ptb"
+    *, triggers: dict[str, int] = TRIGGERS, backend: str
 ) -> dict[str, SoundPTB | Tone]:
     """Create auditory simuli.
 
