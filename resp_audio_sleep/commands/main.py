@@ -155,7 +155,7 @@ def _wait_inter_block(delay: float, keyboard: Keyboard) -> None:
     assert 0 < delay  # sanity-check
     clock = Clock()
     keyboard.start()
-    logger.info("Inter-block for %.1f seconds or a space key press.", delay)
+    logger.info("Inter-block for %.1f seconds (press space to pause).", delay)
     while True:
         keys = keyboard.getKeys(keyList=["space"], waitRelease=True)
         if len(keys) > 1:
