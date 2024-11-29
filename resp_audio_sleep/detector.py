@@ -190,7 +190,7 @@ class Detector:
             elt for elt in (self._ecg_ch_name, self._resp_ch_name) if elt is not None
         ]
         self._stream = StreamLSL(bufsize, name=stream_name).connect(
-            acquisition_delay=0, processing_flags="all"
+            acquisition_delay=None, processing_flags="all"
         )
         if recorder:
             self._stream.pick(picks + [TRG_CHANNEL])
