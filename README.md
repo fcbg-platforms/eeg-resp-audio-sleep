@@ -127,7 +127,7 @@ $ uv pip install -e .[all]
 > [!IMPORTANT]
 > Note the `-e` flag used for an editable install. As the configuration files are within
 > the package, this flag must be used for changes to take effect. It's also handy to
-> use this flag in-case you need to update the package from source, im which case a
+> use this flag in-case you need to update the package from source, in which case a
 > simple `git pull` will suffice.
 
 > [!IMPORTANT]
