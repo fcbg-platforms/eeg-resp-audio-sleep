@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-import click
-import numpy as np
 import datetime
 
+import click
+import numpy as np
+
 from .. import set_log_level
-from ..utils.logs import logger
 from ..tasks import asynchronous as asynchronous_task
 from ..tasks import baseline as baseline_task
 from ..tasks import isochronous as isochronous_task
 from ..tasks import synchronous_cardiac as synchronous_cardiac_task
 from ..tasks import synchronous_respiration as synchronous_respiration_task
 from ..tasks._config import BASELINE_DURATION, N_DEVIANT, N_TARGET
+from ..utils.logs import logger
 from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, verbose
 
 
@@ -84,12 +85,13 @@ def synchronous_respiration(
 ) -> None:
     """Run a synchronous respiration task."""
     set_log_level(verbose)
-    peaks = synchronous_respiration_task(stream, ch_name_resp, target=target, deviant=deviant)
+    peaks = synchronous_respiration_task(
+        stream, ch_name_resp, target=target, deviant=deviant
+    )
     now = datetime.datetime.now()
     peaks_filename = f"peaks_{now.strftime('%Y%m%d_%H%M%S')}.txt"
     logger.info("Saving peaks to %s", peaks_filename)
     np.savetxt(f"peaks_{now.strftime('%Y%m%d_%H%M%S')}.txt", peaks)
-
 
 
 @click.command()
