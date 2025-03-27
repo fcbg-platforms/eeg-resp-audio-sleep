@@ -89,9 +89,9 @@ def synchronous_respiration(
         stream, ch_name_resp, target=target, deviant=deviant
     )
     now = datetime.datetime.now()
-    peaks_filename = f"peaks_{now.strftime('%Y%m%d_%H%M%S')}.txt"
+    peaks_filename = f"synchronous_respiration_peaks_{now.strftime('%Y%m%d_%H%M%S')}.txt"
     logger.info("Saving peaks to %s", peaks_filename)
-    np.savetxt(f"peaks_{now.strftime('%Y%m%d_%H%M%S')}.txt", peaks)
+    np.savetxt(peaks_filename, peaks)
 
 
 @click.command()
@@ -126,3 +126,7 @@ def synchronous_cardiac(
     delays = rng.uniform(low=delays[0], high=delays[1], size=N_TARGET + N_DEVIANT - 1)
     peaks = np.hstack(([0], np.cumsum(delays)))
     synchronous_cardiac_task(stream, ch_name_ecg, peaks, target=target, deviant=deviant)
+    now = datetime.datetime.now()
+    peaks_filename = f"synchronous_cardiac_peaks_{now.strftime('%Y%m%d_%H%M%S')}.txt"
+    logger.info("Saving peaks to %s", peaks_filename)
+    np.savetxt(peaks_filename, peaks)
