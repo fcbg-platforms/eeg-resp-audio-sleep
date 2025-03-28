@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import datetime
+from typing import TYPE_CHECKING
 
 import numpy as np
 from mne_lsl.lsl import local_clock
@@ -220,7 +219,7 @@ def synchronous_cardiac(
     logger.info("Cardiac synchronous block complete.")
     if detector.recorder is not None:
         detector.recorder.save(RECORDER_PATH_CARDIAC)
-    
+
     # Save
     now = datetime.datetime.now()
     peaks_filename = f"synchronous_cardiac_peaks_{now.strftime('%Y%m%d_%H%M%S')}.txt"
