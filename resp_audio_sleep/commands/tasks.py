@@ -89,7 +89,9 @@ def synchronous_respiration(
         stream, ch_name_resp, target=target, deviant=deviant
     )
     now = datetime.datetime.now()
-    peaks_filename = f"synchronous_respiration_peaks_{now.strftime('%Y%m%d_%H%M%S')}.txt"
+    peaks_filename = (
+        f"synchronous_respiration_peaks_{now.strftime('%Y%m%d_%H%M%S')}.txt"
+    )
     logger.info("Saving peaks to %s", peaks_filename)
     np.savetxt(peaks_filename, peaks)
 
