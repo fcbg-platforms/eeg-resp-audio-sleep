@@ -24,6 +24,7 @@ if BACKEND == "ptb":
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
+    from ..utils._typing import EYELink
 
 
 @fill_doc
@@ -32,6 +33,7 @@ def asynchronous(
     *,
     target: float,
     deviant: float,
+    eyelink: EYELink | None = None,
 ) -> None:
     """Asynchronous blocks where a synchronous sequence is repeated.
 
@@ -40,6 +42,7 @@ def asynchronous(
     %(peaks)s
     %(fq_target)s
     %(fq_deviant)s
+    %(eyelink)s
     """  # noqa: D401
     check_type(peaks, (np.ndarray,), "peaks")
     if peaks.ndim != 1:
@@ -47,7 +50,7 @@ def asynchronous(
     logger.info("Starting asynchronous block.")
     # create sound stimuli, trigger, sequence and clock
     sounds = create_sounds(backend=BACKEND)
-    trigger = create_trigger()
+    trigger = create_trigger(eyelink=eyelink)
     sequence = generate_sequence(target, deviant)
     clock = Clock()
     # the sequence, sound and trigger generation validates the trigger dictionary, thus

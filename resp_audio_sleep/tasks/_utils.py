@@ -5,7 +5,7 @@ from itertools import groupby
 from typing import TYPE_CHECKING
 
 import numpy as np
-from stimuli.trigger import ParallelPortTrigger
+from ..trigger import ParallelPortTrigger
 
 from ..utils._checks import check_type, check_value, ensure_int
 from ..utils._docs import fill_doc
@@ -143,7 +143,7 @@ def create_sounds(
     return sounds
 
 
-def create_trigger() -> BaseTrigger:
+def create_trigger(eyelink=None) -> BaseTrigger:
     """Create a trigger object.
 
     Returns
@@ -155,9 +155,9 @@ def create_trigger() -> BaseTrigger:
     check_value(TRIGGER_TYPE, ("arduino", "lpt"), "TRIGGER_TYPE")
     check_type(TRIGGER_ARGS, (str, None), "TRIGGER_ARGS")
     if TRIGGER_TYPE == "arduino":
-        trigger = ParallelPortTrigger("arduino", delay=10)
+        trigger = ParallelPortTrigger("arduino", delay=10, eyelink=eyelink)
     elif TRIGGER_TYPE == "lpt":
-        trigger = ParallelPortTrigger(TRIGGER_ARGS, delay=10)
+        trigger = ParallelPortTrigger(TRIGGER_ARGS, delay=10, eyelink=eyelink)
     return trigger
 
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from stimuli.time import Clock, sleep
 
 from ..detector import _BUFSIZE
@@ -12,9 +14,11 @@ from ._utils import create_sounds, create_trigger, generate_sequence
 if BACKEND == "ptb":
     import psychtoolbox as ptb
 
+if TYPE_CHECKING:
+    from ..utils._typing import EYELink
 
 @fill_doc
-def isochronous(delay: float, *, target: float, deviant: float) -> None:
+def isochronous(delay: float, *, target: float, deviant: float, eyelink: EYELink | None = None) -> None:
     """Isochronous auditory stimulus.
 
     Parameters
@@ -23,6 +27,7 @@ def isochronous(delay: float, *, target: float, deviant: float) -> None:
         Delay between 2 stimuli in seconds.
     %(fq_target)s
     %(fq_deviant)s
+    %(eyelink)s
     """  # noqa: D401
     check_type(delay, ("numeric",), "delay")
     if delay <= 0:
@@ -30,7 +35,7 @@ def isochronous(delay: float, *, target: float, deviant: float) -> None:
     logger.info("Starting isochronous block.")
     # create sound stimuli, trigger, sequence and clock
     sounds = create_sounds(backend=BACKEND)
-    trigger = create_trigger()
+    trigger = create_trigger(eyelink=eyelink)
     sequence = generate_sequence(target, deviant)
     clock = Clock()
     # the sequence, sound and trigger generation validates the trigger dictionary, thus

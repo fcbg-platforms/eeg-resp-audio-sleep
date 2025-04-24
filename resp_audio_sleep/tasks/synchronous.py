@@ -34,6 +34,7 @@ if TYPE_CHECKING:
     from psychopy.sound.backend_ptb import SoundPTB
     from stimuli.audio import Tone
     from stimuli.trigger._base import BaseTrigger
+    from ..utils._typing import EYELink
 
 
 @fill_doc
@@ -43,6 +44,7 @@ def synchronous_respiration(
     *,
     target: float,
     deviant: float,
+    eyelink: EYELink | None = None
 ) -> NDArray[np.float64]:
     """Synchronous auditory stimulus with the respiration peak signal.
 
@@ -52,6 +54,7 @@ def synchronous_respiration(
     %(resp_ch_name)s
     %(fq_target)s
     %(fq_deviant)s
+    %(eyelink)s
 
     Returns
     -------
@@ -61,7 +64,7 @@ def synchronous_respiration(
     logger.info("Starting respiration synchronous block.")
     # create sound stimuli, trigger, sequence
     sounds = create_sounds(backend=BACKEND)
-    trigger = create_trigger()
+    trigger = create_trigger(eyelink=eyelink)
     sequence = generate_sequence(target, deviant)
     # the sequence, sound and trigger generation validates the trigger dictionary, thus
     # we can safely map the target and deviant frequencies to their corresponding
