@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-
 from typing import TYPE_CHECKING
 
 import pylink
@@ -9,9 +8,9 @@ from psychopy import logging
 from psychopy.event import waitKeys
 from psychopy.visual import TextStim, Window
 
-from ._config import FOREGROUND_COLOR, HOST_IP, SCREEN_KWARGS
 from ..utils._checks import check_type, ensure_int, ensure_path
 from ..utils.logs import logger
+from ._config import FOREGROUND_COLOR, HOST_IP, SCREEN_KWARGS
 from .EyeLinkCoreGraphicsPsychoPy import EyeLinkCoreGraphicsPsychoPy
 
 if TYPE_CHECKING:
@@ -158,7 +157,6 @@ class Eyelink:
         self.genv.setTargetType("circle")
         self.genv.setTargetSize(24)
         pylink.openGraphicsEx(self.genv)
-
 
     def clear_screen(self):
         """Clear up the PsychoPy window."""

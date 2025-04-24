@@ -34,6 +34,7 @@ if TYPE_CHECKING:
     from psychopy.sound.backend_ptb import SoundPTB
     from stimuli.audio import Tone
     from stimuli.trigger._base import BaseTrigger
+
     from ..utils._typing import EYELink
 
 
@@ -44,7 +45,7 @@ def synchronous_respiration(
     *,
     target: float,
     deviant: float,
-    eyelink: EYELink | None = None
+    eyelink: EYELink | None = None,
 ) -> NDArray[np.float64]:
     """Synchronous auditory stimulus with the respiration peak signal.
 

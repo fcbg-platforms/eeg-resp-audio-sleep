@@ -5,8 +5,8 @@ from itertools import groupby
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ..trigger import ParallelPortTrigger
 
+from ..trigger import ParallelPortTrigger
 from ..utils._checks import check_type, check_value, ensure_int
 from ..utils._docs import fill_doc
 from ..utils.logs import logger, warn

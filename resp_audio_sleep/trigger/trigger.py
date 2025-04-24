@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import time
 from concurrent.futures import ThreadPoolExecutor
 from platform import system
+from typing import TYPE_CHECKING
 
+from stimuli.trigger._base import BaseTrigger
 from stimuli.utils._checks import check_type, check_value, ensure_int
 from stimuli.utils._docs import copy_doc
 from stimuli.utils._imports import import_optional_dependency
 from stimuli.utils.logs import logger
-from stimuli.trigger._base import BaseTrigger
+
 from ..utils._typing import EYELink
 
 if TYPE_CHECKING:
@@ -54,7 +54,11 @@ class ParallelPortTrigger(BaseTrigger):
     """
 
     def __init__(
-        self, address: int | str, port_type: str | None = None, delay: int = 10, eyelink: EYELink | None = None
+        self,
+        address: int | str,
+        port_type: str | None = None,
+        delay: int = 10,
+        eyelink: EYELink | None = None,
     ) -> None:
         check_type(address, ("int-like", str), "address")
         if not isinstance(address, str):

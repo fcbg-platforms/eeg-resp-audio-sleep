@@ -14,7 +14,10 @@ if TYPE_CHECKING:
     from ..utils._typing import EYELink
 
 
-def baseline(duration: float, eyelink: EYELink | None = None,) -> None:
+def baseline(
+    duration: float,
+    eyelink: EYELink | None = None,
+) -> None:
     """Baseline block corresponding to a resting-state recording.
 
     Parameters

@@ -17,8 +17,11 @@ if BACKEND == "ptb":
 if TYPE_CHECKING:
     from ..utils._typing import EYELink
 
+
 @fill_doc
-def isochronous(delay: float, *, target: float, deviant: float, eyelink: EYELink | None = None) -> None:
+def isochronous(
+    delay: float, *, target: float, deviant: float, eyelink: EYELink | None = None
+) -> None:
     """Isochronous auditory stimulus.
 
     Parameters

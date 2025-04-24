@@ -24,6 +24,7 @@ if BACKEND == "ptb":
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
+
     from ..utils._typing import EYELink
 
 
