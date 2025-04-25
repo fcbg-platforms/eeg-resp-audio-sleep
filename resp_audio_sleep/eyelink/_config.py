@@ -1,7 +1,7 @@
 from typing import Any
 
 # PsychoPy windows constants
-SCREEN = None
+SCREEN = 0
 SCREEN_KWARGS: dict[str, Any] = dict(
     allowGUI=False,
     color=(-1, -1, -1),
