@@ -1,3 +1,3 @@
 """Eye-link module."""
 
-from .eyelink import Eyelink
+from .EyeLink import Eyelink
