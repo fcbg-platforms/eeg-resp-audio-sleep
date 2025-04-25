@@ -44,7 +44,7 @@ def synchronous_respiration(
     *,
     target: float,
     deviant: float,
-    eyelink: EYELink | None = None
+    eyelink: EYELink | None = None,
 ) -> NDArray[np.float64]:
     """Synchronous auditory stimulus with the respiration peak signal.
 
@@ -118,6 +118,7 @@ def synchronous_cardiac(
     *,
     target: float,
     deviant: float,
+    eyelink: EYELink | None = None
 ) -> None:
     """Synchronous auditory stimulus with the cardiac peak signal.
 
@@ -135,7 +136,7 @@ def synchronous_cardiac(
     logger.info("Starting cardiac synchronous block.")
     # create sound stimuli, trigger, sequence
     sounds = create_sounds(backend=BACKEND)
-    trigger = create_trigger()
+    trigger = create_trigger(eyelink=eyelink)
     sequence = generate_sequence(target, deviant)
     # the sequence, sound and trigger generation validates the trigger dictionary, thus
     # we can safely map the target and deviant frequencies to their corresponding

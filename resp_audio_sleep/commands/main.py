@@ -74,6 +74,8 @@ def paradigm(
         eyelink.calibrate()
         eyelink.win.close()
         eyelink.start()
+    else:
+        eyelink = None
         
     # prepare mapping between function and block name
     mapping_func = {

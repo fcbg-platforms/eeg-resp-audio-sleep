@@ -87,6 +87,7 @@ class ParallelPortTrigger(BaseTrigger):
                 )
             self._address = address
             self._connect_pport()
+
         # set pins to 0 and prepare threadpool for resets
         self._set_data(0)
         self._executor = ThreadPoolExecutor(max_workers=1)
@@ -165,7 +166,12 @@ class ParallelPortTrigger(BaseTrigger):
 
     def _connect_pport(self) -> None:
         """Connect to the ParallelPort."""
-        from .io import ParallelPort
+        try:
+            from stimuli.trigger.io import ParallelPort
+        except ImportError:
+            from stimuli.trigger._io import ParallelPort
+
+
 
         if ParallelPort is None and system() == "Darwin":
             raise RuntimeError(
@@ -208,6 +214,9 @@ class ParallelPortTrigger(BaseTrigger):
             )
         self._set_data(value)
         self._future = self._executor.submit(self._signal_off())
+        if self.eyelink:
+            self.eyelink.signal(str(value))
+
 
     def _signal_off(self) -> None:
         """Reset trigger signal to 0."""
@@ -220,8 +229,6 @@ class ParallelPortTrigger(BaseTrigger):
             self._port.write(bytes([value]))
         else:
             self._port.setData(value)
-        if self.eyelink:
-            self.eyelink.signal(str(value))
 
     def close(self) -> None:
         """Disconnect the parallel port.

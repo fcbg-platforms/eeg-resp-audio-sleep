@@ -10,7 +10,8 @@ from ..tasks import isochronous as isochronous_task
 from ..tasks import synchronous_cardiac as synchronous_cardiac_task
 from ..tasks import synchronous_respiration as synchronous_respiration_task
 from ..tasks._config import BASELINE_DURATION, N_DEVIANT, N_TARGET
-from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, verbose
+from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, use_eyelink, verbose
+from ..eyelink import Eyelink
 
 
 @click.command()
@@ -21,11 +22,22 @@ from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, ve
     type=float,
     default=BASELINE_DURATION,
 )
+@use_eyelink
 @verbose
-def baseline(duration: float, verbose: str) -> None:
+def baseline(duration: float, use_eyelink: bool, verbose: str) -> None:
     """Run a baseline task."""
     set_log_level(verbose)
-    baseline_task(duration)
+    if use_eyelink:
+        eyelink = Eyelink()
+        eyelink.calibrate()
+        eyelink.win.close()
+        eyelink.start()
+    else:
+        eyelink = None
+    baseline_task(duration, eyelink=eyelink)
+
+    if use_eyelink:
+        eyelink.stop()
 
 
 @click.command()
@@ -37,11 +49,22 @@ def baseline(duration: float, verbose: str) -> None:
 )
 @fq_target
 @fq_deviant
+@use_eyelink
 @verbose
-def isochronous(delay: float, target: float, deviant: float, verbose: str) -> None:
+def isochronous(delay: float, target: float, deviant: float, use_eyelink: bool, verbose: str) -> None:
     """Run an isochronous task."""
     set_log_level(verbose)
-    isochronous_task(delay, target=target, deviant=deviant)
+
+    if use_eyelink:
+        eyelink = Eyelink()
+        eyelink.calibrate()
+        eyelink.win.close()
+        eyelink.start()
+    else:
+        eyelink = None
+    isochronous_task(delay, target=target, deviant=deviant, eyelink=eyelink)
+    if use_eyelink:
+        eyelink.stop()
 
 
 @click.command()
@@ -54,9 +77,10 @@ def isochronous(delay: float, target: float, deviant: float, verbose: str) -> No
 )
 @fq_target
 @fq_deviant
+@use_eyelink
 @verbose
 def asynchronous(
-    delays: tuple[float, float], target: float, deviant: float, verbose: str
+    delays: tuple[float, float], target: float, deviant: float, use_eyelink: bool, verbose: str
 ) -> None:
     """Run an asynchronous task."""
     set_log_level(verbose)
@@ -68,7 +92,17 @@ def asynchronous(
     rng = np.random.default_rng()
     delays = rng.uniform(low=delays[0], high=delays[1], size=N_TARGET + N_DEVIANT - 1)
     peaks = np.hstack(([0], np.cumsum(delays)))
-    asynchronous_task(peaks, target=target, deviant=deviant)
+
+    if use_eyelink:
+        eyelink = Eyelink()
+        eyelink.calibrate()
+        eyelink.win.close()
+        eyelink.start()
+    else:
+        eyelink = None
+    asynchronous_task(peaks, target=target, deviant=deviant, eyelink=eyelink)
+    if use_eyelink:
+        eyelink.stop()
 
 
 @click.command()
@@ -76,13 +110,23 @@ def asynchronous(
 @ch_name_resp
 @fq_target
 @fq_deviant
+@use_eyelink
 @verbose
 def synchronous_respiration(
-    stream: str, ch_name_resp: str, target: float, deviant: float, verbose: str
+    stream: str, ch_name_resp: str, target: float, deviant: float, use_eyelink: bool, verbose: str
 ) -> None:
     """Run a synchronous respiration task."""
     set_log_level(verbose)
-    synchronous_respiration_task(stream, ch_name_resp, target=target, deviant=deviant)
+    if use_eyelink:
+        eyelink = Eyelink()
+        eyelink.calibrate()
+        eyelink.win.close()
+        eyelink.start()
+    else:
+        eyelink = None
+    synchronous_respiration_task(stream, ch_name_resp, target=target, deviant=deviant, eyelink=eyelink)
+    if use_eyelink:
+        eyelink.stop()
 
 
 @click.command()
@@ -97,6 +141,7 @@ def synchronous_respiration(
 )
 @fq_target
 @fq_deviant
+@use_eyelink
 @verbose
 def synchronous_cardiac(
     stream: str,
@@ -104,6 +149,7 @@ def synchronous_cardiac(
     delays: tuple[float, float],
     target: float,
     deviant: float,
+    use_eyelink: bool,
     verbose: str,
 ) -> None:
     """Run a synchronous cardiac task."""
@@ -116,4 +162,14 @@ def synchronous_cardiac(
     rng = np.random.default_rng()
     delays = rng.uniform(low=delays[0], high=delays[1], size=N_TARGET + N_DEVIANT - 1)
     peaks = np.hstack(([0], np.cumsum(delays)))
-    synchronous_cardiac_task(stream, ch_name_ecg, peaks, target=target, deviant=deviant)
+
+    if use_eyelink:
+        eyelink = Eyelink()
+        eyelink.calibrate()
+        eyelink.win.close()
+        eyelink.start()
+    else:
+        eyelink = None
+    synchronous_cardiac_task(stream, ch_name_ecg, peaks, target=target, deviant=deviant, eyelink=eyelink)
+    if use_eyelink:
+        eyelink.stop()
