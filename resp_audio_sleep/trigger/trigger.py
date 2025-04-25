@@ -175,8 +175,6 @@ class ParallelPortTrigger(BaseTrigger):
         except ImportError:
             from stimuli.trigger._io import ParallelPort
 
-
-
         if ParallelPort is None and system() == "Darwin":
             raise RuntimeError(
                 "macOS does not support built-in parallel port. Please use an arduino "
@@ -220,7 +218,6 @@ class ParallelPortTrigger(BaseTrigger):
         self._future = self._executor.submit(self._signal_off())
         if self.eyelink:
             self.eyelink.signal(str(value))
-
 
     def _signal_off(self) -> None:
         """Reset trigger signal to 0."""

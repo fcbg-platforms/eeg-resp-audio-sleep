@@ -84,7 +84,7 @@ def paradigm(
         eyelink.start()
     else:
         eyelink = None
-        
+
     # prepare mapping between function and block name
     mapping_func = {
         "baseline": baseline_task,

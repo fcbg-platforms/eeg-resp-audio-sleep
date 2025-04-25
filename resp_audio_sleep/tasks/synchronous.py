@@ -119,7 +119,7 @@ def synchronous_cardiac(
     *,
     target: float,
     deviant: float,
-    eyelink: EYELink | None = None
+    eyelink: EYELink | None = None,
 ) -> None:
     """Synchronous auditory stimulus with the cardiac peak signal.
 

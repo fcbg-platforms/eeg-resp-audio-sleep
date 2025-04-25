@@ -8,10 +8,9 @@ from psychopy import logging
 from psychopy.event import waitKeys
 from psychopy.visual import TextStim, Window
 
-from ._config import FOREGROUND_COLOR, HOST_IP, SCREEN_KWARGS, SCREEN
 from ..utils._checks import check_type, ensure_int, ensure_path
 from ..utils.logs import logger
-from ._config import FOREGROUND_COLOR, HOST_IP, SCREEN_KWARGS
+from ._config import FOREGROUND_COLOR, HOST_IP, SCREEN, SCREEN_KWARGS
 from .EyeLinkCoreGraphicsPsychoPy import EyeLinkCoreGraphicsPsychoPy
 
 if TYPE_CHECKING:
