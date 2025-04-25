@@ -26,8 +26,8 @@ dependencies = [
   'psutil',
   'psychopy',
   'psychtoolbox',
-  'stimuli[pport]>=1.0.2',
   'sr-research-pylink',
+  'stimuli[pport]>=1.0.2',
   'wxPython',
 ]
 description = 'Project to study sound stimulus synchronous, asynchronous and isochronous with the respiration during sleep.'

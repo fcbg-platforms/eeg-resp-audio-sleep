@@ -34,6 +34,7 @@ if TYPE_CHECKING:
     from psychopy.sound.backend_ptb import SoundPTB
     from stimuli.audio import Tone
     from stimuli.trigger._base import BaseTrigger
+
     from ..utils._typing import EYELink
 
 
