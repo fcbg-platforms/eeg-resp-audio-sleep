@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -104,6 +105,16 @@ def synchronous_respiration(
     logger.info("Respiration synchronous block complete.")
     if detector.recorder is not None:
         detector.recorder.save(RECORDER_PATH_RESPIRATION)
+
+    # Save
+    now = datetime.datetime.now()
+    peaks_filename = (
+        f"synchronous_respiration_peaks_{now.strftime('%Y%m%d_%H%M%S')}.txt"
+    )
+    peaks_filepath = RECORDER_PATH_RESPIRATION.parent / peaks_filename
+    peaks_filepath.parent.mkdir(parents=True, exist_ok=True)
+    logger.info("Saving peaks to %s", peaks_filepath)
+    np.savetxt(peaks_filepath, peaks)
     return np.array(peaks)
 
 
@@ -168,6 +179,7 @@ def synchronous_cardiac(
     target_time = None
     last_pos = None
     trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][0])
+    detected_peaks = []
     while counter <= sequence.size - 1:
         pos = detector.new_peak("ecg")
         if pos is None:
@@ -201,11 +213,20 @@ def synchronous_cardiac(
             delays = delays[~mask]
         target_time = pos + rng.choice(delays)
         last_pos = pos
+        detected_peaks.append(pos)
     sleep(1.1 * SOUND_DURATION)
     trigger.signal(TRIGGER_TASKS["synchronous-cardiac"][1])
     logger.info("Cardiac synchronous block complete.")
     if detector.recorder is not None:
         detector.recorder.save(RECORDER_PATH_CARDIAC)
+
+    # Save
+    now = datetime.datetime.now()
+    peaks_filename = f"synchronous_cardiac_peaks_{now.strftime('%Y%m%d_%H%M%S')}.txt"
+    peaks_filepath = RECORDER_PATH_CARDIAC.parent / peaks_filename
+    peaks_filepath.parent.mkdir(parents=True, exist_ok=True)
+    logger.info("Saving peaks to %s", peaks_filepath)
+    np.savetxt(peaks_filepath, detected_peaks)
 
 
 class _HeartRateMonitor:

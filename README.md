@@ -127,7 +127,7 @@ $ uv pip install -e .[all]
 > [!IMPORTANT]
 > Note the `-e` flag used for an editable install. As the configuration files are within
 > the package, this flag must be used for changes to take effect. It's also handy to
-> use this flag in-case you need to update the package from source, im which case a
+> use this flag in-case you need to update the package from source, in which case a
 > simple `git pull` will suffice.
 
 > [!IMPORTANT]
@@ -256,3 +256,24 @@ measurements (jack to touchproof). For now, the channels are set as:
 > [!IMPORTANT]
 > Make sure to disable deviant sounds with `N_DEVIANT=0` and to use a target sound which
 > can be sampled, e.g. `440` Hz.
+
+## Special viewer
+
+In order to use the special version of `mne-lsl viewer`, you can create a new environment:
+
+### Installation
+
+```bash
+$ uv venv mne-lsl-viewer --python=3.10
+$ source mne-lsl-viewer/bin/activate
+$ uv pip install git+https://github.com/apelentritou/mne-lsl
+$ uv pip install pyqt5
+```
+
+
+### Usage
+
+```bash
+$ source mne-lsl-viewer/bin/activate
+$ mne-lsl viewer
+```
