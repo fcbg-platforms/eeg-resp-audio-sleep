@@ -1,7 +1,8 @@
 from typing import Any
 
+from pathlib import Path
 # PsychoPy windows constants
-SCREEN = 0
+SCREEN = 1
 SCREEN_KWARGS: dict[str, Any] = dict(
     allowGUI=False,
     color=(-1, -1, -1),
@@ -13,3 +14,6 @@ SCREEN_KWARGS: dict[str, Any] = dict(
 # Eye-tracker constants
 FOREGROUND_COLOR = (0, 0, 0)
 HOST_IP: str = "100.1.1.1"
+DATA_FOLDER_PATH: Path = (
+    Path.home() / "Documents" / "ras-data" / "eyelink"
+)
