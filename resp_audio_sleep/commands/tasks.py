@@ -82,9 +82,7 @@ def synchronous_respiration(
 ) -> None:
     """Run a synchronous respiration task."""
     set_log_level(verbose)
-    synchronous_respiration_task(
-        stream, ch_name_resp, target=target, deviant=deviant
-    )
+    synchronous_respiration_task(stream, ch_name_resp, target=target, deviant=deviant)
 
 
 @click.command()
