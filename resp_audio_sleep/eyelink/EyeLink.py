@@ -222,6 +222,12 @@ class Eyelink:
         finally:
             self.close()
 
+    def draw_fixation(self):
+        self.clear_screen()
+        fixation_cross = TextStim(self.win, "+", units="height")
+        fixation_cross.draw()
+        self.win.flip()
+
     def signal(self, value: str):
         """Send a trigger signal."""
         self.el_tracker.sendMessage(value)
