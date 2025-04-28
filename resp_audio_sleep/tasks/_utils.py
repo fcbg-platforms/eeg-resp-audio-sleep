@@ -179,7 +179,7 @@ def generate_sequence(
     %(fq_deviant)s
     edge_perc : int | float
         Percentage of the total number of elements that have to be targets at
-        the beginning and at the end of the sequence.
+        the beginning of the sequence.
     max_iter : int
         Maximum number of iteration to randomize the sequence.
     on_diverge : str
@@ -226,8 +226,7 @@ def generate_sequence(
     # pseudo-randomize the sequence
     n_edge = np.ceil(edge_perc * (n_target + n_deviant) / 100).astype(int)
     start = [trigger_target] * n_edge
-    middle = [trigger_target] * (n_target - 2 * n_edge) + [trigger_deviant] * n_deviant
-    end = [trigger_target] * n_edge
+    middle = [trigger_target] * (n_target - n_edge) + [trigger_deviant] * n_deviant
     rng = np.random.default_rng()
     rng.shuffle(middle)
     iter_ = 0
@@ -260,7 +259,7 @@ def generate_sequence(
             )
             break
         iter_ += 1
-    sequence = start + middle + end
+    sequence = start + middle
     # sanity-checks
     if converged:
         assert all(len(group) == 1 for n, group in groups if n == trigger_deviant)
@@ -269,5 +268,4 @@ def generate_sequence(
         )
     assert len(sequence) == n_target + n_deviant
     assert trigger_deviant not in start
-    assert trigger_deviant not in end
     return np.array(sequence, dtype=np.int32)
