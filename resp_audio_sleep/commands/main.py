@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from itertools import cycle
 
-import datetime
-
 import click
 import numpy as np
 from psychopy import logging

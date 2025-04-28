@@ -10,7 +10,7 @@ from psychopy.visual import TextStim, Window
 
 from ..utils._checks import check_type, ensure_int, ensure_path
 from ..utils.logs import logger
-from ._config import FOREGROUND_COLOR, HOST_IP, SCREEN, SCREEN_KWARGS, DATA_FOLDER_PATH
+from ._config import DATA_FOLDER_PATH, FOREGROUND_COLOR, HOST_IP, SCREEN, SCREEN_KWARGS
 from .EyeLinkCoreGraphicsPsychoPy import EyeLinkCoreGraphicsPsychoPy
 
 if TYPE_CHECKING:
