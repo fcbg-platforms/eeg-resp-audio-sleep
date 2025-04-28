@@ -10,7 +10,7 @@ from psychopy.visual import TextStim, Window
 
 from ..utils._checks import check_type, ensure_int, ensure_path
 from ..utils.logs import logger
-from ._config import FOREGROUND_COLOR, HOST_IP, SCREEN, SCREEN_KWARGS
+from ._config import FOREGROUND_COLOR, HOST_IP, SCREEN, SCREEN_KWARGS, DATA_FOLDER_PATH
 from .EyeLinkCoreGraphicsPsychoPy import EyeLinkCoreGraphicsPsychoPy
 
 if TYPE_CHECKING:
@@ -42,7 +42,7 @@ class Eyelink:
 
     def __init__(
         self,
-        pname: str | Path = "./",
+        pname: str | Path = DATA_FOLDER_PATH,
         fname: str = "TEST",
         host_ip: str | None = HOST_IP,
         screen: int | None = SCREEN,
@@ -129,6 +129,9 @@ class Eyelink:
         # (HV = horizontal/vertical)
         self.el_tracker.sendCommand("calibration_type = HV9")
         self.el_tracker.sendCommand("button_function 5 'accept_target_fixation'")
+
+        # Set sampling frequency
+        self.el_tracker.sendCommand("sample_rate 1000")
 
         # Step 4: set up a graphics environment for calibration
         SCREEN_KWARGS["screen"] = 0 if screen is None else screen

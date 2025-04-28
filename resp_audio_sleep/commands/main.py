@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from itertools import cycle
 
+import datetime
+
 import click
 import numpy as np
 from psychopy import logging
@@ -78,7 +80,9 @@ def paradigm(
 
     # eyelink
     if use_eyelink:
-        eyelink = Eyelink()
+        now = datetime.datetime.now()
+        fname = f"""paradigm_{now.strftime("%Y%m%d_%H%M%S")}"""
+        eyelink = Eyelink(fname=fname)
         eyelink.calibrate()
         eyelink.win.close()
         eyelink.start()
