@@ -82,7 +82,7 @@ def synchronous_respiration(
 ) -> None:
     """Run a synchronous respiration task."""
     set_log_level(verbose)
-    peaks = synchronous_respiration_task(
+    synchronous_respiration_task(
         stream, ch_name_resp, target=target, deviant=deviant
     )
 
