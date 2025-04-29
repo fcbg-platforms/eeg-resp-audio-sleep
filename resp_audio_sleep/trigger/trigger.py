@@ -101,7 +101,6 @@ class ParallelPortTrigger(BaseTrigger):
         self.eyelink = eyelink
         self._eyelink_executor = ThreadPoolExecutor(max_workers=1)
 
-
     @staticmethod
     def _infer_port_type(address: int | str) -> str:
         """Infer the type of port from the address."""
