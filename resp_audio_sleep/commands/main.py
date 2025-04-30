@@ -80,8 +80,6 @@ def paradigm(
     if use_eyelink:
         fname = input("Eyetracker filename: ")
         eyelink = Eyelink(fname=fname)
-        eyelink.calibrate()
-        eyelink.draw_fixation()
         eyelink.start()
     else:
         eyelink = None
@@ -172,7 +170,6 @@ def paradigm(
         _wait_inter_block(INTER_BLOCK_DELAY, keyboard)
 
     if use_eyelink:
-        eyelink.win.close()
         eyelink.stop()
 
     logger.info("Paradigm complete. Exiting.")
