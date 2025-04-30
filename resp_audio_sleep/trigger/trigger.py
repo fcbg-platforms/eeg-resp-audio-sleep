@@ -97,10 +97,6 @@ class ParallelPortTrigger(BaseTrigger):
         self._executor = ThreadPoolExecutor(max_workers=1)
         self._future = None
 
-        # eyelink
-        self.eyelink = eyelink
-        self._eyelink_executor = ThreadPoolExecutor(max_workers=1)
-
     @staticmethod
     def _infer_port_type(address: int | str) -> str:
         """Infer the type of port from the address."""
@@ -217,8 +213,6 @@ class ParallelPortTrigger(BaseTrigger):
             )
         self._set_data(value)
         self._future = self._executor.submit(self._signal_off())
-        if self.eyelink:
-            self._eyelink_executor.submit(self.eyelink.signal(str(value)))
 
     def _signal_off(self) -> None:
         """Reset trigger signal to 0."""
@@ -240,8 +234,6 @@ class ParallelPortTrigger(BaseTrigger):
         """
         if hasattr(self, "_executor"):
             self._executor.shutdown(wait=True, cancel_futures=False)
-        if hasattr(self, "_eyelink_executor"):
-            self._eyelink_executor.shutdown(wait=True, cancel_futures=False)
         if (
             hasattr(self, "_port_type")
             and self._port_type == "arduino"
