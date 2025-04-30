@@ -239,8 +239,6 @@ class ParallelPortTrigger(BaseTrigger):
         """
         if hasattr(self, "_executor"):
             self._executor.shutdown(wait=True, cancel_futures=False)
-        if hasattr(self, "_eyelink_executor"):
-            self._eyelink_executor.shutdown(wait=True, cancel_futures=False)
         if (
             hasattr(self, "_port_type")
             and self._port_type == "arduino"
