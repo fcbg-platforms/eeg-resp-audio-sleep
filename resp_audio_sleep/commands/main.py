@@ -10,6 +10,7 @@ from stimuli.time import Clock, sleep
 
 from .. import set_log_level
 from ..detector import _BUFSIZE
+from ..eyelink import Eyelink
 from ..tasks import asynchronous as asynchronous_task
 from ..tasks import baseline as baseline_task
 from ..tasks import isochronous as isochronous_task
@@ -18,7 +19,15 @@ from ..tasks import synchronous_respiration as synchronous_respiration_task
 from ..tasks._config import BASELINE_DURATION, INTER_BLOCK_DELAY, ConfigRepr
 from ..utils.blocks import _BLOCKS, generate_blocks_sequence
 from ..utils.logs import logger, warn
-from ._utils import ch_name_ecg, ch_name_resp, fq_deviant, fq_target, stream, verbose
+from ._utils import (
+    ch_name_ecg,
+    ch_name_resp,
+    fq_deviant,
+    fq_target,
+    stream,
+    use_eyelink,
+    verbose,
+)
 from .tasks import (
     asynchronous,
     baseline,
@@ -50,6 +59,7 @@ def run():
 @ch_name_ecg
 @fq_target
 @fq_deviant
+@use_eyelink
 @verbose
 def paradigm(
     n_blocks: int,
@@ -58,12 +68,24 @@ def paradigm(
     ch_name_ecg: str,
     target: float,
     deviant: float,
+    use_eyelink: bool,
     verbose: str,
 ) -> None:
     """Run the paradigm, alternating between blocks."""
     set_log_level(verbose)
     if n_blocks <= 0:
         raise ValueError(f"Number of blocks must be positive. '{n_blocks}' is invalid.")
+
+    # eyelink
+    if use_eyelink:
+        fname = input("Eyetracker filename: ")
+        eyelink = Eyelink(fname=fname)
+        eyelink.calibrate()
+        eyelink.draw_fixation()
+        eyelink.start()
+    else:
+        eyelink = None
+
     # prepare mapping between function and block name
     mapping_func = {
         "baseline": baseline_task,
@@ -90,11 +112,19 @@ def paradigm(
     target = next(targets)
     deviant = next(deviants)
     mapping_kwargs = {
-        "baseline": {},
-        "isochronous": {"target": target, "deviant": deviant},
-        "asynchronous": {"target": target, "deviant": deviant},
-        "synchronous-respiration": {"target": target, "deviant": deviant},
-        "synchronous-cardiac": {"target": target, "deviant": deviant},
+        "baseline": {"eyelink": eyelink},
+        "isochronous": {"target": target, "deviant": deviant, "eyelink": eyelink},
+        "asynchronous": {"target": target, "deviant": deviant, "eyelink": eyelink},
+        "synchronous-respiration": {
+            "target": target,
+            "deviant": deviant,
+            "eyelink": eyelink,
+        },
+        "synchronous-cardiac": {
+            "target": target,
+            "deviant": deviant,
+            "eyelink": eyelink,
+        },
     }
     assert len(set(mapping_kwargs) - set(_BLOCKS)) == 0  # sanity-check
     # create a keyboard object to monitor for breaks
@@ -140,6 +170,11 @@ def paradigm(
                 elt["deviant"] = deviant
         # wait in the inter block delay or a space key press
         _wait_inter_block(INTER_BLOCK_DELAY, keyboard)
+
+    if use_eyelink:
+        eyelink.win.close()
+        eyelink.stop()
+
     logger.info("Paradigm complete. Exiting.")
 
 

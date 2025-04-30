@@ -26,7 +26,9 @@ dependencies = [
   'psutil',
   'psychopy',
   'psychtoolbox',
+  'sr-research-pylink',
   'stimuli[pport]>=1.0.2',
+  'wxPython',
 ]
 description = 'Project to study sound stimulus synchronous, asynchronous and isochronous with the respiration during sleep.'
 keywords = [
@@ -146,3 +148,12 @@ include = ['resp_audio_sleep*']
 all = true
 ignore_case = true
 trailing_comma_inline_array = true
+
+[[tool.uv.index]]
+explicit = true
+name = "sr-research-pylink"
+url = "https://pypi.sr-support.com"
+
+[tool.uv.sources]
+sr-research-pylink = {index = "sr-research-pylink"}
+wxPython = {marker = "sys_platform == 'linux'", url = "https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04/wxPython-4.2.1-cp310-cp310-linux_x86_64.whl"}
