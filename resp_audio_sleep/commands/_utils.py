@@ -38,3 +38,6 @@ verbose = click.option(
     show_default=True,
 )
 no_viewer = click.option("--no-viewer", help="Disable the viewer.", is_flag=True)
+use_eyelink = click.option(
+    "--use_eyelink", "--eyelink", help="Enable eyelink.", is_flag=True
+)

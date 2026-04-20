@@ -23,9 +23,7 @@ def generate_blocks_sequence(previous_blocks: list[str]) -> str:
         The next block selected among the options.
     """
     if len(previous_blocks) == 0:
-        return "baseline"  # Start with baseline
-    elif len(previous_blocks) == 1:
-        return "synchronous-respiration"  # Followed by synchronous-respiration
+        return "synchronous-respiration"  # Start with synchronous-respiration
     # above that, look by group of 5
     idx = len(previous_blocks) % 5
     if idx == 0:

@@ -30,6 +30,9 @@ ecg_ch_name : str | None
     Name of the ECG channel in the LSL stream. This channel should contain the ECG
     signal recorded with 2 bipolar electrodes."""
 
+docdict["eyelink"] = """
+eyelink : Eyelink | None
+    An Eyelink object to use for eye tracking. If None, no eye tracking is performed."""
 # -- F ---------------------------------------------------------------------------------
 docdict["fq_deviant"] = """
 deviant : float
